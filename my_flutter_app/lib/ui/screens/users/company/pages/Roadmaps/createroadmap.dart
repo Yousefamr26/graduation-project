@@ -1,17 +1,7 @@
+import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:my_flutter_app/core/theme/appColors.dart';
 
-// 📌 Class للـ Skill مع النقاط
-class Skill {
-  final String name;
-  final int points;
-
-  Skill({required this.name, required this.points});
-}
 
 class CreateNewRoadmap extends StatefulWidget {
   const CreateNewRoadmap({super.key});
@@ -21,381 +11,1057 @@ class CreateNewRoadmap extends StatefulWidget {
 }
 
 class _CreateNewRoadmapState extends State<CreateNewRoadmap> {
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  String? duration;
-  String? selectedLevel;
-
-  List<Skill> skills = [
-    Skill(name: 'Flutter', points: 10),
-    Skill(name: 'Dart', points: 8),
-    Skill(name: 'Firebase', points: 7),
-    Skill(name: 'UI/UX', points: 5),
-    Skill(name: 'GitHub', points: 6),
-    Skill(name: 'REST API', points: 9),
-  ];
-
-  List<Skill> selectedSkills = [];
-  List<String> uploadedFiles = [];
-
-  final ImagePicker _picker = ImagePicker();
-
-  @override
-  void dispose() {
-    titleController.dispose();
-    descriptionController.dispose();
-    super.dispose();
-  }
-
-  Future<bool> _requestStoragePermission() async {
-    if (Platform.isAndroid) {
-      if (await Permission.manageExternalStorage.isGranted ||
-          await Permission.storage.isGranted ||
-          await Permission.photos.isGranted ||
-          await Permission.videos.isGranted) return true;
-
-      var status = await Permission.manageExternalStorage.request();
-      if (status.isGranted) return true;
-
-      status = await Permission.storage.request();
-      if (status.isGranted) return true;
-
-      status = await Permission.photos.request();
-      if (status.isGranted) return true;
-
-      status = await Permission.videos.request();
-      if (status.isGranted) return true;
-
-      return false;
-    } else if (Platform.isIOS) return true;
-
-    return false;
-  }
-
-  IconData getIcon(String fileName) {
-    if (fileName.endsWith(".pdf")) return Icons.picture_as_pdf;
-    if (fileName.endsWith(".mp4") || fileName.endsWith(".mov")) return Icons.video_library;
-    if (fileName.endsWith(".doc") || fileName.endsWith(".docx") || fileName.endsWith(".txt")) return Icons.description;
-    if (fileName.endsWith(".png") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) return Icons.image;
-    return Icons.insert_drive_file;
-  }
+  File? _selectedImage;
+  TextEditingController _startDateController = TextEditingController();
+  TextEditingController _endDateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    int totalPoints = selectedSkills.fold(0, (sum, skill) => sum + skill.points);
-
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.black), onPressed: () => Navigator.pop(context)),
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Create New Roadmap", style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600)),
-            SizedBox(height: 2),
-            Text("Design a learning path for students", style: TextStyle(color: Colors.grey, fontSize: 13)),
-          ],
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Roadmap Title", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-              const SizedBox(height: 8),
-              TextField(
-                controller: titleController,
-                decoration: InputDecoration(
-                  hintText: "e.g., Flutter Developer Internship",
-                  contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF385798), width: 2)),
-                ),
+      body: Column(
+        children: [
+          // AppBar ثابت
+          Container(
+            decoration: BoxDecoration(
+              color: Color(0xff1893ff),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+              border: Border(bottom: BorderSide(color: Colors.white, width: 2)),
+            ),
+            child: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              toolbarHeight: 130,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-              const SizedBox(height: 20),
-
-              const Text("Description", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-              const SizedBox(height: 8),
-              TextField(
-                controller: descriptionController,
-                minLines: 4,
-                maxLines: 6,
-                decoration: InputDecoration(
-                  hintText: "Briefly describe the roadmap and what students will learn...",
-                  contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF385798), width: 2)),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              const Text("Required Skills", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (var skill in skills)
-                          ChoiceChip(
-                            label: Text('${skill.name} (${skill.points} pts)'),
-                            selected: selectedSkills.contains(skill),
-                            selectedColor: const Color(0xFF385798),
-                            backgroundColor: const Color(0xFF385798).withOpacity(0.1),
-                            labelStyle: TextStyle(color: selectedSkills.contains(skill) ? Colors.white : const Color(0xFF385798), fontWeight: FontWeight.w500),
-                            onSelected: (selected) => setState(() => selected ? selectedSkills.add(skill) : selectedSkills.remove(skill)),
-                          ),
-                        ActionChip(label: const Text('+ Add Skill'), backgroundColor: Colors.green.withOpacity(0.1), labelStyle: const TextStyle(color: Colors.green), onPressed: () => _showAddSkillDialog(context)),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text('Total Points: $totalPoints', style: const TextStyle(fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              const Text("Upload Materials", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-              const SizedBox(height: 6),
-              const Text("Attach useful files for students to learn from", style: TextStyle(color: Colors.grey, fontSize: 13)),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                      _buildFilePickerButton(Icons.picture_as_pdf, "PDF / DOC / TXT", ['pdf', 'doc', 'docx', 'txt']),
-                      _buildImageVideoPickerButton(Icons.image, "Image / Video"),
-                    ]),
-                    const SizedBox(height: 12),
-                    const Divider(),
-                    const SizedBox(height: 8),
-                    const Text("Uploaded Files", style: TextStyle(fontWeight: FontWeight.w500)),
-                    const SizedBox(height: 6),
-                    if (uploadedFiles.isEmpty)
-                      const Text("No files uploaded yet", style: TextStyle(color: Colors.grey))
-                    else
-                      Column(
-                        children: uploadedFiles.map((file) => ListTile(
-                          leading: Icon(getIcon(file), color: const Color(0xFF385798)),
-                          title: Text(file),
-                          trailing: IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => setState(() => uploadedFiles.remove(file))),
-                        )).toList(),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Duration & Level
-              Row(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(right: 8),
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(10)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text("Duration", style: TextStyle(fontWeight: FontWeight.w500)),
-                          const SizedBox(height: 6),
-                          TextField(
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(hintText: "4 weeks", border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
-                            onChanged: (value) => setState(() => duration = value),
-                          ),
-                        ],
-                      ),
+                  Text(
+                    "Create New Roadmap",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(left: 8),
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(10)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text("Level", style: TextStyle(fontWeight: FontWeight.w500)),
-                          const SizedBox(height: 6),
-                          DropdownButton<String>(
-                            isExpanded: true,
-                            value: selectedLevel,
-                            hint: const Text("Select level"),
-                            items: ["Beginner", "Intermediate", "Advanced"].map((level) {
-                              Color textColor;
-                              if (level == "Beginner") {
-                                textColor = Colors.green;
-                              } else if (level == "Intermediate") {
-                                textColor = Colors.orange;
-                              } else {
-                                textColor = Colors.red;
-                              }
-
-                              return DropdownMenuItem<String>(
-                                value: level,
-                                child: Text(
-                                  level,
-                                  style: TextStyle(
-                                    color: textColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (value) => setState(() => selectedLevel = value!),
-                          ),
-
-
-                        ],
-                      ),
+                  SizedBox(height: 4),
+                  Text(
+                    "Design a comprehensive learning path",
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w300,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-
-              // Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => print("Public Roadmap clicked"),
-                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                    child: const Text("Public Roadmap", style: TextStyle(fontSize: 16, color: Colors.white)),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => print("Save Draft clicked"),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade400, padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                    child: const Text("Save Draft", style: TextStyle(fontSize: 16, color: Colors.white)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 40),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
 
-  void _showAddSkillDialog(BuildContext context) {
-    final TextEditingController skillController = TextEditingController();
-    final TextEditingController pointsController = TextEditingController();
+          // باقي الصفحة scrollable
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // Basic Info
+                  _buildSection(
+                    title: "Basic Information",
+                    children: [
+                      _buildTextField(
+                          label: "Roadmap Title",
+                          hint: "e.g., Flutter Developer Roadmap"),
+                      SizedBox(height: 12),
+                      _buildTextArea(
+                          label: "Description",
+                          hint: "Write a brief overview of the roadmap..."),
+                      SizedBox(height: 12),
+                      _buildDropdown(
+                          label: "Target Role", items: ["Student", "Graduate", "Both"]),
+                      SizedBox(height: 16),
+                      _buildUploadContainer(title: "Upload Cover Image"),
+                    ],
+                  ),
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Add New Skill", style: TextStyle(color: Color(0xFF385798))),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: skillController, decoration: const InputDecoration(hintText: "Enter skill name")),
-          const SizedBox(height: 10),
-          TextField(controller: pointsController, keyboardType: TextInputType.number, decoration: const InputDecoration(hintText: "Enter skill points")),
-        ]),
-        actions: [
-          TextButton(child: const Text("Cancel", style: TextStyle(color: Color(0xFF385798))), onPressed: () => Navigator.pop(context)),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF385798)),
-            child: const Text("Add", style: TextStyle(color: Colors.white)),
-            onPressed: () {
-              if (skillController.text.isNotEmpty && pointsController.text.isNotEmpty) {
-                setState(() {
-                  final newSkill = Skill(name: skillController.text.trim(), points: int.parse(pointsController.text.trim()));
-                  skills.insert(0, newSkill);
-                  selectedSkills.add(newSkill);
-                });
-                Navigator.pop(context);
-              }
-            },
+                  // Skills
+                  _buildSection(title: "Required Skills", children: [
+                    SkillsListWidget(),
+                  ]),
+                  _buildSection(
+                    title: "Videos (Learning Materials)",
+                    children: [
+                      VideosListWidget(),
+                    ],
+                  ),
+
+                  _buildSection(
+                    title: "Projects",
+                    children: [
+                      ProjectsListWidget(),
+                    ],
+                  ),
+                  _buildSection(
+                    title: "Quizzes",
+                    children: [
+                      QuizListWidget(),
+                    ],
+                  ),
+
+
+                  // Timeline
+                  _buildTimelineSection(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // Save Draft
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            print("Save Draft pressed");
+                          },
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            side: BorderSide(color: Color(0xff1893ff), width: 2),
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            "Save Draft",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xff1893ff),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      // Publish
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            print("Publish pressed");
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xff1893ff),
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            "Publish",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 50),
+
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  // زر رفع ملفات عادية
-  Widget _buildFilePickerButton(IconData icon, String label, List<String> allowedExtensions) {
-    return Column(
-      children: [
-        InkWell(
-          onTap: () async {
-            try {
-              if (!await _requestStoragePermission()) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Permission denied ❌")));
-                return;
-              }
+  // ===== Helper Widgets =====
 
-              FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: allowedExtensions, allowMultiple: true);
+  Widget _buildSection({required String title, required List<Widget> children}) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(vertical: 10),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 6,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: TextStyle(
+                  fontSize: 18, fontWeight: FontWeight.w500, color: Color(0xff1893ff))),
+          SizedBox(height: 16),
+          ...children,
+        ],
+      ),
+    );
+  }
 
-              if (result != null) {
-                setState(() {
-                  uploadedFiles.addAll(result.files.map((f) => f.name)); // هنا استخدمنا f.name بدل path
-                });
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$label uploaded ✅")));
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No file selected")));
-              }
-            } catch (e) {
-              print("❌ File pick error: $e");
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error picking file: $e")));
-            }
-          },
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: const Color(0xFF385798).withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-            child: Icon(icon, color: const Color(0xFF385798), size: 28),
+  Widget _buildTimelineSection() {
+    return _buildSection(title: "Timeline & Calendar", children: [
+      _buildDateField(controller: _startDateController, label: "Start Date"),
+      SizedBox(height: 12),
+      _buildDateField(controller: _endDateController, label: "End Date"),
+    ]);
+  }
+
+  Widget _buildDateField({required TextEditingController controller, required String label}) {
+    return GestureDetector(
+      onTap: () async {
+        DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+        );
+        if (pickedDate != null) {
+          setState(() {
+            controller.text =
+            "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+          });
+        }
+      },
+      child: AbsorbPointer(
+        child: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            suffixIcon: Icon(Icons.calendar_today, color: Color(0xff1893ff)),
           ),
         ),
-        const SizedBox(height: 6),
-        Text(label, style: const TextStyle(color: Color(0xFF385798), fontSize: 12, fontWeight: FontWeight.w500)),
+      ),
+    );
+  }
+
+  Widget _buildTextField({required String label, required String hint}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontWeight: FontWeight.w600)),
+        SizedBox(height: 6),
+        TextField(
+          decoration: InputDecoration(
+            hintText: hint,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  // زر رفع صور وفيديوهات
-  Widget _buildImageVideoPickerButton(IconData icon, String label) {
+  Widget _buildTextArea({required String label, required String hint}) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        InkWell(
-          onTap: () async {
-            try {
-              if (!await _requestStoragePermission()) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Permission denied ❌")));
-                return;
-              }
-
-              final XFile? media = await _picker.pickImage(source: ImageSource.gallery);
-              if (media != null) {
-                setState(() => uploadedFiles.add(media.name));
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$label uploaded ✅")));
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No file selected")));
-              }
-            } catch (e) {
-              print("❌ Media pick error: $e");
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error picking media: $e")));
-            }
-          },
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: const Color(0xFF385798).withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-            child: Icon(icon, color: const Color(0xFF385798), size: 28),
+        Text(label, style: TextStyle(fontWeight: FontWeight.w600)),
+        SizedBox(height: 6),
+        TextField(
+          maxLines: 4,
+          decoration: InputDecoration(
+            hintText: hint,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         ),
-        const SizedBox(height: 6),
-        Text(label, style: const TextStyle(color: Color(0xFF385798), fontSize: 12, fontWeight: FontWeight.w500)),
       ],
     );
+  }
+
+  Widget _buildDropdown({required String label, required List<String> items}) {
+    String? selected;
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: TextStyle(fontWeight: FontWeight.w600)),
+            SizedBox(height: 6),
+            DropdownButtonHideUnderline(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade400, width: 1),
+                ),
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  dropdownColor: Colors.blue,
+                  hint: Text(
+                    "Select target role",
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  value: selected,
+                  items: items.map((item) {
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: Text(
+                        item,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selected = value;
+                    });
+                  },
+                  selectedItemBuilder: (context) {
+                    return items.map((item) {
+                      return Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          item,
+                          style: TextStyle(
+                            color: Color(0xff1893ff),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      );
+                    }).toList();
+                  },
+                  icon: Icon(Icons.arrow_drop_down, color: Colors.grey[600]),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildUploadContainer({required String title}) {
+    return GestureDetector(
+      onTap: () async {
+        final picker = ImagePicker();
+        final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+        if (image != null) {
+          setState(() {
+            _selectedImage = File(image.path);
+          });
+        }
+      },
+      child: Container(
+        height: 180,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Center(
+          child: _selectedImage == null
+              ? Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.upload, size: 40, color: Colors.blue),
+              SizedBox(height: 8),
+              Text(title,
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15)),
+            ],
+          )
+              : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(
+                  _selectedImage!,
+                  height: 110,
+                  width: 110,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(height: 10),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedImage = null;
+                  });
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.delete, color: Colors.red, size: 20),
+                    SizedBox(width: 5),
+                    Text(
+                      "Delete",
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ===== SkillsListWidget =====
+class SkillsListWidget extends StatefulWidget {
+  SkillsListWidget({Key? key}) : super(key: key);
+
+  @override
+  SkillsListWidgetState createState() => SkillsListWidgetState();
+}
+
+class SkillsListWidgetState extends State<SkillsListWidget> {
+  // فاضية من الأول
+  List<Map<String, dynamic>> skills = [];
+
+  void addEmptySkill() {
+    setState(() {
+      skills.add({
+        "nameController": TextEditingController(),
+        "level": "Beginner",
+        "pointsController": TextEditingController(text: "5"),
+        "points": 5,
+      });
+    });
+  }
+
+  void removeSkill(int index) {
+    setState(() {
+      skills[index]["nameController"].dispose();
+      skills[index]["pointsController"].dispose();
+      skills.removeAt(index);
+    });
+  }
+
+  int _calculatePoints(String level) {
+    switch (level) {
+      case "Beginner":
+        return 5;
+      case "Intermediate":
+        return 10;
+      case "Advanced":
+        return 20;
+      default:
+        return 0;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // يظهر بس العناصر الموجودة
+        ...skills.map((skill) {
+          int index = skills.indexOf(skill);
+          return Container(
+            key: ValueKey(skill),
+            margin: EdgeInsets.symmetric(vertical: 10),
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                )
+              ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Skill Details",
+                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                    GestureDetector(
+                      onTap: () => removeSkill(index),
+                      child: Icon(Icons.delete, color: Colors.red),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: skill["nameController"],
+                  decoration: InputDecoration(
+                    labelText: "Skill Name",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: skill["level"],
+                        items: ["Beginner", "Intermediate", "Advanced"]
+                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                            .toList(),
+                        onChanged: (val) {
+                          setState(() {
+                            skill["level"] = val!;
+                            skill["points"] = _calculatePoints(val);
+                            skill["pointsController"].text =
+                                skill["points"].toString();
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: "Skill Level",
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Container(
+                      width: 60,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        controller: skill["pointsController"],
+                        decoration: InputDecoration(
+                          labelText: "Pts",
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        onChanged: (val) {
+                          skill["points"] = int.tryParse(val) ?? 0;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+
+        SizedBox(height: 10),
+        // زر Add Skill دايمًا ظاهر
+        SizedBox(
+          width: double.infinity,
+          height: 40,
+          child: ElevatedButton.icon(
+            onPressed: addEmptySkill,
+            icon: Icon(Icons.add, color: Colors.white),
+            label: Text("Add Skill",
+                style: TextStyle(
+                    fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xff1893ff),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    for (var skill in skills) {
+      skill["nameController"].dispose();
+      skill["pointsController"].dispose();
+    }
+    super.dispose();
+  }
+}
+
+
+
+
+
+class VideosListWidget extends StatefulWidget {
+  VideosListWidget({Key? key}) : super(key: key);
+
+  @override
+  VideosListWidgetState createState() => VideosListWidgetState();
+}
+
+class VideosListWidgetState extends State<VideosListWidget> {
+  List<Map<String, dynamic>> videos = [];
+
+  void addEmptyVideo() {
+    setState(() {
+      videos.add({"title": "", "file": null, "points": 0});
+    });
+  }
+
+  void removeVideo(int index) {
+    setState(() {
+      videos.removeAt(index);
+    });
+  }
+
+  Future<void> pickVideo(int index) async {
+    final picker = ImagePicker();
+    final XFile? video = await picker.pickVideo(source: ImageSource.gallery);
+    if (video != null) {
+      setState(() {
+        videos[index]["file"] = File(video.path);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ...videos.asMap().entries.map((entry) {
+          int index = entry.key;
+          Map<String, dynamic> video = entry.value;
+
+          return Container(
+            margin: EdgeInsets.symmetric(vertical: 10),
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Header: Video Details + Delete
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Video Details",
+                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                    GestureDetector(
+                      onTap: () => removeVideo(index),
+                      child: Icon(Icons.delete, color: Colors.red),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+
+                // Video Title
+                TextField(
+                  controller: TextEditingController(text: video["title"]),
+                  decoration: InputDecoration(
+                    labelText: "Video Title",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onChanged: (val) => video["title"] = val,
+                ),
+                SizedBox(height: 10),
+
+                // Row: Upload Video + Points
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => pickVideo(index),
+                        child: Container(
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.blue),
+                          ),
+                          child: Center(
+                            child: video["file"] == null
+                                ? Text("Upload Video", style: TextStyle(color: Colors.blue))
+                                : Text("Video Selected", style: TextStyle(color: Colors.green)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    // Editable Points
+                    Container(
+                      width: 60,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        controller: TextEditingController(text: video["points"].toString()),
+                        decoration: InputDecoration(
+                          labelText: "Pts",
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        onChanged: (val) {
+                          setState(() {
+                            video["points"] = int.tryParse(val) ?? 0;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+
+        SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          height: 40,
+          child: ElevatedButton.icon(
+            onPressed: addEmptyVideo,
+            icon: Icon(Icons.add, color: Colors.white),
+            label: Text("Add Video",
+                style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xff1893ff),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              alignment: Alignment.center,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class ProjectsListWidget extends StatefulWidget {
+  ProjectsListWidget({Key? key}) : super(key: key);
+
+  @override
+  ProjectsListWidgetState createState() => ProjectsListWidgetState();
+}
+
+class ProjectsListWidgetState extends State<ProjectsListWidget> {
+  List<Map<String, dynamic>> projects = [];
+
+  void addEmptyProject() {
+    setState(() {
+      projects.add({
+        "title": "",
+        "description": "",
+        "difficulty": "Easy",
+        "points": 5,
+      });
+    });
+  }
+
+  void removeProject(int index) {
+    setState(() {
+      projects.removeAt(index);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ...projects.asMap().entries.map((entry) {
+          int index = entry.key;
+          Map<String, dynamic> project = entry.value;
+
+          return Container(
+            margin: EdgeInsets.symmetric(vertical: 10),
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Header: Project Details + Delete
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Project Details",
+                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                    GestureDetector(
+                      onTap: () => removeProject(index),
+                      child: Icon(Icons.delete, color: Colors.red),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+
+                // Project Title
+                TextField(
+                  controller: TextEditingController(text: project["title"]),
+                  decoration: InputDecoration(
+                    labelText: "Project Title",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onChanged: (val) => project["title"] = val,
+                ),
+                SizedBox(height: 10),
+
+                // Project Description
+                TextField(
+                  controller: TextEditingController(text: project["description"]),
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: "Description",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onChanged: (val) => project["description"] = val,
+                ),
+                SizedBox(height: 10),
+
+                // Row: Difficulty + Points
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: project["difficulty"],
+                        items: ["Easy", "Medium", "Hard"]
+                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                            .toList(),
+                        onChanged: (val) => setState(() {
+                          project["difficulty"] = val!;
+                        }),
+                        decoration: InputDecoration(
+                          labelText: "Difficulty",
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Container(
+                      width: 60,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        controller: TextEditingController(text: project["points"].toString()),
+                        decoration: InputDecoration(
+                          labelText: "Pts",
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        onChanged: (val) {
+                          setState(() {
+                            project["points"] = int.tryParse(val) ?? 0;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+
+        SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          height: 40,
+          child: ElevatedButton.icon(
+            onPressed: addEmptyProject,
+            icon: Icon(Icons.add, color: Colors.white),
+            label: Text("Add Project",
+                style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xff1893ff),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              alignment: Alignment.center,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+class QuizListWidget extends StatefulWidget {
+  QuizListWidget({Key? key}) : super(key: key);
+
+  @override
+  QuizListWidgetState createState() => QuizListWidgetState();
+}
+
+class QuizListWidgetState extends State<QuizListWidget> {
+  List<Map<String, dynamic>> quizzes = [];
+
+  void addEmptyQuiz() {
+    setState(() {
+      quizzes.add({
+        "titleController": TextEditingController(),
+        "type": "Multiple Choice",
+        "pointsController": TextEditingController(text: "0"),
+        "points": 0,
+        "questionsFile": null, // File for uploaded questions
+      });
+    });
+  }
+
+  void removeQuiz(int index) {
+    setState(() {
+      quizzes[index]["titleController"].dispose();
+      quizzes[index]["pointsController"].dispose();
+      quizzes.removeAt(index);
+    });
+  }
+
+  Future<void> pickQuestionsFile(int index) async {
+    final picker = ImagePicker();
+    final XFile? file = await picker.pickImage(source: ImageSource.gallery); // ممكن تعدليها PDF أو أي صيغة
+    if (file != null) {
+      setState(() {
+        quizzes[index]["questionsFile"] = File(file.path);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ...quizzes.asMap().entries.map((entry) {
+          int index = entry.key;
+          Map<String, dynamic> quiz = entry.value;
+
+          return Container(
+            margin: EdgeInsets.symmetric(vertical: 10),
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+              boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 4, offset: Offset(0, 2))],
+            ),
+            child: Column(
+              children: [
+                // Header: Quiz Details + Delete
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Quiz Details", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                    GestureDetector(
+                      onTap: () => removeQuiz(index),
+                      child: Icon(Icons.delete, color: Colors.red),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+
+                // Quiz Title
+                TextField(
+                  controller: quiz["titleController"],
+                  decoration: InputDecoration(
+                    labelText: "Quiz Title",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                SizedBox(height: 10),
+
+                // Row: Quiz Type + Points + Upload Questions
+            // Row 1: Quiz Type
+            DropdownButtonFormField<String>(
+              value: quiz["type"],
+              items: ["Multiple Choice", "True/False", "Short Answer"]
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .toList(),
+              onChanged: (val) {
+                setState(() {
+                  quiz["type"] = val!;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: "Quiz Type",
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            SizedBox(height: 10),
+
+// Row 2: Points + Upload Questions
+                // Row 1: Quiz Type
+
+
+// Row 2: Upload Questions + Points
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => pickQuestionsFile(index),
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.blue),
+                          ),
+                          child: Center(
+                            child: quiz["questionsFile"] == null
+                                ? Text("Upload Questions", style: TextStyle(color: Colors.blue))
+                                : Text("File Selected", style: TextStyle(color: Colors.green)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Container(
+                      width: 70,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        controller: quiz["pointsController"],
+                        decoration: InputDecoration(
+                          labelText: "Pts",
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        onChanged: (val) {
+                          quiz["points"] = int.tryParse(val) ?? 0;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+              ],
+            ),
+          );
+        }).toList(),
+
+        SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          height: 40,
+          child: ElevatedButton.icon(
+            onPressed: addEmptyQuiz,
+            icon: Icon(Icons.add, color: Colors.white),
+            label: Text("Add Quiz", style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xff1893ff),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    for (var quiz in quizzes) {
+      quiz["titleController"].dispose();
+      quiz["pointsController"].dispose();
+    }
+    super.dispose();
   }
 }
