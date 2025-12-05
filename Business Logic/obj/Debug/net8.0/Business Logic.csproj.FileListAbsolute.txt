@@ -1,0 +1,17 @@
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\bin\Debug\net8.0\Business Logic.deps.json
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\bin\Debug\net8.0\Business Logic.runtimeconfig.json
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\bin\Debug\net8.0\Business Logic.dll
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\bin\Debug\net8.0\Business Logic.pdb
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\obj\Debug\net8.0\Business Logic.csproj.AssemblyReference.cache
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\obj\Debug\net8.0\Business Logic.GeneratedMSBuildEditorConfig.editorconfig
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\obj\Debug\net8.0\Business Logic.AssemblyInfoInputs.cache
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\obj\Debug\net8.0\Business Logic.AssemblyInfo.cs
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\obj\Debug\net8.0\Business Logic.csproj.CoreCompileInputs.cache
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\obj\Debug\net8.0\Business Logic.dll
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\obj\Debug\net8.0\refint\Business Logic.dll
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\obj\Debug\net8.0\Business Logic.pdb
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\obj\Debug\net8.0\Business Logic.genruntimeconfig.cache
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\obj\Debug\net8.0\ref\Business Logic.dll
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\bin\Debug\net8.0\DataAccess.dll
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\bin\Debug\net8.0\DataAccess.pdb
+F:\Smart-Career-Hub\SmartCareerHub\Business Logic\obj\Debug\net8.0\Business.31A8D8CC.Up2Date

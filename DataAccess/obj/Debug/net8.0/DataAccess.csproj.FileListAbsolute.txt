@@ -1,0 +1,14 @@
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\obj\Debug\net8.0\DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\obj\Debug\net8.0\DataAccess.AssemblyInfoInputs.cache
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\obj\Debug\net8.0\DataAccess.AssemblyInfo.cs
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\obj\Debug\net8.0\DataAccess.csproj.CoreCompileInputs.cache
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\bin\Debug\net8.0\DataAccess.deps.json
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\bin\Debug\net8.0\DataAccess.runtimeconfig.json
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\bin\Debug\net8.0\DataAccess.dll
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\bin\Debug\net8.0\DataAccess.pdb
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\obj\Debug\net8.0\DataAccess.csproj.AssemblyReference.cache
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\obj\Debug\net8.0\DataAccess.dll
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\obj\Debug\net8.0\refint\DataAccess.dll
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\obj\Debug\net8.0\DataAccess.pdb
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\obj\Debug\net8.0\DataAccess.genruntimeconfig.cache
+F:\Smart-Career-Hub\SmartCareerHub\DataAccess\obj\Debug\net8.0\ref\DataAccess.dll
