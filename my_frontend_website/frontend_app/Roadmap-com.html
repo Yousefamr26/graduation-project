@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Roadmaps Management</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="styles/Roadmap-com.css">
+</head>
+
+<body>
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="title-box">
+    <h1 style="color: #155fc4;margin-top: 10px;"> <i class="fa-solid fa-route"></i>&nbsp; Roadmaps Management</h1>
+    <p>Create and manage career roadmaps for students</p>
+  </div>
+
+  <div class="center-box">
+    <input type="text" id="searchBar" placeholder="Search">
+    <select id="statusFilter">
+      <option value="">Filter by status</option>
+      <option value="draft">Draft</option>
+      <option value="published">Published</option>
+    </select>
+  </div>
+
+  <button class="create-btn" onclick="startNewRoadmap()">
+    <i class="fa-solid fa-plus"></i> Create New Roadmap
+  </button>
+</div>
+
+<div class="container">
+  <div id="roadmapGrid" class="grid"></div>
+  <div id="detailsBox" class="details-box"></div>
+</div>
+
+<script>
+/* --------------------- STORAGE --------------------- */
+const STORAGE_KEY = "roadmaps";
+let all = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+/* --------------------- CREATE NEW --------------------- */
+function startNewRoadmap(){
+  localStorage.removeItem("roadmap_edit_id");   // IMPORTANT
+  window.location.href = "create-roadmap.html"; // open new fresh page
+}
+
+/* --------------------- RENDER CARDS --------------------- */
+function renderRoadmaps(list){
+  const grid = document.getElementById("roadmapGrid");
+  grid.innerHTML = "";
+
+  list.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <img src="${r.coverDataURL || "https://via.placeholder.com/300x150"}">
+      <div class="card-body">
+        <div class="card-title">${r.title || "Untitled Roadmap"}</div>
+        <div class="card-role">${r.targetRole || ""}</div>
+        <span class="status ${r.status === 'published' ? 'published':'draft'}">
+          ${(r.status || "draft").toUpperCase()}
+        </span>
+      </div>
+
+      <div class="card-btns">
+        <button class="btn-edit" onclick="editRoadmap(${r.id}); event.stopPropagation();">
+          <i class="fa-solid fa-pen-to-square"></i> Edit
+        </button>
+
+        <button class="btn-analysis" onclick="showDetails(${r.id}); event.stopPropagation();">
+          <i class="fa-solid fa-chart-line"></i> Analysis
+        </button>
+
+        <button class="btn-trash" onclick="deleteRoadmap(${r.id}); event.stopPropagation();">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    `;
+
+    grid.appendChild(div);
+  });
+}
+
+/* --------------------- EDIT --------------------- */
+function editRoadmap(id){
+  localStorage.setItem("roadmap_edit_id", id);
+  window.location.href = "create-roadmap.html";
+}
+
+/* --------------------- DELETE --------------------- */
+function deleteRoadmap(id){
+  if(!confirm("Delete this roadmap?")) return;
+
+  all = all.filter(r => r.id !== id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  renderRoadmaps(all);
+
+  document.getElementById("detailsBox").style.display = "none";
+}
+
+/* --------------------- DETAILS --------------------- */
+function showDetails(id){
+  const r = all.find(x => x.id === id);
+  if(!r) return;
+
+  const box = document.getElementById("detailsBox");
+  box.style.display = "block";
+
+  box.innerHTML = `<img src="${r.coverDataURL || 'https://via.placeholder.com/300x150'}" 
+     style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-bottom:15px;">
+
+    <h2>${r.title}</h2>
+    <p>${r.description || ""}</p>
+    <p><strong>Role:</strong> ${r.targetRole}</p>
+    <p><strong>Date:</strong> ${r.startDate} - ${r.endDate}</p>
+
+    <div class="section-block"><strong>Skills</strong></div>
+    ${renderItems(r.skills)}
+
+    <div class="section-block"><strong>Videos</strong></div>
+    ${renderItems(r.videos)}
+
+    <div class="section-block"><strong>Materials</strong></div>
+    ${renderItems(r.materials)}
+
+    <div class="section-block"><strong>Projects</strong></div>
+    ${renderItems(r.projects)}
+
+    <div class="section-block"><strong>Quizzes</strong></div>
+    ${renderItems(r.quizzes)}
+  `;
+}
+
+function renderItems(arr){
+  if(!arr || arr.length === 0) 
+      return `<p style="color:#999;">No items</p>`;
+
+  return arr.map(i => {
+    let fileInfo = "";
+
+    if (i.fileMeta) {
+      fileInfo = `
+        <div style="font-size:12px;color:#555;margin-top:4px">
+          <strong>File:</strong> ${i.fileMeta.name || ''} 
+          ${i.fileMeta.size ? " — " + (i.fileMeta.size / (1024*1024)).toFixed(2) + " MB" : ""} 
+          ${i.fileMeta.type ? " — " + i.fileMeta.type : ""}
+        </div>
+      `;
+    }
+
+    return `
+      <div class="item-row">
+        <div>
+          <strong>${i.title || i.name || "Untitled"}</strong>
+          ${fileInfo}
+        </div>
+        <div>${i.points ? i.points + " pts" : ""}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+
+/* --------------------- FILTER --------------------- */
+document.getElementById("searchBar").addEventListener("input", function(){
+  let v = this.value.toLowerCase().trim();
+  if(v === "publish") v = "published";
+  if(v === "published" || v === "draft"){
+    renderRoadmaps(all.filter(r => r.status === v));
+  } else {
+    renderRoadmaps(all);
+  }
+});
+
+document.getElementById("statusFilter").addEventListener("change", function(){
+  if(this.value){
+    renderRoadmaps(all.filter(r => r.status === this.value));
+  } else {
+    renderRoadmaps(all);
+  }
+});
+
+/* --------------------- INIT --------------------- */
+renderRoadmaps(all);
+</script>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Career Hub</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/all.css">
+    <link rel="stylesheet" href="webfonts/">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <!-- <i class="fa-sharp fa-light fa-brain" style="color: #74C0FC;"></i> -->
+    <img src="images/brain.png" alt="brain" width="40px" height="50px">
+    <div class="logo">Smart Career Hub</div>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#team">Our Team</a>
+        <a href="#contact">Contact Us</a>
+    </nav>
+
+    <div>
+        <button class="login-button" onclick="goLogin()">Login</button>
+        <button class="register-button" onclick="goRegister()">Register</button>
+    </div>
+</header>
+
+<!-- HERO SECTION -->
+<section class="hero">
+    <div class="hero-text">
+        <h1>A Platform connecting Students and Graduates with Companies, Universities, and Training Centers through AI.</h1>
+        <button class="primary-btn" onclick="goRegister()">Get started for free</button>
+    </div>
+        <img src="images/hero.png" class="hero-img" width="700px" height="400px">
+</section>
+
+<!-- FEATURES SECTION -->
+<section class="features">
+    <div class="feature-box">
+        <div class="square">
+        <img src="images/cv-ai.png" alt="" width="50px" height="50px">
+        </div>
+        <h4>AI CV Builder & Analysis</h4>
+        <p>Build a personalized CV using AI.</p>
+    </div>
+
+    <div class="feature-box">
+        <div class="square">
+            <img src="images/certificate-course.png" alt="" width="50px" height="50px">
+        </div>
+        <h4>Certified Courses</h4>
+        <p>Access courses from partner organizations.</p>
+    </div>
+
+    <div class="feature-box">
+        <div class="square">
+            <img src="images/jobs&inter.png" alt="" width="50px" height="50px">
+        </div>
+        <h4>Jobs & Internship</h4>
+        <p>Discover job and internship opportunities.</p>
+    </div>
+
+    <div class="feature-box">
+        <div class="square">
+            <img src="images/guidance-ai.png" alt="" width="50px" height="50px">
+        </div>
+        <h4>AI Career Guidance</h4>
+        <p>Get career recommendations based on your skills.</p>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+    <h4>About</h4>
+    <div class="about">
+        <img src="images/about.png" width="750px" height="450px" class="img-about">
+        <div class="about-text">
+        <p>
+            The Al-Powered Career Connection Platform is designed to bridge the gap between education and the job market by linking students and graduates with companies and training centers. Using advanced AI, it provides personalized recommendations for jobs, internships, and training programs while identifying skill gaps and suggesting tailored learning paths.
+        </p>
+        <p>
+            For students and graduates, it acts as a career guide that enhances employability through smart profiling, portfolio support, and interview preparation. For companies, it simplifies recruitment with AI-driven talent matching, pre-assessed candidate profiles, and predictive hiring insights, reducing both time and cost. Training centers benefit by promoting relevant programs and reaching eligible audiences easily.
+        </p>
+        <p>
+            <p>By fostering partnerships with employers and combining matchmaking with AI and career guidance in one ecosystem, the platform creates a seamless connection between education, employment, and professional growth.
+        </p>
+        <p>
+            Moreover, the platform creates an integrated environment that supports continuous professional development through a user-friendly interface and intelligent analytics that guide users in making informed career decisions. It also enables educational institutions and companies to track skill progress and market trends, strengthening collaboration across all stakeholders. By seamlessly combining AI capabilities with real-world workforce needs, the platform becomes a unified hub that simplifies and enhances the entire career growth journey.
+        </p>
+    </div>
+    </div>
+</section>
+
+<!-- TEAM SECTION -->
+<section class="team-section" id="team">
+    <h4>Our Team</h4>
+
+    <div class="team-container">
+
+        <!-- Card 1 -->
+        <div class="team-card">
+            <div class="circle">YA</div>
+            <h3>Youssef Amr</h3>
+            <p>Back-end Developer</p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="team-card">
+            <div class="circle">EA</div>
+            <h3>Eman Ahmed</h3>
+            <p>Back-end Developer</p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="team-card">
+            <div class="circle">MAH</div>
+            <h3>Menna Allah Haitham</h3>
+            <p>Front-end Developer</p>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="team-card">
+            <div class="circle">SY</div>
+            <h3>Sohila Yasser</h3>
+            <p>Front-end Developer</p>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="team-card">
+            <div class="circle">OA</div>
+            <h3>Osaila Ashraf</h3>
+            <p>Flutter</p>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="team-card">
+            <div class="circle">ME</div>
+            <h3>Marwa Eisaied</h3>
+            <p>Flutter</p>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="team-card">
+            <div class="circle">MM</div>
+            <h3>Manar Magdy</h3>
+            <p>Artificial Intelligence</p>
+        </div>
+
+        <!-- Card 8 -->
+        <div class="team-card">
+            <div class="circle">MI</div>
+            <h3>Mahmoud Ibrahim</h3>
+            <p>Artificial Intelligence</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+    <h2>Contact Us</h2>
+    <p>We’d love to hear from you! Send us a message below</p>
+    <div class="contact-us">
+            <form class="contact-form">
+        <input type="text" placeholder="Your Name">
+        <input type="email" placeholder="Your Email">
+        <textarea placeholder="Your Message"></textarea>
+        <button class="send-btn">Send Message</button>
+    </form>
+    </div>
+</section>
+
+<footer>
+    <div class="foot">
+    <center>© 2025 Smart Career Hub</center>
+    </div>
+</footer>
+<script src="script.js"></script>
+</body>
+</html>

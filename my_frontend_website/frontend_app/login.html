@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Career Hub - Login</title>
+
+<link rel="stylesheet" href="styles/login.css">
+<link rel="stylesheet" href="styles/all.css">
+<link rel="stylesheet" href="webfonts/">
+
+<style>
+    /* Error message styling */
+    .error {
+        color: #b91c1c;
+        font-size: 13px;
+        margin-top: -8px;
+        margin-bottom: 8px;
+        display: none;
+    }
+
+    .input.error-border {
+        border: 1px solid #e11d48 !important;
+        background: #fff5f5;
+    }
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- LEFT SECTION -->
+    <div class="left-section">
+        <div class="overlay"></div>
+        <div class="content">
+            <div class="logo">
+                <img src="https://img.icons8.com/ios-filled/100/ffffff/brain.png" width="90">
+            </div>
+            <h2>Welcome to Smart Career Hub</h2>
+            <p>
+                Connect students and graduates with companies and training <br>
+                centers through the power of AI
+            </p>
+        </div>
+    </div>
+
+    <!-- RIGHT SECTION -->
+    <div class="right-section">
+        <div class="login-card">
+
+            <h2>Welcome Back 👋</h2>
+            <p class="sub">Log in to continue your journey toward your dream </p>
+            <p class="sub">career.</p>
+
+            <div class="card">
+
+                <!-- Dropdown -->
+                <div class="example-section">
+                    <select class="dropdown-select" id="userType" style="color: #777;">
+                        <option value="" disabled selected>Select Account Type</option>
+                        <option value="Student">🎓 Student</option>
+                        <option value="Graduate">🎓 Graduate</option>
+                        <option value="Company">🏢 Company</option>
+                        <option value="University">🏛 University</option>
+                        <option value="Training-Center">📖 Training Center</option>
+                    </select>
+                </div>
+
+                <!-- Email -->
+                <input type="text" id="email" class="input" placeholder="Email / Username" required>
+                <div id="emailError" class="error">Please enter a valid email.</div>
+
+                <!-- Password -->
+                <input type="password" id="password" class="input" placeholder="Password" required>
+                <div id="passwordError" class="error">Password must be at least 8 characters.</div>
+
+                <div class="options">
+                    <label><input type="checkbox"> Remember me</label>
+                    <a href="#" class="forgot" onclick="goToForgot()">Forgot Password?</a>
+                </div>
+
+                <button class="login-btn" id="login-btn">Login</button>
+
+                <div class="divider">
+                    <span>Or login with</span>
+                </div>
+
+                <div class="social-btns">
+                    <button class="social google">
+                        <img src="https://img.icons8.com/color/48/google-logo.png" width="24">
+                    </button>
+
+                    <button class="social linkedin">
+                        <img src="https://img.icons8.com/color/48/linkedin.png" width="24">
+                    </button>
+                </div>
+
+                <p class="register">
+                    Don't have an account? <a href="#" onclick="goRegister()">Register now</a>
+                </p>
+
+                <p class="footer">© 2025 Smart Career Hub</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- VALIDATION SCRIPT -->
+<script>
+
+document.getElementById("login-btn").addEventListener("click", function(e){
+    e.preventDefault(); // يمنع الفورم من الإرسال مباشرة
+
+    const userType = document.getElementById("userType").value;
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const emailError = document.getElementById("emailError");
+    const passwordError = document.getElementById("passwordError");
+
+    let isValid = true;
+
+    // إعادة تعيين حالة الأخطاء
+    emailError.style.display = "none";
+    passwordError.style.display = "none";
+    email.classList.remove("error-border");
+    password.classList.remove("error-border");
+
+    // التحقق من الإيميل
+    const emailValue = email.value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(emailValue === "" || !emailRegex.test(emailValue)){
+        emailError.style.display = "block";
+        email.classList.add("error-border");
+        isValid = false;
+    }
+
+    // التحقق من الباسورد
+    if(password.value.trim().length < 8){
+        passwordError.style.display = "block";
+        password.classList.add("error-border");
+        isValid = false;
+    }
+
+    // التحقق من نوع المستخدم
+    if(userType === ""){
+        alert("Please select account type.");
+        isValid = false;
+    }
+
+    // إذا كل البيانات صحيحة
+    if(isValid){
+        if(userType === "Company"){
+            window.location.href = "Company-Dashboard.html";
+        } else if(userType === "Student"){
+            window.location.href = "Student-Dashboard.html";
+        } else if(userType === "Graduate"){
+            window.location.href = "Graduate-Dashboard.html";
+        } else if(userType === "University"){
+            window.location.href = "University-Dashboard.html";
+        } else if(userType === "Training-Center"){
+            window.location.href = "Training-center-Dashboard.html";
+        }
+    }
+});
+
+function goRegister() {
+    window.location.href = "register.html";
+}
+
+function goToForgot() {
+    window.location.href = "forget-password.html";
+}
+
+</script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Career Hub - Registration</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="stylesheet" href="webfonts/">
+<style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  background: #f5f6fa;
+}
+
+/* LEFT PANEL */
+.left-panel {
+  width: 70%;
+  height: 100%;
+  background: url('register-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.left-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 91, 187, 0.70);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+
+.logo{
+    margin-left: -70px;
+    width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.left-overlay h1 {
+  font-size: 28px;
+  margin-top: 10px;
+}
+
+.left-overlay p {
+  margin-top: 10px;
+  font-size: 15px;
+  max-width: 420px;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+  width: 45%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-wrapper {
+  width: 480px;
+  height: 960px;
+  background: #fff;
+  padding: 35px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  margin-top: 375px;
+  margin-left: 7px;
+}
+
+.form-wrapper h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* ROLE TABS */
+.role-tabs {
+  display: flex;
+  justify-content: space-between;
+  background: #eee;
+  padding: 6px;
+  border-radius: 30px;
+  margin: 20px 0;
+}
+
+.role-tabs div {
+  padding: 10px 14px;
+  border-radius: 25px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.role-tabs .active {
+  background: white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  color: #1e90ff;
+}
+
+/* IMAGE UPLOAD */
+.image-upload-box {
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.image-circle {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 2px solid #57a8e7;
+  display: flex;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.image-circle i {
+  font-size: 45px;
+  color: #a0a0a0;
+}
+
+.upload-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  background: #1e90ff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.upload-btn i {
+  color: #fff;
+  font-size: 14px;
+}
+
+/* INPUTS */
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f5f4f4;
+}
+
+.button {
+  width: 100%;
+  padding: 12px;
+  background: #1e90ff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.button:hover {
+  opacity: .9;
+}
+
+.login-text {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.login-text a {
+  color: #1e90ff;
+  text-decoration: none;
+}
+
+.login-text a:hover{
+    text-decoration: underline;
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  color: #777;
+  margin-top: 15px;
+}
+</style>
+</head>
+
+
+<body>
+
+<!-- LEFT SIDE -->
+<!-- <div class="left-panel">
+  <div class="left-overlay">
+    <img src="images/register-page.png" alt="">
+  </div>
+</div> -->
+
+  <div class="left-panel">
+        <!-- <div class="left-overlay"> -->
+            <div class="logo" style="margin-bottom: -10px;">
+                <img src="images/register.png" width="1000" height="1100px">
+            </div>
+        </div>
+    </div>
+
+
+<!-- RIGHT SIDE -->
+<div class="right-panel">
+  <div class="form-wrapper">
+
+    <h2>Create Account</h2>
+    <p style="text-align:center;color: #777;">Choose your account type and get started</p>
+
+    <!-- ROLE TABS -->
+    <div class="role-tabs" id="roleTabs">
+      <div class="active" data-role="student"><i class="fa-solid fa-user-graduate"></i></div>
+      <div data-role="graduate"><i class="fa-solid fa-user"></i></div>
+      <div data-role="company"><i class="fa-solid fa-building"></i></div>
+      <div data-role="university"><i class="fa-solid fa-school"></i></div>
+      <div data-role="training"><i class="fa-solid fa-book"></i></div>
+    </div>
+
+    <!-- PROFILE UPLOAD -->
+     <small id="roleName" style="margin-left: 170px;color: #777; font-size: 16px;">Student</small>
+    <div class="image-upload-box">
+      <div class="image-circle" id="iconCircle">
+        <i class="fa-solid fa-user-graduate"></i>
+        <label class="upload-btn">
+          <i class="fa-solid fa-upload"></i>
+          <input type="file" id="profileImage" accept="image/*" style="display:none" />
+        </label>
+      </div>
+    </div>
+    <small id="roleName" style="margin-left: 115px; color: #777; font-size: 16px;">Upload your photo / Logo</small>
+
+    <!-- FORM -->
+    <form id="regForm" style="margin-top: 10px;">
+      <div id="dynamicFields"></div>
+
+      <select id="country" style="color: #777;">Country</select>
+      <select id="city" style="color: #777;">City/State</select>
+
+      <button class="button" id="submitBtn" type="submit" onclick="goLogin()">Continue</button>
+    </form>
+
+    <p class="login-text">Already have an account? <a href="#" onclick="goLogin()">Login</a></p>
+    <footer>© 2025 Smart Career Hub</footer>
+
+  </div>
+</div>
+
+
+<script>
+// ------------------------------
+// COUNTRY & CITY LISTS
+// ------------------------------
+const countries = [
+  "Country","Egypt","United States","United Kingdom","Canada","France","Germany",
+  "Italy","Spain","Saudi Arabia","UAE","Kuwait","Qatar","Oman","Bahrain",
+  "India","China","Japan","Brazil","Argentina","South Africa"
+];
+
+const egyptGov = [
+  "City/State","Cairo","Giza","Alexandria","Aswan","Luxor","Suez","Port Said","Ismailia",
+  "Dakahlia","Sharqia","Gharbia","Monufia","Qalyubia","Kafr El Sheikh",
+  "Fayoum","Beni Suef","Minya","Sohag","Qena","Red Sea","Matruh",
+  "North Sinai","South Sinai","Beheira","Assiut"
+];
+
+document.getElementById("country").innerHTML =
+  countries.map(c => `<option value="${c}">${c}</option>`).join('');
+
+document.getElementById("city").innerHTML =
+  egyptGov.map(c => `<option value="${c}">${c}</option>`).join('');
+
+// ------------------------------
+// ROLE FIELDS
+// ------------------------------
+const fields = {
+  student: ["Full Name","Email","Phone Number","Password","Confirm Password"],
+  graduate: ["Full Name","Email","Phone Number","Password","Confirm Password"],
+  company: ["Organization Name","Official Email","Phone Number","Password","Confirm Password"],
+  university: ["University Name","Official Email","Phone Number","Password","Confirm Password"],
+  training: [" Training Center Name","Official Email","Phone Number","Password","Confirm Password"]
+};
+
+// role icons
+const roleIcons = {
+  student: "fa-user-graduate",
+  graduate: "fa-user",
+  company: "fa-building",
+  university: "fa-school",
+  training: "fa-book"
+};
+
+// load initial fields
+loadFields("student");
+
+function loadFields(role) {
+  const container = document.getElementById("dynamicFields");
+
+  container.innerHTML = fields[role].map((label, index) => {
+    let type = "text";
+    if (label.includes("Email")) type = "email";
+    if (label.includes("Password")) type = "password";
+    return `<input placeholder="${label}" required class="field-input">`;
+  }).join('');
+}
+
+// ------------------------------
+// SWITCH ROLE
+// ------------------------------
+const tabs = document.querySelectorAll('#roleTabs div');
+const iconCircle = document.getElementById("iconCircle");
+const roleName = document.getElementById("roleName");
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    let role = tab.dataset.role;
+    loadFields(role);
+
+    // update icon
+    iconCircle.querySelector("i").className =
+      "fa-solid " + roleIcons[role];
+
+    // update role name
+    roleName.textContent =
+      role.charAt(0).toUpperCase() + role.slice(1);
+  });
+});
+
+// ------------------------------
+// IMAGE VALIDATION
+// ------------------------------
+document.getElementById("profileImage").addEventListener("change", function() {
+  const file = this.files[0];
+  if (file && file.size > 5 * 1024 * 1024) {
+    alert("Image must be less than or equal to 5 MB.");
+    this.value = "";
+  }
+});
+
+// ------------------------------
+// FORM VALIDATION
+// ------------------------------
+document.getElementById("regForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const inputs = document.querySelectorAll(".field-input");
+  let email = null;
+  let password = null;
+  let confirmPassword = null;
+  let phone = null;
+
+  inputs.forEach(input => {
+    if (input.placeholder.includes("Email")) email = input;
+    if (input.placeholder === "Password") password = input;
+    if (input.placeholder === "Confirm Password") confirmPassword = input;
+    if (input.placeholder.includes("Phone")) phone = input;
+  });
+
+  // email validation
+  const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+  if (!emailPattern.test(email.value)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  // phone validation (digits only / 10-15 digits)
+  const phonePattern = /^[0-9]{10,15}$/;
+  if (!phonePattern.test(phone.value)) {
+    alert("Phone number must be 10–15 digits.");
+    return;
+  }
+
+  // password match
+  if (password.value !== confirmPassword.value) {
+    alert("Passwords do not match.");
+    return;
+  }
+
+  alert("Form submitted successfully!");
+});
+
+function goLogin() {
+    window.location.href = "login.html";
+}
+
+</script>
+
+</body>
+</html>

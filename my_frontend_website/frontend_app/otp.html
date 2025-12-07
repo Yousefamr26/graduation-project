@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify OTP</title>
+<link rel="stylesheet" href="styles/otp.css">
+<link rel="stylesheet" href="styles/all.css">
+<link rel="stylesheet" href="webfonts/">
+
+<style>
+    .error {
+        color: red;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+    .invalid {
+        border: 1px solid red !important;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="back-btn" onclick="goBackToForgot()">← Back</div>
+
+<div class="card">
+
+    <div class="logo">
+        <img src="images/verify-otp.png" width="210px" height="158px">
+    </div>
+
+    <h2>Verify Your Email</h2>
+    <p>We’ve sent a 6-digit code to your email. Please enter</p>
+    <p>it below to verify.</p>
+
+    <div class="otp-box">
+        <input class="otp-1" maxlength="1" id="d1">
+        <input class="otp" maxlength="1" id="d2">
+        <input class="otp" maxlength="1" id="d3">
+        <input class="otp" maxlength="1" id="d4">
+        <input class="otp" maxlength="1" id="d5">
+        <input class="otp-6" maxlength="1" id="d6">
+    </div>
+
+    <p id="otpError" class="error"></p>
+
+    <button onclick="verifyOTP()">Verify OTP</button>
+
+    <p style="margin-top:20px;">
+        Didn’t receive code? <span class="link">Resend OTP</span>
+    </p>
+
+    <div class="footer">© 2025 Smart Career Hub</div>
+</div>
+
+<script>
+// OTP Validation
+function verifyOTP() {
+    const fields = [
+        document.getElementById("d1"),
+        document.getElementById("d2"),
+        document.getElementById("d3"),
+        document.getElementById("d4"),
+        document.getElementById("d5"),
+        document.getElementById("d6")
+    ];
+
+    const otpError = document.getElementById("otpError");
+    let otp = "";
+    let valid = true;
+
+    fields.forEach(input => {
+        input.classList.remove("invalid");
+        if (input.value.trim() === "") {
+            valid = false;
+            input.classList.add("invalid");
+        }
+        otp += input.value;
+    });
+
+    if (!valid) {
+        otpError.textContent = "Please enter all 6 digits.";
+        return;
+    }
+
+    if (otp.length !== 6 || isNaN(otp)) {
+        otpError.textContent = "OTP must be 6 digits.";
+        return;
+    }
+
+    // If OTP is correct (you can compare with backend here)
+    otpError.textContent = "";
+    alert("OTP Verified Successfully!");
+    window.location.href = "new-password.html";
+}
+
+function goBackToForgot() {
+    window.location.href = "forget-password.html";
+}
+
+</script>
+
+</body>
+</html>
+

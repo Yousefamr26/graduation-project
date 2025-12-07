@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Create New Roadmap</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="styles/Create-roadmap.css">
+</head>
+<body>
+  <div class="container">
+    <div class="top-row">
+      <div>
+        <h2 id="pageTitle">Create New Roadmap</h2>
+        <p class="help">Build a comprehensive learning path for students and graduates</p>
+      </div>
+    </div>
+
+    <!-- BASIC INFO -->
+    <div class="section-box">
+      <h3 class="section-title1"><i class="fa-solid fa-circle-info" style="color: var(--blue)"></i>&nbsp; Basic Information</h3>
+
+      <label>Roadmap Title</label>
+      <input id="title" type="text" placeholder="e.g., Flutter Developer Roadmap">
+
+      <label>Description</label>
+      <textarea id="description" placeholder="Write a brief overview of the roadmap..."></textarea>
+
+      <label>Target Role</label>
+      <select id="targetRole" style="color: #777;">
+        <option value="">Select target audience</option>
+        <option>Student</option>
+        <option>Graduate</option>
+        <option>Both</option>
+      </select>
+
+      <label>Upload Cover Image (≤ 5 MB)</label>
+      <div class="upload-box" id="imageDrop">
+        <div style="pointer-events:none">
+          <i class="fa-solid fa-upload" style="font-size:30px;color:var(--muted)"></i>
+          <p class="meta-small">Drag and drop or click to upload</p>
+        </div>
+        <button class="btn" onclick="document.getElementById('coverImage').click()">Choose Image</button>
+        <input id="coverImage" type="file" accept="image/*" style="display:none">
+        <div id="previewImage"></div>
+        <p id="coverError" class="meta-small" style="color:#b33"></p>
+      </div>
+    </div>
+
+    <!-- SKILLS (collapsible, closed by default) -->
+    <div class="section-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="fa-solid fa-book-open" style="color:var(--blue)"></i>
+          <h3>Required Skills</h3>
+        </div>
+        <div class="collapsible" id="skillsHeader" onclick="toggleSkills()">
+          <div class="chev"><i class="fa-solid fa-chevron-down"></i></div>
+        </div>
+      </div>
+
+      <!-- Add Skill button is visible below heading (like add-video) -->
+      <div style="margin-bottom:8px">
+        <button id="addSkillBtn" class="add-btn" onclick="openSkillsAndAdd()"><i class="fa-solid fa-plus"></i> Add Skill</button>
+      </div>
+
+      <div id="skillsContent" class="collapsible-content">
+        <div id="skillsList" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <!-- VIDEOS -->
+    <div class="section-box">
+      <h3 style="margin:0"><i class="fa-solid fa-video" style="color:var(--blue)"></i>&nbsp; Videos (Learning Materials)</h3>
+      <div style="margin-top:8px">
+        <button class="add-video-btn" onclick="addVideo()"><i class="fa-solid fa-plus"></i> Add Video</button>
+      </div>
+      <div id="videosList" style="margin-top:8px"></div>
+      <p class="meta-small">Note: video files validated for size ≤ 100MB. File contents are <strong>not</strong> stored in localStorage — only filename/type/size metadata is saved for display.</p>
+    </div>
+
+    <!-- MATERIALS -->
+    <div class="section-box">
+      <h3 style="margin:0"><i class="fa-solid fa-file-pdf" style="color:var(--blue)"></i>&nbsp; PDF / Reading Materials</h3>
+      <div style="margin-top:8px">
+        <button class="add-material-btn" onclick="addMaterial()"><i class="fa-solid fa-plus"></i> Add Material</button>
+      </div>
+      <div id="materialsList" style="margin-top:8px"></div>
+      <p class="meta-small">PDFs validated ≤ 100MB. Only metadata (name/size/type) is saved.</p>
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="section-box">
+      <h3 style="margin:0"><i class="fa-solid fa-trophy" style="color:var(--blue)"></i>&nbsp; Projects</h3>
+      <div style="margin-top:8px">
+        <button class="add-project-btn" onclick="addProject()"><i class="fa-solid fa-plus"></i> Add Project</button>
+      </div>
+      <div id="projectsList" style="margin-top:8px"></div>
+    </div>
+
+    <!-- QUIZZES -->
+    <div class="section-box">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0"><i class="fa-solid fa-brain" style="color:var(--blue)"></i>&nbsp; Quizzes</h3>
+        <button class="add-quiz-btn" onclick="addQuiz()"><i class="fa-solid fa-plus"></i> Add Quiz</button>
+      </div>
+      <div id="quizzesList" style="margin-top:8px"></div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="section-box">
+      <h3 class="section-title11"><i class="fa-solid fa-calendar" style="color:var(--blue)"></i>&nbsp; Timeline</h3>
+      <label>Start Date</label>
+      <input id="startDate" type="date">
+      <label>End Date</label>
+      <input id="endDate" type="date">
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="section-box">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <i class="fa-solid fa-award" style="color:var(--blue)"></i>
+            <h3>Roadmap Summary</h3>
+          </div>
+          <p class="meta-small">Totals are calculated from points fields (if set) — you can edit points in items.</p>
+        </div>
+        <div>
+          <div class="summary-cards">
+            <div class="summary-card"><h2 id="sumPoints">0</h2><p>Total Points</p></div>
+            <div class="summary-card"><h2 id="sumSkills">0</h2><p>Skills</p></div>
+            <div class="summary-card"><h2 id="sumVideos">0</h2><p>Videos</p></div>
+            <div class="summary-card"><h2 id="sumMaterials">0</h2><p>Materials</p></div>
+            <div class="summary-card"><h2 id="sumProjects">0</h2><p>Projects</p></div>
+            <div class="summary-card"><h2 id="sumQuizzes">0</h2><p>Quizzes</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER ACTIONS -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+      <div class="small">Note: cover image stored as data URL (max 5MB). Other files are saved as metadata only.</div>
+      <div class="footer-actions">
+        <button class="draft-btn" id="saveDraftBtn"><i class="fa-regular fa-floppy-disk"></i> Save as Draft</button>
+        <button class="publish-btn" id="publishBtn"><i class="fa-regular fa-paper-plane"></i> Publish Roadmap</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /* -------- configuration -------- */
+  const MAX_COVER_BYTES = 5 * 1024 * 1024; // 5 MB
+  const MAX_OTHER_BYTES = 100 * 1024 * 1024; // 100 MB
+  const STORAGE_KEY_ARRAY = 'roadmaps';
+  const STORAGE_KEY_LATEST = 'roadmap_latest';
+  const EDIT_KEY = 'roadmap_edit_id';
+
+  /* -------- helpers -------- */
+  function bytesToMB(bytes){
+    return (bytes / (1024*1024)).toFixed(2) + ' MB';
+  }
+
+  function readFileAsDataURL(file){
+    return new Promise((res, rej)=>{
+      const fr = new FileReader();
+      fr.onload = ()=>res(fr.result);
+      fr.onerror = ()=>rej(fr.error);
+      fr.readAsDataURL(file);
+    });
+  }
+
+  /* -------- cover image -------- */
+  const coverInput = document.getElementById('coverImage');
+  const previewDiv = document.getElementById('previewImage');
+  const coverError = document.getElementById('coverError');
+  let coverDataURL = null;
+
+  document.getElementById('imageDrop').addEventListener('click', ()=> coverInput.click());
+  coverInput.addEventListener('change', async (e)=>{
+    coverError.textContent = '';
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > MAX_COVER_BYTES) {
+      coverError.textContent = `Selected image is too large (${bytesToMB(file.size)}). Max allowed is ${bytesToMB(MAX_COVER_BYTES)}.`;
+      coverInput.value = '';
+      return;
+    }
+    try {
+      coverDataURL = await readFileAsDataURL(file);
+      previewDiv.innerHTML = `<img src="${coverDataURL}" class="cover-preview" alt="Cover"> <div class="meta-small">${file.name} — ${bytesToMB(file.size)}</div>`;
+    } catch(err){
+      coverError.textContent = 'Failed to read image.';
+      coverDataURL = null;
+    }
+  });
+
+  /* -------- dynamic blocks -------- */
+  // Skills
+  function addSkill(prefill = {}) {
+    const skillsList = document.getElementById("skillsList");
+    const skillBox = document.createElement("div");
+    skillBox.className = 'skill-box';
+
+    skillBox.innerHTML = `
+      <div class="skill-field">
+        <label>Skill Name</label>
+        <input type="text" class="skill-name" placeholder="e.g., React">
+      </div>
+      <div class="skill-field">
+        <label>Skill Level</label>
+        <select class="skill-level" style="color:#777;">
+          <option value="">Level</option>
+          <option>Beginner</option>
+          <option>Intermediate</option>
+          <option>Advanced</option>
+        </select>
+      </div>
+      <div style="width:120px">
+        <input type="number" class="skill-points" placeholder="0" style="width:75%;margin-top:22px;">
+      </div>
+      <div style="min-width:30px">
+        <span class="delete-skill" title="Remove" style="font-size:18px"><i class="fa-solid fa-trash"></i></span>
+      </div>
+    `;
+
+    skillBox.querySelector('.delete-skill').addEventListener('click', ()=> { skillBox.remove(); updateSummaryCounts(); });
+
+    if (prefill.name) skillBox.querySelector('.skill-name').value = prefill.name;
+    if (prefill.level) skillBox.querySelector('.skill-level').value = prefill.level;
+    if (prefill.points !== undefined) skillBox.querySelector('.skill-points').value = prefill.points;
+
+    skillsList.appendChild(skillBox);
+    updateSummaryCounts();
+  }
+
+  // Button behavior: open skills content then add skill
+  function openSkillsAndAdd(){
+    const content = document.getElementById('skillsContent');
+    const header = document.getElementById('skillsHeader');
+    if (!content.classList.contains('open')){
+      content.classList.add('open');
+      header.classList.remove('collapsed');
+      header.classList.add('expanded');
+    }
+    addSkill();
+  }
+
+  // Videos
+  let videoCounter = 0;
+  function addVideo(prefill = null){
+    videoCounter++;
+    const container = document.getElementById("videosList");
+    const box = document.createElement("div");
+    box.className = 'video-box';
+    box.id = 'videoBox' + videoCounter;
+
+    box.innerHTML = `
+      <input type="text" class="video-title" placeholder="Video Title..." style="width:90%">
+      <span class="delete-btn" title="Remove"><i class="fa-solid fa-trash"></i></span>
+      <select class="duration-select" style="width:70%;color:#777;">
+        <option disabled selected>Duration</option>
+        <option>1-5 min (3 pts)</option>
+        <option>5-15 min (6 pts)</option>
+        <option>15-30 min (9 pts)</option>
+        <option>30+ min (15 pts)</option>
+      </select>
+      <input type="number" class="skill-points" placeholder="0" style="width:12%">
+      <button class="upload-btn file-btn">Choose File</button>
+      <input type="file" accept="video/*" style="display:none" class="video-file">
+      <div class="meta-small file-meta" style="width:100%"></div>
+    `;
+    container.appendChild(box);
+
+    const fileBtn = box.querySelector('.file-btn');
+    const fileInput = box.querySelector('.video-file');
+    const fileMeta = box.querySelector('.file-meta');
+
+    fileBtn.addEventListener('click', ()=> fileInput.click());
+
+    fileInput.addEventListener('change', (e)=>{
+      const f = e.target.files[0];
+      if (!f) return;
+      if (f.size > MAX_OTHER_BYTES){
+        alert(`File ${f.name} is too big (${bytesToMB(f.size)}). Max is ${bytesToMB(MAX_OTHER_BYTES)}.`);
+        fileInput.value = '';
+        fileMeta.textContent = '';
+        return;
+      }
+      // set metadata string (will be parsed later)
+      fileMeta.textContent = `${f.name} — ${bytesToMB(f.size)} — ${f.type}`;
+    });
+
+    box.querySelector('.delete-btn').addEventListener('click', ()=> {
+      box.remove();
+      updateSummaryCounts();
+    });
+
+    if (prefill){
+      box.querySelector('.video-title').value = prefill.title || '';
+      box.querySelector('.duration-select').value = prefill.duration || 'Duration';
+      box.querySelector('.video-points').value = prefill.points || 0;
+      if (prefill.fileMeta) fileMeta.textContent = `${prefill.fileMeta.name} — ${bytesToMB(prefill.fileMeta.size)} — ${prefill.fileMeta.type}`;
+    }
+    updateSummaryCounts();
+  }
+
+  // Materials
+  function addMaterial(prefill = null){
+    const container = document.getElementById("materialsList");
+    const c = document.createElement('div');
+    c.className = 'material-box';
+    c.innerHTML = `
+      <input type="text" class="title-input" placeholder="Material Title..." style="width:90%">
+       <span class="delete-btn" title="Remove"><i class="fa-solid fa-trash"></i></span>
+      <select class="size-select" style="width:70%;color:#777;">
+        <option>Size</option>
+        <option>1–5 pages (3 pts)</option>
+        <option>5–20 pages (6 pts)</option>
+        <option>20–50 pages (9 pts)</option>
+        <option>50+ pages (15 pts)</option>
+      </select>
+      <input type="number" class="skill-points" placeholder="0" style="width:12%">
+      <button class="upload-btn file-btn">Choose PDF</button>
+      <input type="file" accept="application/pdf" style="display:none" class="material-file">
+      <div class="meta-small file-meta" style="width:100%"></div>
+    `;
+    container.appendChild(c);
+
+    const fileBtn = c.querySelector('.file-btn');
+    const fileInput = c.querySelector('.material-file');
+    const fileMeta = c.querySelector('.file-meta');
+
+    fileBtn.addEventListener('click', ()=> fileInput.click());
+    fileInput.addEventListener('change', (e)=>{
+      const f = e.target.files[0];
+      if (!f) return;
+      if (f.size > MAX_OTHER_BYTES){
+        alert(`File ${f.name} is too big (${bytesToMB(f.size)}). Max is ${bytesToMB(MAX_OTHER_BYTES)}.`);
+        fileInput.value = '';
+        fileMeta.textContent = '';
+        return;
+      }
+      fileMeta.textContent = `${f.name} — ${bytesToMB(f.size)} — ${f.type}`;
+    });
+
+    c.querySelector('.delete-btn').addEventListener('click', ()=> {
+      c.remove();
+      updateSummaryCounts();
+    });
+
+    if (prefill){
+      c.querySelector('.title-input').value = prefill.title || '';
+      c.querySelector('.size-select').value = prefill.size || 'Size';
+      c.querySelector('.points-box').value = prefill.points || 0;
+      if (prefill.fileMeta) fileMeta.textContent = `${prefill.fileMeta.name} — ${bytesToMB(prefill.fileMeta.size)} — ${prefill.fileMeta.type}`;
+    }
+    updateSummaryCounts();
+  }
+
+  // Projects
+  function addProject(prefill = null){
+    const container = document.getElementById('projectsList');
+    const div = document.createElement('div');
+    div.className = 'project-box';
+    div.innerHTML = `
+      <div style="flex:1">
+        <label>Project Details</label>
+        <input type="text" class="project-input" placeholder="Project Title" style="width:90%">
+        <span class="delete-btn" title="Remove"><i class="fa-solid fa-trash"></i></span>
+        <select class="select" style="color: #777;">
+          <option>Difficulty</option>
+          <option>Easy (3 pts)</option>
+          <option>Medium (6 pts)</option>
+          <option>Hard (10 pts)</option>
+        </select>
+        <input type="number" class="skill-points" placeholder="0">
+        <textarea class="project-desc" placeholder="Project Description..." style="width:95%;min-height:60px"></textarea>
+      </div>
+    `;
+    container.appendChild(div);
+    div.querySelector('.delete-btn').addEventListener('click', ()=> { div.remove(); updateSummaryCounts(); });
+
+    if (prefill){
+      div.querySelector('.project-input').value = prefill.title || '';
+      div.querySelector('.difficulty-select').value = prefill.difficulty || 'Difficulty';
+      div.querySelector('.project-points').value = prefill.points || 0;
+      div.querySelector('.project-desc').value = prefill.description || '';
+    }
+    updateSummaryCounts();
+  }
+
+  // Quizzes
+  function addQuiz(prefill = null){
+    const container = document.getElementById('quizzesList');
+    const div = document.createElement('div');
+    div.className = 'quiz-row';
+    div.innerHTML = `
+      <input type="text" class="quiz-title" placeholder="Quiz Title" style="width:90%">
+      <span class="delete-btn" title="Remove"><i class="fa-solid fa-trash"></i></span>
+      <select class="quiz-type" style="width:70%;color:#777;">
+        <option>Quiz Type</option>
+        <option>MCQ</option>
+        <option>True/False</option>
+        <option>Mixed</option>
+      </select>
+      <input type="number" class="skill-points" placeholder="0" style="width:12%">
+            <button class="upload-btn file-btn">Choose File</button>
+      <input type="file" style="display:none" class="quiz-file">
+      <div class="meta-small file-meta" style="width:90%"></div>
+    `;
+    container.appendChild(div);
+
+    const fileBtn = div.querySelector('.file-btn');
+    const fileInput = div.querySelector('.quiz-file');
+    const fileMeta = div.querySelector('.file-meta');
+
+    fileBtn.addEventListener('click', ()=> fileInput.click());
+    fileInput.addEventListener('change', (e)=>{
+      const f = e.target.files[0];
+      if (!f) return;
+      if (f.size > MAX_OTHER_BYTES){
+        alert(`File ${f.name} is too big (${bytesToMB(f.size)}). Max is ${bytesToMB(MAX_OTHER_BYTES)}.`);
+        fileInput.value = '';
+        fileMeta.textContent = '';
+        return;
+      }
+      fileMeta.textContent = `${f.name} — ${bytesToMB(f.size)} — ${f.type}`;
+    });
+
+    div.querySelector('.delete-btn').addEventListener('click', ()=> { div.remove(); updateSummaryCounts(); });
+
+    if (prefill){
+      div.querySelector('.quiz-title').value = prefill.title || '';
+      div.querySelector('.quiz-type').value = prefill.type || 'Quiz Type';
+      if (prefill.fileMeta) fileMeta.textContent = `${prefill.fileMeta.name} — ${bytesToMB(prefill.fileMeta.size)} — ${prefill.fileMeta.type}`;
+    }
+    updateSummaryCounts();
+  }
+
+  /* -------- summary calculation -------- */
+  function updateSummaryCounts(){
+    document.getElementById('sumSkills').textContent = document.querySelectorAll('.skill-box').length;
+    document.getElementById('sumVideos').textContent = document.querySelectorAll('.video-box').length;
+    document.getElementById('sumMaterials').textContent = document.querySelectorAll('.material-box').length;
+    document.getElementById('sumProjects').textContent = document.querySelectorAll('.project-box').length;
+    document.getElementById('sumQuizzes').textContent = document.querySelectorAll('.quiz-row').length;
+
+    const pointsInputs = document.querySelectorAll('.skill-points, .video-points, .points-box, .project-points');
+    let total = 0;
+    pointsInputs.forEach(inp=>{
+      const v = Number(inp.value) || 0;
+      total += v;
+    });
+    document.getElementById('sumPoints').textContent = total;
+  }
+
+  /* -------- collect form data -------- */
+  async function collectFormData(){
+    const title = document.getElementById('title').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const targetRole = document.getElementById('targetRole').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    const skills = Array.from(document.querySelectorAll('.skill-box')).map(box=>{
+      return {
+        name: box.querySelector('.skill-name').value || '',
+        level: box.querySelector('.skill-level').value || '',
+        points: Number(box.querySelector('.skill-points').value) || 0
+      };
+    });
+
+    const videos = Array.from(document.querySelectorAll('.video-box')).map(box=>{
+      const fileMetaText = box.querySelector('.file-meta').textContent || '';
+      const fm = parseFileMetaText(fileMetaText);
+      return {
+        title: box.querySelector('.video-title').value || '',
+        duration: box.querySelector('.duration-select').value || '',
+        points: Number(box.querySelector('.video-points').value) || 0,
+        fileMeta: fm
+      };
+    });
+
+    const materials = Array.from(document.querySelectorAll('.material-box')).map(box=>{
+      const fm = parseFileMetaText(box.querySelector('.file-meta').textContent || '');
+      return {
+        title: box.querySelector('.title-input').value || '',
+        sizeLabel: box.querySelector('.size-select').value || '',
+        points: Number(box.querySelector('.points-box').value) || 0,
+        fileMeta: fm
+      };
+    });
+
+    const projects = Array.from(document.querySelectorAll('.project-box')).map(box=>{
+      return {
+        title: box.querySelector('.project-input').value || '',
+        difficulty: box.querySelector('.difficulty-select').value || '',
+        points: Number(box.querySelector('.project-points').value) || 0,
+        description: box.querySelector('.project-desc').value || ''
+      };
+    });
+
+    const quizzes = Array.from(document.querySelectorAll('.quiz-row')).map(box=>{
+      const fm = parseFileMetaText(box.querySelector('.file-meta').textContent || '');
+      return {
+        title: box.querySelector('.quiz-title').value || '',
+        type: box.querySelector('.quiz-type').value || '',
+        fileMeta: fm
+      };
+    });
+
+    const totalPoints = Number(document.getElementById('sumPoints').textContent) || 0;
+
+    return {
+      title, description, targetRole, startDate, endDate,
+      coverDataURL, skills, videos, materials, projects, quizzes, totalPoints,
+      savedAt: new Date().toISOString()
+    };
+  }
+
+  function parseFileMetaText(text){
+    if (!text) return null;
+    const parts = text.split('—').map(s=>s.trim());
+    if (parts.length >= 3){
+      const sizeStr = parts[1];
+      let sizeBytes = null;
+      if (sizeStr.endsWith('MB')){
+        const val = parseFloat(sizeStr.replace('MB','').trim());
+        if (!isNaN(val)) sizeBytes = Math.round(val * 1024 * 1024);
+      }
+      return { name: parts[0], size: sizeBytes, type: parts[2] };
+    } else {
+      return { name: text };
+    }
+  }
+
+  /* -------- collapsible skills behavior -------- */
+  function toggleSkills(){
+    const header = document.getElementById('skillsHeader');
+    const content = document.getElementById('skillsContent');
+    const isOpen = content.classList.contains('open');
+    if (isOpen){
+      content.classList.remove('open');
+      header.classList.remove('expanded'); header.classList.add('collapsed');
+    } else {
+      content.classList.add('open');
+      header.classList.remove('collapsed'); header.classList.add('expanded');
+      // if first open and no skills -> add one automatically
+      if (document.querySelectorAll('.skill-box').length === 0){
+        addSkill();
+      }
+    }
+  }
+
+  /* -------- save logic (single-save, supports edit) -------- */
+  async function saveRoadmap(status){
+    const data = await collectFormData();
+    data.status = status;
+
+    let all = JSON.parse(localStorage.getItem(STORAGE_KEY_ARRAY)) || [];
+    const editId = localStorage.getItem(EDIT_KEY);
+
+    if (editId){
+      data.id = Number(editId);
+      const idx = all.findIndex(r => Number(r.id) === Number(data.id));
+      if (idx !== -1){
+        all[idx] = data;
+      } else {
+        all.push(data);
+      }
+      localStorage.removeItem(EDIT_KEY);
+    } else {
+      data.id = Date.now();
+      all.push(data);
+    }
+
+    localStorage.setItem(STORAGE_KEY_ARRAY, JSON.stringify(all));
+    localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(data));
+    return true;
+  }
+
+  document.getElementById('saveDraftBtn').addEventListener('click', async ()=>{
+    const ok = await saveRoadmap('draft');
+    if (ok) window.location.href = 'Roadmap-com.html';
+  });
+
+  document.getElementById('publishBtn').addEventListener('click', async ()=>{
+    const ok = await saveRoadmap('published');
+    if (ok) window.location.href = 'Roadmap-com.html';
+  });
+
+  /* -------- load if editing only (do NOT auto-load latest) -------- */
+  function loadIfEditing(){
+    const editId = localStorage.getItem(EDIT_KEY);
+    if (!editId){
+      // NEW mode: keep skills COLLAPSED and empty (no initial addSkill here)
+      document.getElementById('skillsContent').classList.remove('open');
+      document.getElementById('skillsHeader').classList.remove('expanded');
+      document.getElementById('skillsHeader').classList.add('collapsed');
+      updateSummaryCounts();
+      document.getElementById('pageTitle').textContent = 'Create New Roadmap';
+      return;
+    }
+
+    try {
+      const arr = JSON.parse(localStorage.getItem(STORAGE_KEY_ARRAY)) || [];
+      const r = arr.find(x => String(x.id) === String(editId));
+      if (!r){
+        localStorage.removeItem(EDIT_KEY);
+        loadIfEditing();
+        return;
+      }
+
+      document.getElementById('pageTitle').textContent = 'Edit Roadmap';
+      document.getElementById('title').value = r.title || '';
+      document.getElementById('description').value = r.description || '';
+      document.getElementById('targetRole').value = r.targetRole || '';
+      document.getElementById('startDate').value = r.startDate || '';
+      document.getElementById('endDate').value = r.endDate || '';
+      if (r.coverDataURL){
+        coverDataURL = r.coverDataURL;
+        previewDiv.innerHTML = `<img src="${coverDataURL}" class="cover-preview">`;
+      }
+
+      // populate dynamic lists
+      document.getElementById('skillsList').innerHTML = '';
+      (r.skills || []).forEach(s => addSkill(s));
+
+      document.getElementById('videosList').innerHTML = '';
+      (r.videos || []).forEach(v => addVideo(v));
+
+      document.getElementById('materialsList').innerHTML = '';
+      (r.materials || []).forEach(m => addMaterial(m));
+
+      document.getElementById('projectsList').innerHTML = '';
+      (r.projects || []).forEach(p => addProject(p));
+
+      document.getElementById('quizzesList').innerHTML = '';
+      (r.quizzes || []).forEach(q => addQuiz(q));
+
+      // open skills iff there are skills to show
+      if ((r.skills || []).length > 0){
+        document.getElementById('skillsContent').classList.add('open');
+        document.getElementById('skillsHeader').classList.remove('collapsed');
+        document.getElementById('skillsHeader').classList.add('expanded');
+      }
+
+      updateSummaryCounts();
+    } catch(e){
+      console.warn('loadIfEditing failed', e);
+      updateSummaryCounts();
+    }
+  }
+
+  // init
+  loadIfEditing();
+
+  // recalc on input change
+  document.addEventListener('input', (e)=>{
+    if (e.target.matches('.skill-points, .video-points, .points-box, .project-points')) updateSummaryCounts();
+  });
+
+</script>
+</body>
+</html>
+
+

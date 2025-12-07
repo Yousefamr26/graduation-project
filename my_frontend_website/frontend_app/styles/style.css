@@ -1,0 +1,271 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f8f9fb;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 50px;
+    background: white;
+    color: #3498DB;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.header img{
+    margin-left: 60px;
+}
+
+.header nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #333;
+}
+
+.register-button{
+    margin-left: 10px;
+    padding: 8px 15px;
+    border: none;
+    background: #3498DB;
+    color: white;
+    border-radius: 7px;
+}
+
+.register-button:hover{
+    border: solid 2px #3498DB;
+    background-color: #fbfbfc;
+    color: #3498DB;
+}
+
+.login-button{
+    margin-left: 10px;
+    padding: 8px 15px;
+    border: solid 2px #3498DB;
+    background-color: #fbfbfc;
+    color: #3498DB;
+    border-radius: 7px;
+}
+
+.login-button:hover{
+    color: #fbfbfc;
+    background-color: #3498DB;
+}
+
+.logo{
+    margin-left: -290px;
+    font-size: 20px;
+}
+
+.header nav a:hover {
+    color: #3498DB;
+}
+
+/* HERO */
+.hero {
+    padding: 50px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.hero-text h1 {
+    font-size: 24px;
+}
+
+.hero-img{
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.primary-btn {
+    padding: 12px 22px;
+    background: #3498DB;
+    border: none;
+    color: white;
+    border-radius: 12px;
+    font-size: 16px;
+    width: 30px;
+    height: 43px;
+    position: absolute;
+    left: -90px;
+}
+
+/* FEATURES */
+.features {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    margin: 30px;
+}
+
+.square{
+    width: 35px;
+    height: 35px;
+    background-color : #3498DB;
+    opacity: 0.5;
+    border-radius: 8px;
+}
+
+.feature-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.feature-box h4{
+    color: #3498DB;
+    font-weight: 400;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.feature-box:hover {
+    transform: translateY(-5px);
+    border: solid 2px #3698da;
+}
+
+/* ABOUT */
+
+.about-section{
+    text-align: center;
+}
+.about {
+    padding: 40px;
+    display: flex;
+    gap: 40px;
+    margin: 30px;
+}
+
+.img-about {
+    border-radius: 10px;
+    margin-top: -10PX;
+}
+
+.about-section h4 {
+    font-size: 20px;
+    margin-top: 70px;
+}
+
+/* TEAM */
+
+.team-section {
+    text-align: center;
+    padding: 40px 0;
+    margin-top: 40px;
+}
+
+.team-section h4 {
+    font-size: 20px;
+    margin-bottom: 40px;
+    font-weight: bold;
+}
+
+.team-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    padding: 0 40px;
+    margin-top: 70px;
+}
+
+.team-card {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
+}
+
+.circle {
+    width: 70px;
+    height: 70px;
+    background-color: #3498DB;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.team-card h3 {
+    margin: 10px 0 5px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.team-card p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* CONTACT FORM */
+
+.contact {
+    padding: 40px;
+    text-align: center;
+}
+
+.contact-form {
+    width: 540px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-form input, .contact-form textarea {
+    padding: 12px;
+    margin: 11px;
+    border-radius: 6px;
+    background-color: rgb(247, 245, 245);
+    border: 1px solid #cccbcb;
+}
+
+.contact-us{
+    width: 580px;
+    height: 270px;
+    background-color: white;
+    border: solid 1px rgb(210, 208, 208);
+    border-radius: 15px;
+    margin-left: 405px;
+    padding: 20px;
+    margin-top: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.send-btn{
+    width: 250px;
+    height: 40px;
+    margin-left: 150px;
+    margin-top: 15px;
+    padding: 12px 22px;
+    background: #3498DB;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+
+/* Footer*/
+
+.foot{
+    width: 100%;
+    height: 50px;
+    background-color: rgb(3, 3, 35);
+    color: white;
+    font-size: 16px;
+    padding-top: 25px;
+}

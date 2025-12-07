@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body { font-family: Arial; background:#f5f5f5; margin:0; padding:20px; }
+        .container { max-width:1000px; margin:auto; }
+        .card { background:#fff; padding:20px; border-radius:10px; margin-bottom:20px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+        .profile-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+        .edit-btn { background:#1a73e8; color:#fff; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
+        .edit-btn i { margin-right:6px; }
+        .profile-box { display:flex; gap:20px; }
+        .left-box, .right-box { flex:1; }
+        .avatar {
+            width:120px; height:120px; border-radius:50%;
+            background:#1a73e8; color:#fff; display:flex;
+            align-items:center; justify-content:center;
+            font-size:32px; margin-bottom:10px;
+        }
+        .info-line { margin:8px 0; font-size:15px; }
+        .info-line i { margin-right:8px; color:#1a73e8; font-size: 20px; margin-bottom: 15px; }
+        .about-text { padding:15px; background:#f1f1f1; border-radius:8px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="profile-header">
+        <h2>Company Profile</h2>
+        <button class="edit-btn" onclick="goToEditPage()"><i class="fa-solid fa-pen"></i>Edit Profile</button>
+    </div>
+
+    <div class="card profile-box">
+        <div class="left-box" style="text-align:center;">
+            <div class="avatar" id="profileInitials">TC</div>
+            <h3 id="companyName" style="text-align: left;">TechCorp Solutions</h3>
+            <p id="industry" style="text-align: left;">Technology & Innovation</p>
+        </div>
+
+        <div class="right-box">
+            <h3>Company Information</h3>
+            <p class="info-line"><i class="fa-solid fa-location-dot"></i><span id="location">Cairo, Egypt</span></p>
+            <p class="info-line"><i class="fa-solid fa-envelope"></i><span id="email">hr@techcorp.com</span></p>
+            <p class="info-line"><i class="fa-solid fa-phone"></i><span id="phone">+20 123 456 7890</span></p>
+            <p class="info-line"><i class="fa-solid fa-globe"></i><span id="website">www.techcorp.com</span></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>About</h3>
+        <p class="about-text" id="aboutText">
+            TechCorp Solutions is a leading technology company providing innovative
+            solutions and career opportunities for students and graduates through
+            our comprehensive development programs and partnerships.
+        </p>
+    </div>
+
+</div>
+
+<script>
+
+// Load saved data if exists
+window.onload = function () {
+    const saved = JSON.parse(localStorage.getItem("companyData"));
+    if (saved) {
+        document.getElementById("companyName").textContent = saved.companyName;
+        document.getElementById("industry").textContent = saved.industry;
+        document.getElementById("email").textContent = saved.email;
+        document.getElementById("phone").textContent = saved.phone;
+        document.getElementById("website").textContent = saved.website;
+        document.getElementById("location").textContent = saved.location;
+        document.getElementById("aboutText").textContent = saved.about;
+        document.getElementById("profileInitials").textContent =
+            saved.companyName.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase();
+    }
+}
+
+function goToEditPage() {
+    window.location.href = "editpro-company.html";
+}
+</script>
+
+</body>
+</html>
+

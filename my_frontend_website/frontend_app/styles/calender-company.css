@@ -1,0 +1,152 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f8f8f8;
+}
+
+.container {
+    display: flex;
+    padding: 20px;
+    gap: 25px;
+}
+
+.header h2{
+    margin-left: 20px;
+    font-size: 30px;
+}
+
+.header p{
+    position: absolute;
+    right: 45px;
+    top: 40px;
+    color: #5f5f5f;
+}
+
+/* CALENDAR */
+
+.calendar {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    flex: 5;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    margin-top: 120px;
+    margin-left: -170px;
+}
+
+.cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cal-header button {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-top: 15px;
+    font-weight: lighter;
+    text-align: center;
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.day {
+    height: 90px;
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 5px;
+    position: relative;
+    border: 1px solid #eee;
+}
+
+.day:hover {
+    border: 2px solid rgb(32, 117, 187);
+}
+
+.day-30 {
+    height: 90px;
+    background: rgb(143, 202, 250);
+    border-radius: 8px;
+    padding: 5px;
+    position: relative;
+    border: 2px solid rgb(32, 117, 187);
+}
+
+.day-30:hover {
+    border: 2px solid rgb(32, 117, 187);
+}
+
+
+/* Color dots for event days */
+.workshop::after { background: #4a90e2; display: block; }
+.interview::after { background: #b37ad9; display: block; }
+.course::after { background: #6ecf68; display: block; }
+.event::after { background: #ff9f43; display: block; }
+.deadline::after { background: #ff5b5b; display: block; }
+
+/* SIDEBAR */
+
+.sidebar {
+    flex: 1.8;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    margin-top: 120px;
+}
+
+.event-card {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.event-card.workshop { background: #e8f1ff; }
+.event-card.interview { background: #f3e8ff; }
+.event-card.event { background: #ffe9d9; }
+.event-card.course { background: #e6ffe6; }
+
+.tag {
+    float: right;
+    padding: 3px 8px;
+    border-radius: 7px;
+    font-size: 11px;
+    border: solid 1px #777;
+}
+
+/* LEGEND */
+
+.legend {
+    list-style: none;
+    padding: 0;
+}
+
+.legend li {
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.dot.workshop { background: #4a90e2; }
+.dot.interview { background: #b37ad9; }
+.dot.course { background: #6ecf68; }
+.dot.event { background: #ff9f43; }
+.dot.deadline { background: #ff5b5b; }

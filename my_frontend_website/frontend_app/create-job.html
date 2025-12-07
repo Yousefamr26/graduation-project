@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Job</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body{
+            font-family: "Segoe UI", sans-serif;
+            background:#f4f6fa;
+            margin:0;
+            padding:20px;
+            color:#333;
+        }
+
+        .container{
+            max-width:900px;
+            margin:auto;
+            background:#fff;
+            padding:25px;
+            border-radius:18px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        h2{ margin-top:0; }
+
+        label{
+            font-weight:600;
+            display:block;
+            margin:15px 0 5px;
+        }
+
+        input, textarea{
+            width:95%;
+            padding:12px;
+            border:1px solid #ccc;
+            border-radius:10px;
+            font-size:15px;
+            background:#fafafa;
+        }
+
+        textarea{ height:100px; }
+
+        .button-area{
+            display:flex;
+            justify-content:flex-end;
+            gap:10px;
+            margin-top:25px;
+        }
+
+        .cancel-btn{
+            background:#fff;
+            border:1px solid #ccc;
+            padding:12px 22px;
+            border-radius:10px;
+            cursor:pointer;
+            font-size:15px;
+            color:#333;
+        }
+        .cancel-btn:hover{ background:#f2f2f2; }
+
+        .save-btn{
+            background:#155fc4;
+            color:white;
+            padding:12px 22px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            font-size:15px;
+        }
+        .save-btn:hover{ background:#0e4a9a; }
+
+        .square-1{
+            width: 30px;
+            height: 28px;
+            background-color: #8ab5f1;
+            text-align: center;
+            border-radius: 5px;
+        }
+        
+        .square-2{
+            width: 30px;
+            height: 28px;
+            background-color: #e1a2f1;
+            text-align: center;
+            border-radius: 5px;
+        }
+                .square-3{
+            width: 30px;
+            height: 28px;
+            background-color: #bff7b7;
+            text-align: center;
+            border-radius: 5px;
+        }
+                .square-4{
+            width: 30px;
+            height: 28px;
+            background-color: #f7dfb7;
+            text-align: center;
+            border-radius: 5px;
+        }
+                .square-5{
+            width: 30px;
+            height: 28px;
+            background-color: #c8fffa;
+            text-align: center;
+            border-radius: 5px;
+        }
+        h4, p{
+            margin-top: -30px;
+            margin-left: 40px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2 id="pageTitle"><i class="fa-solid fa-briefcase" style="color: #155fc4;margin-left: 290px;"></i>&nbsp; Create Job</h2>
+    <p style="color: #777; margin-top: -5px;margin-left: 290px;">Post a new job opening to attract talented candidates</p>
+<div class="container">
+
+    <div class="square-1">
+        <i class="fa-solid fa-briefcase" style="color: #155fc4"></i>
+    </div>
+<h4 >Job Title</h4>
+    <p style="margin-top: -5px;">Enter the position name clearly</p>
+    <label>Job Title</label>
+    <input type="text" id="jobTitle" placeholder="e.g.,Sinor React Developer"><br> <br>
+    </div>
+
+
+    <div class="container">
+            <div class="square-2">
+                <i class="fa-solid fa-file-lines" style="color: #c415bb;"></i>
+            </div>
+<h4>Describtion</h4>
+    <p style="margin-top: -5px;">Describe the job role, responsibilities, and what you're looking for</p>
+    <label>Job Description</label>
+    <textarea id="jobDesc" placeholder="Describe the job role, responsibilities and what you 're looking for... "></textarea>
+    <p style="margin-top: 20px; margin-left: -5px;">*Include: Job description, tasks, responsibilities, and what the employer is looking for</p><br> 
+    </div>
+
+
+<div class="container">
+        <div class="square-3">
+            <i class="fa-solid fa-square-check" style="color: #41c415;"></i>
+        </div>
+<h4>Requirements</h4>
+    <p style="margin-top: -5px;">List required skills, experience, and qualifications</p>
+    <label>Job Requirements</label>
+    <textarea id="jobReq" placeholder="List the required skills, experience and qualifications..."></textarea>
+    <p style="margin-top: 20px; margin-left: -5px;">*Example: • 5+ years of React experience • Strong TypeScript skills • Experience with REST APIs</p><br>
+</div>
+
+
+<div class="container">
+        <div class="square-4">
+            <i class="fa-solid fa-calendar-days" style="color: #f99034;"></i>
+        </div>
+<h4>Application Deadline</h4>
+    <p style="margin-top: -5px;">Set the last date for applications</p>
+    <label>Deadline</label>
+    <input type="date" id="jobDeadline"><br> <br>
+</div>
+
+
+<div class="container">
+    
+    <div class="square-5">
+        <i class="fa-solid fa-location-dot" style="color: #15c4bb;"></i>
+    </div>
+<h4>Location</h4>
+    <p style="margin-top: -5px;">Specify the job location (optional)</p>
+    <label>Location (optional)</label>
+    <input type="text" id="jobLocation" placeholder="e.g., Remote, New York , Hybird"><br> <br>
+    
+    <div class="button-area">
+        <button class="cancel-btn" onclick="cancelForm()">
+            <i class="fa-solid fa-xmark"></i> Cancel
+        </button>
+
+        <button class="save-btn" onclick="saveJob()">
+            <i class="fa-solid fa-floppy-disk"></i> Save Job
+        </button>
+    </div>
+</div>
+
+</div>
+
+<script>
+const KEY = "jobs";
+let editId = null;
+
+/* Read & Write helpers */
+function readJobs(){ return JSON.parse(localStorage.getItem(KEY) || "[]"); }
+function writeJobs(v){ localStorage.setItem(KEY, JSON.stringify(v)); }
+
+/* CANCEL BUTTON */
+function cancelForm() {
+    window.location.href = "job-company.html";
+}
+
+/* =============== LOAD EDIT MODE =============== */
+function loadEditMode(){
+    const params = new URLSearchParams(window.location.search);
+    editId = params.get("id");
+
+    if(!editId) return;  // not editing, normal create mode
+
+    document.getElementById("pageTitle").innerHTML = 
+        `<i class="fa-solid fa-pen"></i> Edit Job`;
+
+    const jobs = readJobs();
+    const job = jobs.find(j => String(j.id) === String(editId));
+
+    if(!job) return; // safety: job not found
+
+    // Fill fields
+    document.getElementById("jobTitle").value = job.title;
+    document.getElementById("jobDesc").value = job.desc;
+    document.getElementById("jobReq").value = job.req;
+    document.getElementById("jobDeadline").value = job.deadline;
+    document.getElementById("jobLocation").value = job.location;
+}
+
+/* =============== SAVE / UPDATE JOB =============== */
+function saveJob(){
+    const title = jobTitle.value.trim();
+    const desc = jobDesc.value.trim();
+    const req  = jobReq.value.trim();
+    const deadline = jobDeadline.value;
+    const location = jobLocation.value.trim();
+
+    if (!title || !desc || !req || !deadline){
+        alert("Please fill out all required fields.");
+        return;
+    }
+
+    let jobs = readJobs();
+
+    if(editId){
+        /* UPDATE EXISTING JOB */
+        jobs = jobs.map(j => 
+            j.id == editId ? {
+                ...j,
+                title, desc, req, deadline, location
+            } : j
+        );
+
+    } else {
+        /* CREATE NEW JOB */
+        const job = {
+            id: Date.now(),
+            title, desc, req, deadline, location
+        };
+        jobs.push(job);
+    }
+
+    writeJobs(jobs);
+
+    window.location.href = "job-company.html";
+}
+
+/* Load edit mode if URL contains ?id= */
+loadEditMode();
+</script>
+
+</body>
+</html>
+
+

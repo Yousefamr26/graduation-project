@@ -1,0 +1,79 @@
+    :root{--blue:#155fc4;--muted:#777}
+    body{font-family:Inter,Arial,Helvetica,sans-serif;margin:20px;background:#f7f9fc;color:#111}
+    .container{max-width:980px;margin:0 auto;background:white;padding:20px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.06)}
+    h2{margin:0 0 8px}
+    .section-box{border:1px solid #ccccce;padding:16px;border-radius:8px;margin-bottom:14px;background:#fff}
+    .section-title1{font-size:16px;margin-bottom:8px;
+    font-size: 18px;
+    }
+    input[type=text], input[type=date], textarea, select, input[type=number]{
+    width:95%;padding:8px;border:1px solid #d9d9da;border-radius:6px;margin-top:6px;margin-bottom:10px;font-size:14px;
+    }
+    select{
+        width:97%;padding:8px;border:1px solid #d9d9da;border-radius:6px;margin-top:6px;margin-bottom:10px;font-size:14px;
+    }
+    textarea{min-height:80px;resize:vertical;width:95%;padding:8px;border:1px solid #d9d9da;border-radius:6px;margin-top:6px;margin-bottom:10px;font-size:14px;
+    }
+    .upload-box{border:2px dashed #e6eefb;padding:16px;text-align:center;border-radius:8px;cursor:pointer;
+        margin-top: 10px;
+    }
+    .upload-box:hover{
+        border:2px dashed #0b69d1;
+    }
+    .btn, .add-btn, .upload-btn, .add-video-btn, .add-material-btn, .add-project-btn, .add-quiz-btn{
+    background:var(--blue);color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:14px
+    }
+
+    .add-project-btn{
+    position: absolute;
+    right: 288px;
+    margin-top: -33px;
+    }
+    .add-video-btn, .add-material-btn{
+    position: absolute;
+    right: 288px;
+    margin-top: -20px;
+    }
+    .add-btn{background:#0b69d1;
+    position: absolute;
+    right: 288px;
+    margin-top: -50px;
+    }
+    .skill-box, .video-box, .material-box, .project-box, .quiz-row{border:1px solid #dddddf;padding:10px;border-radius:6px;margin-bottom:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .video-box, .material-box, .project-box{
+        margin-top: 30px;
+    }
+    .skill-field{flex:1 1 150px;min-width:120px}
+    .delete-skill, .delete-btn{cursor:pointer;color: #777;font-size:18px;}
+    .delete-skill{
+        margin-left: -10px;
+    }
+    .delete-skill:hover, .delete-btn:hover{
+        color: red;
+    }
+    .footer-actions{display:flex;gap:12px;align-items:center;justify-content:flex-end}
+    .draft-btn{background:#f0f0f0;color:#111;padding:10px 12px;border-radius:8px;border:1px solid #ddd;cursor:pointer}
+    .publish-btn{background:var(--blue);color:white;padding:10px 12px;border-radius:8px;border:none;cursor:pointer}
+    .cover-preview{max-width:220px;max-height:140px;display:block;border-radius:6px;margin-top:10px;object-fit:cover}
+    .meta-small{font-size:12px;color:#666}
+    .summary-cards{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+    .summary-card{flex:1 1 120px;background:#d6e6fa;padding:12px;border-radius:8px;text-align:center;
+    border: 2px solid #0b69d1;
+    }
+    .help{font-size:13px;color:var(--muted)}
+    .top-row{display:flex;gap:12px;align-items:center;justify-content:space-between}
+    .row{display:flex;gap:8px;align-items:center}
+    .small{font-size:13px;color:#555}
+
+    /* collapsible */
+    .collapsible { cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+    .collapsible .chev { transition: transform .18s ease; }
+    .collapsed .chev { transform: rotate(0deg); }
+    .expanded .chev { transform: rotate(180deg); }
+    .collapsible-content { display:none; margin-top:10px; }
+    .collapsible-content.open { display:block; }
+
+    /* small responsive */
+    @media (max-width:620px){
+    .skill-box, .video-box, .material-box, .project-box, .quiz-row { flex-direction: column; align-items:stretch; }
+    }

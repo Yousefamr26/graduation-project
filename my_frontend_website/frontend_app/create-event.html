@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Create Event</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root{
+    --card:#ffffff; --muted:#7a8291; --accent:#155fc4; --success:#1e9b68; --danger:#e74c3c;
+    --soft:#f3f6fb;
+  }
+  body{font-family: "Segoe UI", Arial, sans-serif; background:var(--soft); margin:0; padding:28px;}
+  .wrap{max-width:1000px;margin:0 auto;}
+  h1{color:#133c66;font-weight:600;margin:6px 0 18px;}
+  .section{background:var(--card);border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 2px 6px rgba(20,30,50,0.05);}
+  .section h3{margin:0 0 10px;font-size:15px;color:#334;}
+  label{display:block;font-weight:600;margin:8px 0 6px;color:#334;}
+  input[type="text"], input[type="number"], input[type="date"], input[type="time"], select, textarea{
+    width:100%;padding:10px;border-radius:7px;border:1px solid #e1e6ee;box-sizing:border-box;font-size:14px;
+  }
+  textarea{min-height:78px;resize:vertical;}
+  .row{display:flex;gap:12px;flex-wrap:wrap;}
+  .col-2{flex:1 1 48%;}
+  .upload{border:2px dashed #d6dfea;padding:14px;border-radius:8px;text-align:center;color:var(--muted);cursor:pointer;}
+  .upload:hover{
+    border:2px dashed #155fc4;
+  }
+  img.preview{max-width:100%;height:auto;border-radius:8px;margin-top:10px;display:none;}
+  .controls{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-top:14px;}
+  button{padding:10px 16px;border-radius:8px;border:0;cursor:pointer;font-weight:600;}
+  .btn-cancel{background:#fff;border:1px solid #ddd;color:#333;}
+  .btn-draft{background:#f0f7ff;color:#155fc4;border:1px solid #cfe6ff;}
+  .btn-publish{background:var(--accent);color:#fff;}
+  .small-muted{font-size:13px;color:var(--muted);margin-top:6px;}
+  /* Eligibility slider + toggles */
+  .slider-wrap{padding:10px 0;}
+  input[type=range]{width:100%;}
+  .toggles{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+  .toggle{display:flex;align-items:center;gap:8px;background:#f9f8f8;border:1px solid #d8d8d8;padding:8px 12px;border-radius:8px;
+  width: 95%;
+  }
+  .switch{position:relative;width:42px;height:24px;background:#ddd;border-radius:999px;cursor:pointer;
+  margin-left: 600px;}
+  .switch .knob{position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:all .18s;}
+  .switch.on{background:#4fb07f;}
+  .switch.on .knob{left:21px;}
+  .small-pill{display:inline-block;padding:6px 8px;border-radius:8px;font-size:13px;background:#f6fbff;color:#1360c8;border:1px solid #dbeeff;}
+  /* summary tiles */
+  .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;}
+  .tile{background:#fcfdff;border-radius:8px;padding:12px;border:1px solid #eef3fb;}
+  .tile small{display:block;color:var(--muted);font-size:13px;}
+  .info-row{display:flex;justify-content:space-between;align-items:center;}
+  .ai-box{background:linear-gradient(180deg,#eef6ff,#f9fcff);padding:12px;border-radius:8px;border:1px solid #dbeeff;}
+  .eligible-badge{background:#ecfff1;color:#0b8f46;padding:8px 10px;border-radius:8px;font-weight:700;display:inline-block;}
+  /* responsive */
+  @media(max-width:760px){ .col-2{flex-basis:100%} .summary-grid{grid-template-columns:repeat(1,1fr);} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 style="color:#2b8bf2;"><i class="fa-solid fa-calendar-plus" style="color:#2b8bf2;"></i> Create New Event</h1>
+  <p style="margin-top: -10px; margin-left: 40px; color: #777;">Create events with points-based eligibility filtering</p>
+
+  <!-- EVENT INFO -->
+  <div class="section" id="section-info">
+      <div style="width: 28px; height: 28px; text-align: center; background-color: #bddbfa;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-file-lines" style="color:#2b8bf2;"></i>
+      </div>
+    <h3 style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Event Information</h3>
+    <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Provide the core details of your event</p>
+
+    <label>Event Title <span style="color: red;">*</span></label>
+    <input id="title" type="text" placeholder="e.g., Vodafone Tech Tour">
+
+    <label>Description <span style="color: red;">*</span></label>
+    <textarea id="description" placeholder="Write a clear description of the event..."></textarea>
+
+    <label>Event Banner</label>
+    <div class="upload" onclick="document.getElementById('bannerInput').click()"> <i class="fa-solid fa-image"></i> &nbsp; Upload Event Image (≤ 5 MB)</div>
+    <input id="bannerInput" type="file" accept="image/*" style="display:none">
+    <img id="bannerPreview" class="preview" alt="preview">
+    <div class="small-muted">Tip: Use a landscape image for best results.</div>
+  </div>
+
+  <!-- TYPE & MODE -->
+  <div class="section">
+          <div style="width: 28px; height: 28px; text-align: center; background-color: #e5d1f6;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-layer-group" style="color:#9e43ff;"></i>
+        </div>
+    <h3
+    style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Event Type & Mode</h3>
+    <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Select the type and format of your event</p>
+    <div class="row">
+      <div class="col-2">
+        <label>Event Type <span style="color: red;">*</span></label>
+        <select id="type" style="color: #777;">
+          <option value="">Select event type...</option>
+          <option>Company Tour</option>
+          <option>Hiring Event</option>
+          <option>Workshop</option>
+          <option>Networking Event</option>
+          <option>Tech Talk</option>
+          <option>Bootcamp Preview</option>
+        </select>
+      </div>
+      <div class="col-2">
+        <label>Mode <span style="color: red;">*</span></label>
+        <select id="mode" style="color: #777;">
+          <option value="">Select mode...</option>
+          <option>Online</option>
+          <option>Onsite</option>
+          <option>Hybrid</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATE & TIME -->
+  <div class="section">
+        <div style="width: 28px; height: 28px; text-align: center; background-color: #e0f3df;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-clock" style="color:#00b57a;"></i>
+        </div>
+    <h3 style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Date & Time</h3>
+    <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Schedule your event timing</p>
+    <div class="row">
+      <div class="col-2">
+        <label>Start Date <span style="color: red;">*</span></label>
+        <input id="startDate" type="date">
+      </div>
+      <div class="col-2">
+        <label>Start Time <span style="color: red;">*</span></label>
+        <input id="startTime" type="time">
+      </div>
+      <div class="col-2">
+        <label>End Date <span style="color: red;">*</span></label>
+        <input id="endDate" type="date">
+      </div>
+      <div class="col-2">
+        <label>End Time <span style="color: red;">*</span></label>
+        <input id="endTime" type="time">
+      </div>
+    </div>
+  </div>
+
+  <!-- ELIGIBILITY -->
+  <div class="section">
+        <div style="width: 28px; height: 28px; text-align: center; background-color: #c8ddf5;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-shield-halved" style="color:#2b8bf2;"></i>
+        </div>
+    <h3 style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Eligibility Settings</h3>
+    <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Filter students based on their performance and progress</p>
+
+<div style="width: 96%; background-color: #d9e6f6; border-radius: 10px;padding: 20px; border: solid 1px #2b8bf2 ;">
+      <label style="margin-left: 10px;">Minimum Required Points: <span id="minPointsLabel">0 pts</span></label>
+    <div class="slider-wrap">
+      <input id="minPoints" type="range" min="0" max="10000" step="100" value="0">
+      <div class="small-muted" style="display:flex;justify-content:space-between;"><span>0 pts</span><span>5,000 pts</span><span>10,000 pts</span></div>
+    </div>
+</div><hr style="color: #d5d5d5; margin: 30px;">
+
+    <label style="margin-top:5px;margin-left: 10px;">Additional Criteria (Optional)</label>
+    <div class="toggles">
+      <div class="toggle" data-key="completedRoadmap"><i class="fa-solid fa-road" style="color: #0b8f46;"></i> Completed Roadmap
+        <div class="switch" onclick="toggleSwitch(this)" data-key="completedRoadmap" style="margin-left: 650px;"><div class="knob"></div></div>
+      </div>
+      <div class="toggle" data-key="completedCourses"><i class="fa-solid fa-book" style="color: #5a8ee8;"></i> Completed ≥50% Courses
+        <div class="switch" onclick="toggleSwitch(this)" data-key="completedCourses" style="margin-left: 620px;"><div class="knob"></div></div>
+      </div>
+      <div class="toggle" data-key="highComm"><i class="fa-solid fa-comment" style="color: #ad44ee;"></i> High Communication Skills
+        <div class="switch" onclick="toggleSwitch(this)" data-key="highComm" style="margin-left: 610px;"><div class="knob"></div></div>
+      </div>
+      <div class="toggle" data-key="highTech"><i class="fa-solid fa-code" style="color: #d51616;"></i> High Technical Skills
+        <div class="switch" onclick="toggleSwitch(this)" data-key="highTech" style="margin-left: 655px;"><div class="knob"></div></div>
+      </div>
+      <div class="toggle" data-key="topProgress"><i class="fa-solid fa-trophy" style="color: #e8954d;"></i> Top 20% Progress
+        <div class="switch" onclick="toggleSwitch(this)" data-key="topProgress" style="margin-left: 675px;"><div class="knob"></div></div>
+      </div>
+    </div>
+
+    <hr style="color: #f0f0f0; margin: 30px;">
+    <div style="margin-top:14px;">
+      
+      <div class="toggle" style="width: 96%;background-color: #e9dcf8; border: solid 1px #b583ee; height: 70px;">
+        <label style="margin-top:-20px;margin-left: 10px;">
+          <i class="fa-solid fa-list-check" style="color:#7318b0;margin-right:8px;"></i>
+          Invite only students above criteria</label>
+        <p style="flex:1; margin-left: -255px;margin-top: 40px; font-size: 14px;">Only eligible students can see & register</p>
+        <div class="switch" onclick="toggleSwitch(this)" data-key="inviteOnly" style="margin-left: 100px;background-color: #c7c7c7;"><div class="knob"></div></div>
+      </div>
+    </div><br>
+
+<div style="width: 98.5%;background-color: #ecfae9; border: solid 1px #83c870; height: 70px;border-radius: 5px;">
+      <div style="margin-top:-20px;margin-left: 15px;" class="info-row">
+      <label class="small-muted" style="font-size: 16px;">
+        <i class="fa-solid fa-users" style="color:#2fa212;margin-right:8px;"></i>Eligible Students</label>
+      <p style="flex:1; margin-left: -120px;margin-top: 60px; font-size: 14px;">auto-calculated based on filters</p>
+      <div id="eligibleNumber" class="eligible-badge" style="margin-right: 10px; background-color: #0b8f46; color: white;">500</div>
+    </div>
+  </div>
+</div>
+
+  <!-- CAPACITY -->
+  <div class="section" style="margin-bottom: 20px;">
+
+    <div style="width: 28px; height: 28px; text-align: center; background-color: #f5ecc8;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-users" style="color:#ef8b3b;"></i>
+        </div>
+    <h3 style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Capacity & Registration</h3>
+    <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Set registration limits and preferences</p>
+
+    <label>Maximum Capacity</label>
+    <input id="capacity" type="number" placeholder="e.g., 150 attendees">
+
+    <div style="margin-top:12px;">
+      <div class="toggle" style="width:97%;height: 80px;margin-bottom: 20px;">
+        <label style="margin-top:-20px;margin-left: 10px;">
+          <i class="fa-solid fa-users" style="color:#a5a5a5;margin-top: -80px;"></i> &nbsp;Allow Waiting List</label>
+        <p style="flex:1; margin-left: -140px;margin-top: 50px; font-size: 14px; color: #777;">Let students join a waiting list if capacity is full</p>
+        <div class="switch" onclick="toggleSwitch(this)" data-key="allowWait" style="margin-left: 650px;"><div class="knob"></div></div>
+      </div>
+      <div style="height:8px">
+      <div class="toggle" style="width:97%;height: 100px;margin-bottom: 20px;">
+        <label style="margin-top:-20px;margin-left: 10px;">
+          <i class="fa-solid fa-users" style="color:#a5a5a5;margin-top: -80px;"></i>&nbsp;
+          Send Auto Email to Eligible Students</label>
+        <p style="flex:1; margin-left: -270px;margin-top: 50px; font-size: 14px; color: #777;">Automatically notify eligible students about this event</p>
+        <div class="switch" onclick="toggleSwitch(this)" data-key="sendAutoEmail"><div class="knob"></div></div>
+      </div>
+    </div>
+  </div><br><br><br><br><br>
+  <hr style="color: #f0f0f0; margin: 30px;">
+
+  <!-- REWARDS + AI -->
+  <div class="section" >
+    <div style="width: 28px; height: 28px; text-align: center; background-color: #f5ddc8;border-radius: 5px; margin-left: 10px; margin-top: 0px;">
+        <i class="fa-solid fa-medal" style="color:#f7b500;"></i>
+        </div>
+    <h3 style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Event Rewards</h3>
+    <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Set points awarded for participation</p>
+    <div class="row">
+      <div class="col-2">
+        <label>Points Awarded for Attendance</label>
+        <input id="pointsAttend" type="number" placeholder="e.g., 50">
+      </div>
+      <div class="col-2">
+        <label>Points Awarded for Full Participation</label>
+        <input id="pointsFull" type="number" placeholder="e.g., 100">
+      </div>
+    </div>
+
+    <div style="margin-top:14px;padding: 10px;" class="ai-box">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>AI Recommendations</strong>
+          <div class="small-muted">AI can suggest a points threshold based on event type and expected audience.</div>
+        </div>
+        <button id="applyAI" onclick="applyAISuggestion()" style="background:#1360c8;border:1px solid #d7eaff;padding:8px 10px;border-radius:8px;cursor:pointer;color: white;">
+          <i class="fa-solid fa-robot"></i>&nbsp; Apply AI Suggestions
+        </button>
+      </div>
+      <div id="aiNote" class="small-muted" style="margin-top:8px;color:#c0392b;display:none;">Please select an event type first</div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="section">
+    <div style="width: 28px; height: 28px; text-align: center; background-color: #daf8f6;border-radius: 5px; margin-left: 10px; margin-top: 0px;">
+        <i class="fa-solid fa-list-check" style="color:#23e2e2;"></i>
+        </div>
+    <h3
+    style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Summary</h3>
+    <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Overview of your event configuration</p>
+    <div class="summary-grid">
+      <div class="tile" style="background-color: #cee1f6;border: solid 1px #1360c8;"><small style="color: #1360c8;">Event Title</small><div id="sumTitle">Not set</div></div>
+      <div class="tile" style="background-color: #e6d9f7;border: solid 1px #8013c8;"><small style="color: #8013c8;">Duration</small><div id="sumDuration">Not set</div></div>
+      <div class="tile" style="background-color: #d9f7da;border: solid 1px #13c819;"><small style="color: #13c819;">Mode</small><div id="sumMode">Not set</div></div>
+      <div class="tile" style="background-color: #f8eccd;border: solid 1px #e39a46;"><small style="color: #e39a46;">Min Points</small><div id="sumMinPoints">0 pts</div></div>
+      <div class="tile" style="background-color: #f6cef5;border: solid 1px #c813a7;"><small style="color: #c813a7;">Expected Attendees</small><div id="sumExpected">Auto</div></div>
+      <div class="tile" style="background-color: #fce3f3;border: solid 1px #c81383;"><small style="color: #c81383;">Points Reward</small><div id="sumReward">Not set</div></div>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+    <div style="font-size:14px;color:var(--muted)"><i class="fa-solid fa-circle-info" style="color: #2b8bf2;"></i> Min Points: <b id="footerMin">0 pts</b> &nbsp;&nbsp;&nbsp;&nbsp;
+      <i class="fa-solid fa-users" style="color: #0b8f46;"></i> &nbsp; Eligible: <b id="footerEligible">500</b></div>
+    <div class="controls">
+      <button class="btn-cancel" onclick="cancelForm()">Cancel</button>
+      <button class="btn-draft" onclick="submitForm('draft')"><i class="fa-solid fa-file"></i>&nbsp; Save as Draft</button>
+      <button class="btn-publish" onclick="submitForm('published')"><i class="fa-solid fa-paper-plane"></i>&nbsp; Publish Event</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- Utilities & State ---------- */
+const state = {
+  toggles: {
+    completedRoadmap:false, completedCourses:false,
+    highComm:false, highTech:false, topProgress:false,
+    inviteOnly:false, allowWait:false, sendAutoEmail:false
+  },
+  bannerData: "",
+  editId: localStorage.getItem("editEventID") || null,
+};
+
+/* ---------- DOM refs ---------- */
+const minPoints = document.getElementById('minPoints');
+const minPointsLabel = document.getElementById('minPointsLabel');
+const eligibleNumber = document.getElementById('eligibleNumber');
+const footerMin = document.getElementById('footerMin');
+const footerEligible = document.getElementById('footerEligible');
+
+const bannerInput = document.getElementById('bannerInput');
+const bannerPreview = document.getElementById('bannerPreview');
+
+const titleInput = document.getElementById('title');
+const descInput = document.getElementById('description');
+const typeInput = document.getElementById('type');
+const modeInput = document.getElementById('mode');
+const startDate = document.getElementById('startDate');
+const startTime = document.getElementById('startTime');
+const endDate = document.getElementById('endDate');
+const endTime = document.getElementById('endTime');
+const capacityInput = document.getElementById('capacity');
+const pointsAttend = document.getElementById('pointsAttend');
+const pointsFull = document.getElementById('pointsFull');
+
+const sumTitle = document.getElementById('sumTitle');
+const sumDuration = document.getElementById('sumDuration');
+const sumMode = document.getElementById('sumMode');
+const sumMinPoints = document.getElementById('sumMinPoints');
+const sumExpected = document.getElementById('sumExpected');
+const sumReward = document.getElementById('sumReward');
+
+const aiNote = document.getElementById('aiNote');
+
+/* ---------- Initialize ---------- */
+function init(){
+  // slider update
+  minPoints.addEventListener('input', onMinPointsChange);
+  titleInput.addEventListener('input', updateSummary);
+  descInput.addEventListener('input', updateSummary);
+  typeInput.addEventListener('change', updateSummary);
+  modeInput.addEventListener('change', updateSummary);
+  startDate.addEventListener('change', updateSummary);
+  startTime.addEventListener('change', updateSummary);
+  endDate.addEventListener('change', updateSummary);
+  endTime.addEventListener('change', updateSummary);
+  capacityInput.addEventListener('input', updateEligible);
+  pointsAttend.addEventListener('input', updateSummary);
+  pointsFull.addEventListener('input', updateSummary);
+
+  bannerInput.addEventListener('change', handleBanner);
+
+  // load edit if exists
+  if(state.editId){
+    try{
+      let ev = JSON.parse(localStorage.getItem('events')||'[]').find(e=> String(e.id) === String(state.editId));
+      if(ev) loadEventToForm(ev);
+      else localStorage.removeItem('editEventID');
+    }catch(e){}
+  }
+
+  // initial calculations
+  updateSummary();
+  updateEligible();
+}
+init();
+
+/* ---------- Toggles ---------- */
+function toggleSwitch(elem){
+  const key = elem.dataset.key;
+  const on = !state.toggles[key];
+  state.toggles[key] = on;
+  if(on) elem.classList.add('on'); else elem.classList.remove('on');
+  updateEligible();
+}
+
+/* ---------- Slider ---------- */
+function onMinPointsChange(){
+  const val = Number(minPoints.value);
+  minPointsLabel.textContent = formatPoints(val);
+  footerMin.textContent = formatPoints(val);
+  sumMinPoints.textContent = formatPoints(val);
+  updateEligible();
+}
+
+/* ---------- Banner handling ---------- */
+function handleBanner(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  if(file.size > 5 * 1024 * 1024){ alert('Image must be ≤ 5 MB'); bannerInput.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    state.bannerData = evt.target.result;
+    bannerPreview.src = state.bannerData;
+    bannerPreview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ---------- Compute eligible students (mock logic) ---------- */
+/*
+  Approach (simple, deterministic):
+  - Start with base pool of 1000 students.
+  - MinPoints removes a proportion: (minPoints / 10000) of base pool.
+  - Each extra criteria toggled reduces remaining pool by 10% each.
+  - Capacity caps the final number.
+  - Minimum eligible is 0, round to nearest integer.
+*/
+function updateEligible(){
+  const base = 1000;
+  const minP = Number(minPoints.value || 0);
+  let remaining = base * (1 - (minP / 10000));
+  // apply criteria reductions
+  let reductions = 0;
+  Object.keys(state.toggles).forEach(k=>{
+    // skip non-criteria keys
+    if(['inviteOnly','allowWait','sendAutoEmail'].includes(k)) return;
+    if(state.toggles[k]) reductions += 0.10;
+  });
+  remaining = remaining * (1 - reductions);
+  // capacity cap
+  const cap = Number(capacityInput.value || 0);
+  let finalCount = Math.max(0, Math.round(remaining));
+  if(cap > 0 && finalCount > cap) finalCount = cap;
+  // Display
+  eligibleNumber.textContent = finalCount;
+  footerEligible.textContent = finalCount;
+  sumExpected.textContent = finalCount + ' students';
+}
+
+/* ---------- Summary ---------- */
+function updateSummary(){
+  sumTitle.textContent = titleInput.value.trim() || 'Not set';
+  // duration
+  if(startDate.value && endDate.value){
+    sumDuration.textContent = startDate.value + ' → ' + endDate.value;
+  } else sumDuration.textContent = 'Not set';
+  sumMode.textContent = modeInput.value || 'Not selected';
+  sumMinPoints.textContent = formatPoints(Number(minPoints.value || 0));
+  sumReward.textContent = (pointsAttend.value||'Not set') + ' / ' + (pointsFull.value||'Not set');
+  // footer numbers already updated by other handlers
+}
+
+/* ---------- AI suggestion (mock) ---------- */
+function applyAISuggestion(){
+  if(!typeInput.value){
+    aiNote.style.display = 'block';
+    setTimeout(()=>aiNote.style.display='none',3000);
+    return;
+  }
+  aiNote.style.display='none';
+  // Example heuristic: workshops -> min 1000; hackathon -> 3000; webinar -> 500
+  let suggestion = 500;
+  if(typeInput.value.toLowerCase().includes('workshop')) suggestion = 1000;
+  if(typeInput.value.toLowerCase().includes('hackathon')) suggestion = 3000;
+  if(typeInput.value.toLowerCase().includes('job') || typeInput.value.toLowerCase().includes('fair')) suggestion = 2000;
+  // apply
+  minPoints.value = suggestion;
+  onMinPointsChange();
+  alert('AI suggestion applied: Min Points set to ' + formatPoints(suggestion));
+}
+
+/* ---------- Submit form (draft/published) ---------- */
+function submitForm(status){
+  // basic validation
+  if(!titleInput.value.trim()){ alert('Please enter event title'); titleInput.focus(); return; }
+  if(!descInput.value.trim()){ alert('Please enter description'); descInput.focus(); return; }
+  // create event object
+  const id = state.editId || Date.now();
+  const ev = {
+    id,
+    title: titleInput.value.trim(),
+    description: descInput.value.trim(),
+    image: state.bannerData || '',
+    type: typeInput.value || '',
+    mode: modeInput.value || '',
+    startDate: startDate.value || '',
+    startTime: startTime.value || '',
+    endDate: endDate.value || '',
+    endTime: endTime.value || '',
+    minPoints: Number(minPoints.value || 0),
+    criteria: {...state.toggles},
+    capacity: Number(capacityInput.value || 0),
+    pointsAttend: Number(pointsAttend.value || 0),
+    pointsFull: Number(pointsFull.value || 0),
+    expectedEligible: Number(eligibleNumber.textContent || 0),
+    status
+  };
+  // save to localStorage (replace if editing)
+  let events = JSON.parse(localStorage.getItem('events') || '[]');
+  events = events.filter(x=> String(x.id) !== String(id));
+  events.push(ev);
+  localStorage.setItem('events', JSON.stringify(events));
+  // clear edit marker
+  localStorage.removeItem('editEventID');
+  // redirect to company page
+  window.location.href = 'event-company.html';
+}
+
+/* ---------- Cancel (clear form) ---------- */
+function cancelForm(){
+  if(confirm('Cancel and clear all data?')){
+    localStorage.removeItem('editEventID');
+    // reset form fields
+    titleInput.value = '';
+    descInput.value = '';
+    typeInput.value = '';
+    modeInput.value = '';
+    startDate.value = '';
+    startTime.value = '';
+    endDate.value = '';
+    endTime.value = '';
+    capacityInput.value = '';
+    pointsAttend.value = '';
+    pointsFull.value = '';
+    state.bannerData = '';
+    bannerInput.value = '';
+    bannerPreview.style.display = 'none';
+    // reset toggles
+    Object.keys(state.toggles).forEach(k => state.toggles[k]=false);
+    document.querySelectorAll('.switch').forEach(s => s.classList.remove('on'));
+    minPoints.value = 0;
+    onMinPointsChange();
+    updateSummary();
+    updateEligible();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+}
+
+/* ---------- Load edit data to form ---------- */
+function loadEventToForm(ev){
+  titleInput.value = ev.title || '';
+  descInput.value = ev.description || '';
+  state.bannerData = ev.image || '';
+  if(state.bannerData){ bannerPreview.src = state.bannerData; bannerPreview.style.display = 'block'; }
+  typeInput.value = ev.type || '';
+  modeInput.value = ev.mode || '';
+  startDate.value = ev.startDate || '';
+  startTime.value = ev.startTime || '';
+  endDate.value = ev.endDate || '';
+  endTime.value = ev.endTime || '';
+  minPoints.value = ev.minPoints || 0;
+  onMinPointsChange();
+  capacityInput.value = ev.capacity || '';
+  pointsAttend.value = ev.pointsAttend || '';
+  pointsFull.value = ev.pointsFull || '';
+  // toggles
+  if(ev.criteria) {
+    Object.keys(ev.criteria).forEach(k => {
+      state.toggles[k] = !!ev.criteria[k];
+      const sw = document.querySelector('.switch[data-key="'+k+'"]');
+      if(sw) { if(state.toggles[k]) sw.classList.add('on'); else sw.classList.remove('on'); }
+    });
+  }
+  updateEligible();
+  updateSummary();
+}
+
+/* ---------- Helpers ---------- */
+function formatPoints(n){ return (Number(n)||0).toLocaleString() + ' pts'; }
+
+</script>
+</body>
+</html>

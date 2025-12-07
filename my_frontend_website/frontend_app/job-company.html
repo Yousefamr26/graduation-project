@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Jobs</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+  body { font-family: Arial; background: #f5f7fa; padding: 25px; }
+  .header{
+    width: 1490px;
+    margin-top: -30px;
+    margin-left: -30px;
+    height: 110px;
+    background-color: white;
+    padding:20px;box-shadow:0 6px 20px rgba(0,0,0,.06);}
+  h2 { margin-bottom:10px; color:#155fc4;
+  margin-top: 12px; }
+  .top-bar { display:flex; gap:12px; align-items:center; margin-bottom:18px; flex-wrap:wrap; }
+  .top-bar input { padding:10px; border-radius:8px; border:1px solid #ccc; width:600px;
+  position: absolute;
+  top: 55px;
+  left: 400px;
+}.top-bar select{
+  padding:10px; border-radius:8px; border:1px solid #ccc; width:260px;
+  position: absolute;
+  top: 55px;
+  left: 1050px;
+}
+
+  .create-btn { background:#155fc4; color:#fff; padding:10px 16px; border-radius:8px; border:none; cursor:pointer;
+  position: absolute;
+  top: 55px;
+  right: 55px;
+  }
+
+  .grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(320px,1fr)); gap:16px; margin-top:12px; }
+
+  .job-card { background:#fff; padding:16px; border-radius:12px; border:1px solid #e6e6e6;
+              box-shadow:0 2px 6px rgba(0,0,0,0.03); }
+
+  .job-title { font-weight:700; font-size:18px; margin-bottom:6px; color:#111; }
+  .meta { font-size:13px; color:#555; margin-bottom:8px; }
+
+  .job-actions { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  button.action { padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600; }
+
+  .edit { background:#6ab4ff; color:#fff; }
+  .delete { background:#ff6b6b; color:#fff; }
+  .analysis { background:#4caf50; color:#fff; }
+
+  .analysis-box { background:#eef7ff; padding:12px; border-radius:8px; margin-top:10px; display:none; }
+  .empty { color:#666; margin-top:12px; }
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2><i class="fa-solid fa-briefcase"></i>&nbsp;Job Management</h2>
+<p style="color:#777;">Manage your job postings and track applications</p>
+
+<div class="top-bar">
+  <input id="searchInput" placeholder="Search by title or description..." />
+
+  <!-- DROPDOWN WILL NOT RESET NOW -->
+  <select id="dropdownFilter" style="color: #777;"></select>
+
+  <button class="create-btn" onclick="goCreateJob()"><i class="fa-solid fa-plus"></i> Create New Job</button>
+</div>
+</div>
+
+<div id="jobsGrid" class="grid"></div>
+<div id="empty" class="empty" style="display:none;">No jobs found.</div>
+
+<script>
+/* MAIN STORAGE KEY */
+const KEY = 'jobs';
+
+/* read & write helpers */
+function readJobs(){ return JSON.parse(localStorage.getItem(KEY) || "[]"); }
+function writeJobs(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); }
+
+/* go to create-job */
+function goCreateJob(){
+  window.location.href = "create-job.html";
+}
+
+/* delete job */
+function deleteJob(id){
+  if(!confirm("Are you sure you want to delete this job?")) return;
+  const jobs = readJobs().filter(j => String(j.id) !== String(id));
+  writeJobs(jobs);
+  render();
+}
+
+/* edit job */
+function editJob(id){
+  window.location.href = `create-job.html?id=${id}`;
+}
+
+/* toggle analysis */
+function toggleAnalysis(id){
+  const box = document.getElementById("analysis-" + id);
+  if(box) box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+/* escape HTML */
+function escapeHTML(text){
+  if(!text) return "";
+  return text.replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+}
+
+/* ============ FIXED RENDER FUNCTION ============ */
+function render(){
+  const jobs = readJobs();
+  const grid = document.getElementById("jobsGrid");
+  const empty = document.getElementById("empty");
+  const dropdown = document.getElementById("dropdownFilter");
+  const searchText = document.getElementById("searchInput").value.toLowerCase();
+  
+  grid.innerHTML = "";
+
+  /* SAVE CURRENT SELECTED OPTION BEFORE RELOADING IT */
+  const selected = dropdown.value || "";
+
+  /* REFILL DROPDOWN (FIXED — DOES NOT RESET SELECTION) */
+  dropdown.innerHTML = '<option value="">All jobs</option>' +
+    jobs.map(j => `<option value="${j.id}">${escapeHTML(j.title)}</option>`).join("");
+
+  /* RESTORE PREVIOUS SELECTION */
+  dropdown.value = selected;
+
+  let filtered = jobs;
+
+  /* FILTER BY DROPDOWN — FIXED */
+  if (dropdown.value !== "") {
+    filtered = filtered.filter(j => String(j.id) === String(dropdown.value));
+  }
+
+  /* SEARCH FILTER */
+  if (searchText) {
+    filtered = filtered.filter(j =>
+      j.title.toLowerCase().includes(searchText) ||
+      j.desc.toLowerCase().includes(searchText)
+    );
+  }
+
+  /* EMPTY STATE */
+  if(filtered.length === 0){
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  /* SORT NEWEST FIRST */
+  filtered.sort((a,b) => Number(b.id) - Number(a.id));
+
+  filtered.forEach(job => {
+    const card = document.createElement("div");
+    card.className = "job-card";
+
+    card.innerHTML = `
+      <div class="job-title">${escapeHTML(job.title)}</div>
+
+      <div class="meta"><b>Location:</b> ${escapeHTML(job.location || "Not specified")}</div>
+      <div class="meta"><b>Deadline:</b> ${escapeHTML(job.deadline || "-")}</div>
+      <div class="meta">${escapeHTML(job.desc.substring(0,140))}${job.desc.length>140?"...":""}</div>
+
+      <div class="job-actions">
+        <button class="action edit" onclick="editJob('${job.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+        <button class="action delete" onclick="deleteJob('${job.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+        <button class="action analysis" onclick="toggleAnalysis('${job.id}')"><i class="fa-solid fa-chart-simple"></i> Analysis</button>
+      </div>
+
+      <div id="analysis-${job.id}" class="analysis-box">
+        <p><b>Description:</b> ${escapeHTML(job.desc)}</p>
+        <p><b>Requirements:</b> ${escapeHTML(job.req)}</p>
+        <p><b>Posted:</b> ${new Date(Number(job.id)).toLocaleString()}</p>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+/* LISTENERS */
+document.getElementById("searchInput").addEventListener("input", render);
+document.getElementById("dropdownFilter").addEventListener("change", render);
+
+/* INITIAL RENDER */
+render();
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+

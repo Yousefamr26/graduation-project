@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Company Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body { font-family: Arial; background:#f5f5f5; margin:0; padding:20px; }
+        .container { max-width:600px; margin:auto; }
+        .card { background:#fff; padding:25px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+        input, select, textarea {
+            width:95%; padding:12px; border:1px solid #ccc;
+            border-radius:8px; margin-bottom:15px; resize:none;
+            margin-top: 5px;
+            background-color: #f5f5f5;
+        }
+        select{
+            width: 99%;
+            color: #777;
+        }
+        label{
+            color: #585858;
+        }
+        .btn { width:100%; padding:12px; border:none; border-radius:8px; cursor:pointer; font-size:16px; }
+        .save-btn { background:#1a73e8; color:white; width: 49%;}
+        .cancel-btn { background: white; border: solid 1px #777; margin-top:10px; width: 47%;margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h2>Edit Company Profile</h2>
+        <p style="color: #777;margin-top: -5px;">Update your company information and details</p>
+
+        <label>Company Name</label>
+        <input id="companyName" type="text" placeholder="TechCorp Solutions">
+
+        <label>Industry</label>
+        <select id="industry">
+            <option>Technology & Innovation</option>
+            <option>Finance & Banking</option>
+            <option>Healthcare</option>
+            <option>Education</option>
+            <option>Manufacturing</option>
+            <option>Retail & E-commerce</option>
+            <option>Consulting</option>
+            <option>Other</option>
+        </select>
+
+        <label>Email</label>
+        <input id="email" type="email" placeholder="hr@techcorp.com">
+
+        <label>Phone</label>
+        <input id="phone" type="text" placeholder="+20 123 456 7890">
+
+        <label>Website</label>
+        <input id="website" type="text" placeholder="www.techcorp.com">
+
+        <label>Location</label>
+        <input id="location" type="text" placeholder="Cairo, Egypt">
+        
+        <label>Company Size</label>
+        <select id="industry">
+            <option>1-50 employees</option>
+            <option>51-200 employees</option>
+            <option>201-1000 employees</option>
+            <option>1000+ employees</option>
+        </select>
+
+        <label>About Company</label>
+        <textarea id="about" rows="4" placeholder="TechCorp Solutions is a leading technology company providing innovative solutions and career opportunities for students and graduates through our comprehensive development programs and partnerships."></textarea>
+
+        <label>HR Contact Person</label>
+        <input id="location" type="text" placeholder="Full Name">
+
+        <button class="btn save-btn" onclick="saveChanges()">Save Changes</button>
+        <button class="btn cancel-btn" onclick="cancelEdit()">Cancel</button>
+    </div>
+</div>
+
+<script>
+window.onload = function () {
+    const saved = JSON.parse(localStorage.getItem("companyData"));
+    if (saved) {
+        document.getElementById("companyName").value = saved.companyName;
+        document.getElementById("industry").value = saved.industry;
+        document.getElementById("email").value = saved.email;
+        document.getElementById("phone").value = saved.phone;
+        document.getElementById("website").value = saved.website;
+        document.getElementById("location").value = saved.location;
+        document.getElementById("about").value = saved.about;
+    }
+};
+
+function saveChanges() {
+    const data = {
+        companyName: document.getElementById("companyName").value,
+        industry: document.getElementById("industry").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        website: document.getElementById("website").value,
+        location: document.getElementById("location").value,
+        about: document.getElementById("about").value
+    };
+
+    localStorage.setItem("companyData", JSON.stringify(data));
+    window.location.href = "company-profile.html";
+}
+
+function cancelEdit() {
+    window.location.href = "company-profile.html";
+}
+</script>
+
+</body>
+</html>

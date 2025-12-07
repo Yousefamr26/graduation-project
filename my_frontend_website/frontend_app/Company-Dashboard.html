@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Company Dashboard</title>
+
+<!-- ✅ Official Font Awesome 6.5.0 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<link rel="stylesheet" href="styles/Company-Dashboard.css">
+</head>
+
+<body>
+
+<!-- Navigation Sidebar -->
+<div id="sidebar" class="sidebar">
+<div class="header">
+    <img src="images/company-photo.jpg" alt="" width="45px" height="42px" class="img">
+    <div class="title">
+        <h2>Smart Career Hub</h2>
+        <p>Company Portal</p>
+    </div>
+</div>
+<hr>
+
+<ul class="menu-list">
+
+    <li>
+        <i class="fa-solid fa-house"></i>&nbsp;
+        <a href="#dashboard">Dashboard</a>
+    </li>
+
+    <li>
+        <i class="fa-solid fa-route"></i>&nbsp;
+        <a href="#roadmap" onclick="goRoadmap()">Roadmaps</a>
+    </li>
+
+    <li>
+        <i class="fa-solid fa-briefcase"></i>&nbsp;
+        <a href="#job" onclick="goJobs()">Jobs</a>
+    </li>
+
+    <li>
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;
+        <a href="#calender" onclick="goCalender()">Calendar</a>
+    </li>
+
+    <li>
+        <i class="fa-solid fa-chalkboard-user"></i>&nbsp;
+        <a href="#workshop" onclick="goWorkshop()">Workshops</a>
+    </li>
+
+    <li>
+        <i class="fa-solid fa-calendar-check"></i>&nbsp;
+        <a href="#event" onclick="goEvent()">Events</a>
+    </li>
+
+    <li>
+        <i class="fa-solid fa-comments"></i>&nbsp;
+        <a href="#interview" onclick="goInterview()">Interviews</a>
+    </li>
+
+    <li>
+        <i class="fa-solid fa-chart-column"></i>&nbsp;
+        <a href="#analytics" onclick="goAnalytics()">Analytics</a>
+    </li>
+
+    <li>
+        <i class="fa-solid fa-bell"></i>&nbsp;
+        <a href="#notification" onclick="goNotification()">Notifications</a>
+    </li>
+
+    <li>
+        <i class="fa-solid fa-robot"></i>&nbsp;
+        <a href="#ai">AI Assistant</a>
+    </li>
+
+    <li>
+        <i class="fa-solid fa-user"></i>&nbsp;
+        <a href="#profile" onclick="goProfile()">Profile</a>
+    </li>
+
+    <li class="logout" onclick="goLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        Logout
+    </li>
+
+</ul>
+</div>
+
+<!-- Top bar -->
+<header>
+<div class="hamburger" id="dashboard">
+    <h2>Company Dashboard</h2>
+    <p>TechCorp Solutions - Manage your roadmaps, workshops, and student engagement</p>
+</div>
+</header>
+
+<!-- Main Content -->
+<div class="content">
+    <div class="cards">
+        <div class="card">
+            <img src="images/pic-1.png" width="50px" height="40px">
+            <h3>Active Roadmaps</h3>
+            <p>1,234 students enrolled</p>
+            <h2>5</h2>
+        </div>
+
+        <div class="card">
+            <img src="images/pic-2.png" width="60px" height="50px">
+            <h3>Upcoming Interviews</h3>
+            <p>This Week</p>
+            <h2>12</h2>
+        </div>
+
+        <div class="card">
+            <img src="images/pic-3.png" width="50px" height="50px">
+            <h3>Enrolled Students</h3>
+            <p>+45 this month</p>
+            <h2>856</h2>
+        </div>
+
+        <div class="card">
+            <img src="images/pic-4.png" width="50px" height="50px">
+            <h3>Workshops Created</h3>
+            <p>3 upcoming</p>
+            <h2>8</h2>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn primary" onclick="goCreateroadmap()">
+            <span class="icon"><img src="images/pic-5.png" width="30"></span>
+            Add Roadmap
+        </button>
+
+        <button class="btn outline" onclick="goCreateworkshop()">
+            <span class="icon"><img src="images/pic-6.png" width="30"></span>
+            Create Workshop
+        </button>
+
+        <button class="btn outline" onclick="goCreateevent()">
+            <span class="icon"><img src="images/pic-7.png" width="30"></span>
+            Create Event
+        </button>
+    </div>
+
+    <div class="big-box">
+        <div class="box-1">
+            <h4>Student Performance & Progress</h4>
+            <div class="action-buttons">
+                <button class="btn primary-1">View Details</button>
+            </div>
+
+            <div class="chart-box">
+                <img src="images/progress.png" width="100">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+

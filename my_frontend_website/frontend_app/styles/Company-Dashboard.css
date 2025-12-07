@@ -1,0 +1,254 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f6fa;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    width: 250px;
+    background: #fff;
+    height: 100vh;
+    border-right: 1px solid #ddd;
+    padding-top: 20px;
+    transition: transform 0.3s ease;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+} 
+
+.sidebar ul li {
+    padding: 15px 25px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar ul li a {
+    color: black;
+    text-decoration: none;
+    color: #414141;
+}
+
+.sidebar ul li a:hover{
+    font-size: 20px;
+    color: #3ba0ee;
+    transition: 0.3s;
+}
+
+.sidebar ul li:hover {
+    background-color: #e9e9e9;
+}  
+
+.logout {
+    color: black;
+}
+
+.logout:hover{
+    color: red;
+    font-size: 20px;
+    transition: 0.3s;
+}
+
+/* Hidden sidebar class */
+.sidebar.hidden {
+    transform: translateX(-260px);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 15px; 
+}
+
+.menu-icon {
+    font-size: 28px;
+    cursor: pointer;
+    margin-left: 10px;
+    margin-top: -17px;
+}
+
+.title h2 {
+    margin-bottom: 10px;
+    color: #2196f3;
+    font-size: 20px;
+    margin-left: -5px;
+}
+
+.title p {
+    margin-top: -2px;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+
+/* Header */
+header {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 15px 20px;
+    border-bottom: 1px solid #ddd;
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
+}
+
+.img{
+    margin-left: 10px;
+    border-radius: 12px;
+    margin-top: -2px;
+}
+
+header.hamburger-active {
+    margin-left: 0;
+}
+
+.hamburger h1{
+    font-size: 28px;
+    margin-right: 20px;
+}
+
+.hamburger-p{
+    display: block;
+}
+
+/* Main content */
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+}
+
+.content.shift {
+    margin-left: 0;
+}
+
+.cards {
+    display: flex;
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    flex: 1;
+    border-radius: 12px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: 0.3s;
+    height: 140px;
+    display: flex;
+}
+
+.card h3{
+    margin-top: 60px;
+    font-size: 15px;
+    margin-left: -50px;
+}
+
+.card p{
+    margin-top: 90px;
+    margin-left: -130px;
+    color: #8d8c8c;
+    font-size: 12px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2{
+    margin-top: 10px;
+    margin-left: 110px;
+    font-size: 20px;
+    font-weight: 200px;
+    color: #3ba0ee;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 20px;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: 0.2s ease;
+}
+
+/* Primary filled button */
+.btn.primary {
+    background-color: #3498DB;
+    color: white;
+    border-color: #1e88e5;
+    border-radius: 15px;
+}
+
+/* Outline buttons */
+.btn.outline {
+    background-color: white;
+    color: #1e88e5;
+    border: solid 1px #1e88e5;
+    border-radius: 15px;
+}
+
+.btn.outline:hover {
+    color: black;
+}
+
+/* Icon */
+.icon {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+}
+
+
+
+.big-box {
+    margin-top: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.big-box:hover {
+    transform: translateY(-5px);
+}
+
+.box-1{
+    margin-top: 20px;
+}
+.btn.primary-1{
+    background-color: white;
+    color: black;
+    border: solid 1px #bfbebe;
+    border-radius: 10px;
+    margin-left: 1010px;
+    margin-top: -60px;
+}
+
+.chart-box {
+    margin-top: 20px;
+    height: 200px;
+    background: #f4f6f8;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

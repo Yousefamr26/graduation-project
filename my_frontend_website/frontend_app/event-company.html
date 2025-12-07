@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Company Events</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+  :root{
+    --bg:#f4f7fb;
+    --card:#fff;
+    --accent:#155fc4;
+    --muted:#788090;
+  }
+
+  body{
+    font-family:"Segoe UI",Arial,sans-serif;
+    background:var(--bg);
+    margin:0;
+    padding:26px;
+  }
+
+  .wrap{max-width:1100px;margin:0 auto;}
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+    width: 1470px;
+    background-color: white;
+    height: 100px;
+    padding: 30px;
+    margin-left: -215px;
+    margin-top: -30px;
+    box-shadow:0 6px 20px rgba(0,0,0,.06);
+  }
+
+  h1{
+  margin-top: -15px;
+  margin-bottom:10px;}
+
+  .controls{
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+
+  input.search{
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #cfd0d1;
+    width:680px;
+  }
+
+  select{
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #cfd0d1;
+    width: 120px;
+    color: #777;
+  }
+
+  button.create{
+    background:var(--accent);
+    color:#fff;
+    padding:10px 14px;
+    border-radius:8px;
+    border:0;
+    cursor:pointer;
+  }
+
+  /* ---------- SMALLER CARDS ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:14px;
+  }
+
+  .card{
+    background:var(--card);
+    padding:12px;
+    border-radius:10px;
+    box-shadow:0 1px 4px rgba(18,34,63,0.08);
+    min-height:150px;
+  }
+
+  .card h3{
+    margin:0 0 4px;
+    font-size:17px;
+  }
+
+  .meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:var(--muted);
+    font-size:12px;
+    margin-bottom:6px;
+  }
+
+  .status{
+    padding:4px 8px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:11px;
+  }
+
+  .published{background:#ecfff1;color:#0b8f46;}
+  .draft{background:#fff7e8;color:#a76c00;}
+
+  img.thumb{
+    width:100%;
+    height:130px;
+    object-fit:cover;
+    border-radius:8px;
+    margin-top:8px;
+  }
+
+  .actions{
+    display:flex;
+    gap:6px;
+    margin-top:8px;
+  }
+
+  .actions button{
+    padding:6px 8px;
+    border-radius:8px;
+    font-size:12px;
+    border:0;
+    cursor:pointer;
+  }
+
+  .btn-edit{background:#2b8bf2;color:#fff}
+  .btn-delete{background:#ff5a5a;color:#fff}
+  .btn-analysis{background:#6f42c1;color:#fff}
+
+  .analysis-box{
+    margin-top:10px;
+    padding:10px;
+    border-radius:8px;
+    background:#ffffff;
+    display:none;
+    border-left:4px solid #155fc4;
+    font-size:13px;
+  }
+
+  .empty{
+    color:var(--muted);
+    padding:40px;
+    text-align:center;
+    border-radius:8px;
+    background:#fff;
+    font-size:15px;
+  }
+
+  @media(max-width:900px){
+    .controls{flex-direction:column;align-items:stretch;gap:8px;}
+    input.search{width:100%}
+  }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <header>
+    <h1 style="color:var(--accent)"><i class="fa-solid fa-flag"></i> Company Events</h1>
+    <p style="color: #777;position: absolute; left: 40px; top: 80px;">Manage your company events with points-based eligibility</p>
+
+    <div class="controls">
+      <input class="search" id="search" placeholder="Search events by title..." oninput="renderEvents()">
+
+      <select id="filter" onchange="renderEvents()">
+        <option value="all">All</option>
+        <option value="published">Published</option>
+        <option value="draft">Draft</option>
+      </select>
+
+      <button class="create" onclick="createNew()">
+        <i class="fa-solid fa-plus"></i> Create New Event
+      </button>
+    </div>
+  </header>
+
+  <div id="listArea"></div>
+
+</div>
+
+<script>
+
+/* -------------------- Go to Create Page -------------------- */
+function createNew(){
+  localStorage.removeItem('editEventID');
+  window.location.href = 'create-event.html';
+}
+
+/* -------------------- Fetch Events -------------------- */
+function getEvents(){
+  try{
+    return JSON.parse(localStorage.getItem('events') || '[]')
+      .sort((a,b)=> b.id - a.id);
+  }catch(e){ return []; }
+}
+
+/* -------------------- SEARCH + FILTER LOGIC -------------------- */
+function renderEvents(){
+  const container = document.getElementById('listArea');
+  container.innerHTML = '';
+
+  const events = getEvents();
+
+  const q = (document.getElementById('search').value || '').toLowerCase();
+  const filter = document.getElementById('filter').value;
+
+  let filtered = events;
+
+  /* ------------------------------------------
+     SPECIAL SEARCH:
+     typing "draft"  → only draft events
+     typing "published" → only published events
+  ------------------------------------------- */
+  if(q === "draft"){
+    filtered = events.filter(ev => ev.status === "draft");
+  }
+  else if(q === "published"){
+    filtered = events.filter(ev => ev.status === "published");
+  }
+  else{
+    // normal title search
+    filtered = events.filter(ev =>
+      ev.title.toLowerCase().includes(q)
+    );
+  }
+
+  /* ---------- APPLY DROPDOWN FILTER TOO ---------- */
+  if(filter !== "all"){
+    filtered = filtered.filter(ev => ev.status === filter);
+  }
+
+  if(filtered.length === 0){
+    container.innerHTML = `
+      <div class="empty">
+        <i class="fa-solid fa-calendar-xmark"></i>
+        &nbsp; No events found.
+      </div>`;
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+
+  filtered.forEach(ev => {
+    const statusClass = (ev.status === "published") ? "published" : "draft";
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;">
+        <div>
+          <h3>${escape(ev.title)}</h3>
+          <div class="meta">
+            <div>${ev.type || "—"}</div>
+            <div>${ev.startDate || "—"}</div>
+          </div>
+        </div>
+        <div><div class="status ${statusClass}">${ev.status}</div></div>
+      </div>
+
+      <p style="color:#556;font-size:13px;margin:4px 0;">
+        ${ev.description ? escape(truncate(ev.description,120)) : ""}
+      </p>
+
+      ${ev.image ? `<img class="thumb" src="${ev.image}">` : ""}
+
+      <div class="actions">
+        <button class="btn-edit" onclick="editEvent('${ev.id}')"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn-delete" onclick="deleteEvent('${ev.id}')"><i class="fa-solid fa-trash"></i></button>
+        <button class="btn-analysis" onclick="toggleAnalysis('${ev.id}')"><i class="fa-solid fa-chart-line"></i></button>
+      </div>
+
+      <div id="analysis-${ev.id}" class="analysis-box">
+        <strong>Event Details</strong>
+        <div style="margin-top:6px;">
+          <div><b>Type:</b> ${ev.type || "—"}</div>
+          <div><b>Mode:</b> ${ev.mode || "—"}</div>
+          <div><b>Start:</b> ${ev.startDate || "—"} ${ev.startTime || ""}</div>
+          <div><b>End:</b> ${ev.endDate || "—"} ${ev.endTime || ""}</div>
+          <div><b>Min Points:</b> ${ev.minPoints || 0}</div>
+          <div><b>Eligible Students:</b> ${ev.expectedEligible || 0}</div>
+          <div><b>Capacity:</b> ${ev.capacity || "—"}</div>
+        </div>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+
+  container.appendChild(grid);
+}
+
+/* -------------------- Edit / Delete -------------------- */
+function editEvent(id){
+  localStorage.setItem("editEventID", id);
+  window.location.href = "create-event.html";
+}
+
+function deleteEvent(id){
+  if(confirm("Delete this event?")){
+    let evs = getEvents().filter(e => String(e.id) !== String(id));
+    localStorage.setItem("events", JSON.stringify(evs));
+    renderEvents();
+  }
+}
+
+function toggleAnalysis(id){
+  const box = document.getElementById("analysis-" + id);
+  box.style.display = (box.style.display === "block") ? "none" : "block";
+}
+
+/* -------------------- Helpers -------------------- */
+function truncate(text,n){
+  return text.length > n ? text.slice(0,n) + "…" : text;
+}
+
+function escape(str){
+  return String(str).replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+  }[m]));
+}
+
+renderEvents();
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+

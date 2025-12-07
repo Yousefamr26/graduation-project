@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+    body {
+        margin: 0;
+        padding: 40px;
+        font-family: "Segoe UI", sans-serif;
+        background: #f4f6fa;
+        color: #222;
+    }
+
+    h2 {
+        font-size: 30px;
+        margin-top: -10px;
+    }
+
+    .subtitle {
+        color: #666;
+        margin-top: -5px;
+        margin-bottom: 20px;
+    }
+
+    /* NEW BADGE */
+    .new-badge {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        background: #1e88ff;
+        padding: 6px 12px;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* NOTIFICATION LIST */
+    .noti-container {
+        max-width: 900px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .notification:hover{
+        translate: calc(-10px);
+    }
+
+    .notification {
+        display: flex;
+        gap: 20px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        align-items: flex-start;
+        border: 1px solid #e5e9ef;
+        position: relative;
+        left: -280px;
+        transition: 0.3s;
+    }
+
+    /* Unread (blue card) */
+    .notification.unread {
+        background: #e8f2ff;
+        border-color: #8dc3ff;
+    }
+
+    /* Blue unread dot */
+    .unread-dot {
+        width: 10px;
+        height: 10px;
+        background: #1e88ff;
+        border-radius: 50%;
+        position: absolute;
+        right: 20px;
+        top: 20px;
+    }
+
+    /* Icon Circle */
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #dfeafe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: #155fc4;
+        flex-shrink: 0;
+    }
+
+    /* Read icon (gray) */
+    .read .icon-box {
+        background: #ececec;
+        color: #999;
+    }
+
+    .noti-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .noti-desc {
+        color: #555;
+        margin-bottom: 8px;
+    }
+
+    .time {
+        color: #888;
+        font-size: 13px;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="new-badge">3 New</div>
+
+<h2>Notifications</h2>
+<p class="subtitle">Stay updated with your latest activities</p>
+
+<div class="noti-container">
+
+    <!-- UNREAD 1 -->
+    <div class="notification unread">
+        <div class="icon-box"><i class="fa-solid fa-book-open"></i></div>
+        <div>
+            <div class="noti-title">Course Deadline Approaching</div>
+            <div class="noti-desc">Your 'Advanced React' course deadline is in 3 days</div>
+            <div class="time">2 hours ago</div>
+        </div>
+        <div class="unread-dot"></div>
+    </div>
+
+    <!-- UNREAD 2 -->
+    <div class="notification unread">
+        <div class="icon-box"><i class="fa-solid fa-calendar-days"></i></div>
+        <div>
+            <div class="noti-title">Vodafone Workshop Registration Open</div>
+            <div class="noti-desc">React Advanced Patterns workshop registration is now open</div>
+            <div class="time">5 hours ago</div>
+        </div>
+        <div class="unread-dot"></div>
+    </div>
+
+    <!-- UNREAD 3 -->
+    <div class="notification unread">
+        <div class="icon-box"><i class="fa-solid fa-briefcase"></i></div>
+        <div>
+            <div class="noti-title">New Job Posted</div>
+            <div class="noti-desc">Flutter Developer position at Orange matches your profile</div>
+            <div class="time">1 day ago</div>
+        </div>
+        <div class="unread-dot"></div>
+    </div>
+
+    <!-- READ 1 -->
+    <div class="notification read" style="border: solid 1px #c9c8c8;">
+        <div class="icon-box"><i class="fa-solid fa-trophy"></i></div>
+        <div>
+            <div class="noti-title">Achievement Unlocked!</div>
+            <div class="noti-desc">You've earned 500 points! Keep up the great work</div>
+            <div class="time">2 days ago</div>
+        </div>
+    </div>
+
+    <!-- READ 2 -->
+    <div class="notification read" style="border: solid 1px #c9c8c8;">
+        <div class="icon-box"><i class="fa-solid fa-book"></i></div>
+        <div>
+            <div class="noti-title">Course Completed</div>
+            <div class="noti-desc">Congratulations! You've completed JavaScript Fundamentals</div>
+            <div class="time">3 days ago</div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
+

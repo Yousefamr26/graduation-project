@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Create Workshop</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  :root{
+    --accent:#155fc4; --muted:#7a7f86; --card:#fff; --bg:#f4f6f8;
+    --toggle-off:#e6e9ee; --toggle-on:var(--accent);
+  }
+  *{box-sizing:border-box}
+  body{font-family:"Segoe UI",sans-serif;background:var(--bg);margin:0;padding:28px}
+  .wrap{max-width:1100px;margin:0 auto}
+  .header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  .header h1{font-size:20px;color:var(--accent);margin:0}
+  .subtitle{color:var(--muted);margin:0;font-size:13px}
+  .section{background:var(--card);border-radius:12px;padding:18px;margin-top:18px;box-shadow:0 2px 8px rgba(16,24,40,0.06)}
+  .section .title{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-weight:600;color:#263147}
+  label{display:block;margin:8px 0 6px;font-weight:600;color:#394a59;font-size:14px}
+  input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea{
+    width:100%;padding:10px;border-radius:8px;border:1px solid #d6dbe0;font-size:14px;background:#fff
+  }
+  textarea{height:110px;resize:vertical}
+  .row{display:flex;gap:12px}
+  .row > div{flex:1}
+  .upload-area{ border:2px dashed #e4e7ee;border-radius:8px;padding:16px;text-align:center;color:#5b6b7a;cursor:pointer}
+  .upload-area:hover{
+    border: 2px dashed #155fc4;
+  }
+  .btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+  .btn.primary{background:var(--accent);color:#fff}
+  .btn.ghost{background:#fff;border:1px solid #d6dbe0}
+  .btn.soft{background:#f1f5f9;color:#1f2937}
+  .points-line{color:var(--accent);font-weight:700;display:flex;align-items:center;gap:8px;margin-top:12px}
+  .small-muted{font-size:13px;color:#8892a6}
+  .materials-list, .activities-list{display:flex;flex-direction:column;gap:10px}
+  .material, .activity{background:#fbfdff;padding:12px;border-radius:8px;border:1px solid #e9f0fb;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .material > input[type="text"], .activity > input[type="text"]{flex:1;min-width:200px}
+  .mini{padding:8px 10px;border-radius:8px;border:none;cursor:pointer; color: #777;}
+  .remove{background:#fff;border:1px solid #f1a3a3;color:red;}
+  .add-btn{background:#0ea5a4;color:#fff}
+  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+  .summary .card{padding:12px;border-radius:8px;background:#fff;border:1px solid #eef2f7;min-height:64px}
+  .summary .card .label{color:#6b7280;font-size:13px;margin-bottom:6px}
+  .summary .card .value{font-weight:700;color:#111}
+  .toggle { position: relative; display:inline-block; width:48px; height:26px; }
+  .toggle input { display:none; }
+  .slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:var(--toggle-off); transition:.25s; border-radius:50px; }
+  .slider:before { position:absolute; content:""; height:20px; width:20px; left:3px; bottom:3px; background:white; transition:.25s; border-radius:50%; box-shadow:0 1px 2px rgba(2,6,23,.08)}
+  .toggle input:checked + .slider { background: var(--toggle-on); }
+  .toggle input:checked + .slider:before { transform: translateX(22px); }
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:900px){ .row{flex-direction:column} .summary{grid-template-columns:1fr} .form-grid{grid-template-columns:1fr} }
+  .bottom-actions { display:flex; gap:12px; justify-content:flex-end; margin-top:18px; align-items:center; }
+  .bottom-container { margin-top:18px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+  .info-pill{background:#eef6ff;padding:6px 10px;border-radius:999px;color:var(--accent);font-weight:700;border:1px solid #dfefff}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <i class="fa-solid fa-chalkboard-user" style="font-size:26px;color:#155fc4"></i>
+      <div>
+        <h1 style="color: #155fc4;">Create Workshop</h1>
+        <div class="subtitle" style="font-size: 16px;">Collaborate with universities to create engaging workshops for students</div>
+      </div>
+    </div>
+
+    <!-- Basic Info -->
+    <div class="section" id="basicSection">
+      <div style="width: 28px; height: 28px; text-align: center; background-color: #bddbfa;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-file-lines" style="color:#2b8bf2;"></i>
+      </div>
+      <h3 class="title" style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Basic Information</h3>
+            <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Provide the core details of your workshop</p>
+      <label>Workshop Title <span style="color: red;">*</span>
+      </label>
+      <input id="title" type="text" placeholder="e.g., AI Career Bootcamp">
+
+      <label>Description <span style="color: red;">*</span></label>
+      <textarea id="description" placeholder="Describe the goals and activities of this workshop..."></textarea>
+
+      <label>Workshop Banner (image ≤ 5 MB)</label>
+      <div class="upload-area" onclick="document.getElementById('banner').click()">
+        <i class="fa-solid fa-image"></i> &nbsp; Upload Workshop Banner
+      </div>
+      <input id="banner" type="file" accept="image/*" style="display:none" />
+      <img id="bannerPreview" class="img-preview" style="display:none;max-width:100%;margin-top:10px;border-radius:8px;border:1px solid #e6eef6" alt="banner preview" />
+      <div class="small-muted">Banner must be an image file and ≤ 5 MB.</div>
+    </div>
+
+    <!-- Collaboration Details -->
+    <div class="section">
+      <div style="width: 28px; height: 28px; text-align: center; background-color: #f0d3fd;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-user-group" style="color: #a711c9;"></i>
+      </div>
+      <h3 class="title" style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Collaboration Details</h3>
+            <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Select your university partner and event details</p>
+      <label>Select University Partner <span style="color: red;">*</span></label>
+      <select id="university" style="color: #777;">
+        <option value="">Choose a university...</option>
+        <option value="Cairo University">Cairo University</option>
+        <option value="Tanta University">Tanta University</option>
+        <option value="Assuit University">Assuit University</option>
+        <option value="Alex University">Alex University</option>
+        <option value="Ain Shams University">Ain Shams University</option>
+        <option value="Mansoura University">Mansoura University</option>
+      </select>
+
+      <label>Location</label>
+      <input id="location" type="text" placeholder="Online / Onsite (Campus Hall, Building...)">
+
+      <div class="row">
+        <div>
+          <label>Start Date <span style="color: red;">*</span></label>
+          <input id="startDate" type="date" />
+        </div>
+        <div>
+          <label>End Date <span style="color: red;">*</span></label>
+          <input id="endDate" type="date" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Start Time <span style="color: red;">*</span></label>
+          <input id="startTime" type="time" />
+        </div>
+        <div>
+          <label>End Time <span style="color: red;">*</span></label>
+          <input id="endTime" type="time" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Capacity & Type -->
+    <div class="section">
+      <div style="width: 28px; height: 28px; text-align: center; background-color: #dffbdd;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-users" style="color: #11c917;"></i>
+      </div>
+      <h3 class="title" style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Capacity & Type</h3>
+      <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Define workshop capacity and format</p>
+      <div class="row">
+        <div>
+          <label>Max Capacity</label>
+          <input id="capacity" type="number" placeholder="e.g., 100 attendees" />
+        </div>
+        <div>
+          <label>Workshop Type <span style="color: red;">*</span></label>
+          <select id="workType" style="color: #777;">
+            <option value="">Select type...</option>
+            <option value="Technical">Online</option>
+            <option value="Career">Onsite</option>
+            <option value="Soft Skills">Hybird</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Materials -->
+    <div class="section">
+      <div style="width: 28px; height: 28px; text-align: center; background-color: #fbefdd;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-box-open" style="color: #c97611;"></i>
+      </div>
+      <h3 class="title" style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Materials Provided</h3>
+      <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Upload resources with auto-calculated points</p>
+      <div class="materials-list" id="materialsList"></div>
+      <div style="margin-top:10px">
+        <button class="btn add-btn" onclick="addMaterial()" style="background-color: #2e3bf9; color: white;"><i class="fa-solid fa-plus"></i> Add Material</button>
+      </div>
+    </div>
+
+    <!-- Activities -->
+    <div class="section">
+        <div style="width: 28px; height: 28px; text-align: center; background-color: #fbddf6;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-list-check" style="color: #c415ad;"></i>
+      </div>
+      <h3 class="title" style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Activities Inside Workshop</h3>
+      <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Define hands-on activities and award points</p>
+      <div class="activities-list" id="activitiesList"></div>
+      <div style="margin-top:10px">
+        <button class="btn add-btn" onclick="addActivity()" style="background-color: #2e3bf9; color: white;"><i class="fa-solid fa-plus"></i> Add Activity</button>
+      </div>
+    </div>
+
+    <!-- Registration Requirements -->
+<div class="section">
+        <div style="width: 28px; height: 28px; text-align: center; background-color: #f2ddfb;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-clipboard-check" style="color: #972ef9;"></i>
+      </div>
+      <h3 class="title"
+      style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"> Registration Requirements</h3>
+      <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Set prerequisites for student participation</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <label style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700;">Require CV Upload?</div>
+            <div class="small-muted">Students must upload their CV to register.</div>
+          </div>
+          <label class="toggle">
+            <input id="reqCv" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </label>
+
+        <label style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">Require Student Roadmap Completion?</div>
+            <div class="small-muted">Students must complete a roadmap to register.</div>
+          </div>
+          <label class="toggle">
+            <input id="reqRoadmap" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </label>
+      </div>
+    </div>
+
+    <!-- AI Recommendations -->
+    <div class="section" style="background:linear-gradient(180deg,#eef6ff,#f8fbff);border: solid 2px #1161c9;">
+      <div class="title"><i class="fa-solid fa-robot"></i> AI Recommendations <span style="font-size:12px;background:#2e3bf9;color:#fff;padding:3px 8px;border-radius:10px;margin-left:8px">Smart</span></div>
+      <p class="small-muted">AI can auto-generate points based on workshop difficulty and duration.</p>
+      <div style="margin-top:8px">
+        <button class="btn ghost" onclick="applyAI()" style="background-color: #2e3bf9;color: white;"> <i class="fa-solid fa-magic"></i> Apply AI Suggestions</button>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="section" id="summarySection">
+      <div style="width: 28px; height: 28px; text-align: center; background-color: #d4f9f8;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-clipboard-check" style="color: #1ad6f3;"></i>
+      </div>
+      <h3 class="title"
+      style=" margin-top: -30px;
+            margin-left: 50px;
+            margin-bottom: 20px;"><i class="fa-solid fa-chart-simple"></i> Summary</h3>
+      <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Overview of your workshop configuration</p>
+      <div class="summary">
+        <div class="card" style="background-color: #cee1f6;border: solid 1px #1360c8;">
+          <div class="label" style="color: #1360c8;"><i class="fa-solid fa-box" style="color: #1360c8;"></i> Total Materials</div>
+          <div class="value" id="totalMaterials">0</div>
+        </div>
+        <div class="card" style="background-color: #e6d9f7;border: solid 1px #8013c8;">
+          <div class="label" style="color: #8013c8;"><i class="fa-solid fa-list" style="color: #8013c8;"></i> Total Activities</div>
+          <div class="value" id="totalActivities">0</div>
+        </div>
+        <div class="card" style="background-color: #d9f7da;border: solid 1px #13c819;">
+          <div class="label" style="color: #13c819;"><i class="fa-solid fa-award" style="color: #13c819;"></i> Total Points</div>
+          <div class="value" id="totalPointsSummary">0 pts</div>
+        </div>
+
+        <div class="card" style="background-color: #f8eccd;border: solid 1px #e39a46;">
+          <div class="label" style="color: #e39a46;"><i class="fa-solid fa-university" style="color: #e39a46;"></i> University Partner</div>
+          <div class="value" id="sumUniversity">Not selected</div>
+        </div>
+        <div class="card" style="background-color: #f6cef5;border: solid 1px #c813a7;">
+          <div class="label" style="color: #c813a7;"><i class="fa-solid fa-tags" style="color: #c813a7;"></i> Type</div>
+          <div class="value" id="sumType">Not selected</div>
+        </div>
+        <div class="card" style="background-color: #fce3f3;border: solid 1px #c81383;">
+          <div class="label" style="color: #c81383;"><i class="fa-solid fa-calendar-days" style="color: #c81383;"></i> Date & Time</div>
+          <div class="value" id="sumDate">Not set</div>
+        </div>
+      </div>
+
+      <!-- Buttons + Total Points under summary (user requested) -->
+      <div class="bottom-container">
+        <div class="points-line">
+          <i class="fa-solid fa-award" style="color:var(--accent)"></i>
+          Total Points: <span id="totalPointsBottom" style="margin-left:8px;font-weight:700;font-weight: 400; color: #111;">0 points</span>
+        </div>
+
+        <div style="margin-left:auto;display:flex;gap:10px">
+          <button class="btn ghost" onclick="cancelForm()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+          <button class="btn soft" onclick="saveEvent('draft')"><i class="fa-regular fa-save"></i>&nbsp; Save as Draft</button>
+          <button class="btn primary" onclick="saveEvent('published')"><i class="fa-solid fa-paper-plane"></i>&nbsp; Publish Workshop</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+<script>
+/* -------------- Data & helpers -------------- */
+const MAX_BANNER_BYTES = 5 * 1024 * 1024;
+let materials = [];   // items: {id,title,type,fileName,fileDataURL,points}
+let activities = [];  // items: {id,name,difficulty,desc,points}
+let editId = null;
+
+const $ = id => document.getElementById(id);
+const genId = () => Date.now() + Math.floor(Math.random()*999);
+
+/* -------------- Banner preview -------------- */
+$('banner').addEventListener('change', async (e)=>{
+  const f = e.target.files[0];
+  if(!f){ $('bannerPreview').style.display='none'; return; }
+  if(f.size > MAX_BANNER_BYTES){ alert('Banner must be <= 5 MB'); e.target.value=''; $('bannerPreview').style.display='none'; return; }
+  const url = await fileToDataURL(f);
+  $('bannerPreview').src = url;
+  $('bannerPreview').style.display = 'block';
+  updateSummary();
+});
+function fileToDataURL(file){
+  return new Promise((res,rej)=>{
+    const fr = new FileReader();
+    fr.onload = ()=> res(fr.result);
+    fr.onerror = ()=> rej('read error');
+    fr.readAsDataURL(file);
+  });
+}
+
+/* -------------- Materials -------------- */
+function addMaterial(data={}){
+  materials.push({
+    id: genId(),
+    title: data.title || '',
+    type: data.type || '',
+    fileName: data.fileName || '',
+    fileDataURL: data.fileDataURL || null,
+    points: Number(data.points || 0)
+  });
+  renderMaterials();
+}
+function removeMaterial(id){
+  materials = materials.filter(m=>m.id!==id);
+  renderMaterials();
+}
+function renderMaterials(){
+  const list = $('materialsList'); list.innerHTML='';
+  materials.forEach(m=>{
+    const div = document.createElement('div'); div.className='material';
+    div.innerHTML = `
+      <input type="text" placeholder="Material Title" value="${escapeHtml(m.title)}" onchange="updateMaterial(${m.id},'title',this.value)">
+      <select onchange="updateMaterial(${m.id},'type',this.value)" style="color:#777">
+        <option value="">Type</option>
+        <option ${m.type==='PDF'?'selected':''}>PDF</option>
+        <option ${m.type==='Video'?'selected':''}>Video</option>
+        <option ${m.type==='Slides'?'selected':''}>Assignment</option>
+      </select>
+      <label class="small-muted" style="font-size:13px;">Upload file:</label>
+      <input type="file" onchange="materialFileChange(event,${m.id})">
+      <div style="min-width:100px">
+        <input type="number" min="0" placeholder="Points" value="${m.points}" onchange="updateMaterial(${m.id},'points',this.value)" style="width:100px;border-radius:6px;border:1px solid #e6eef6">
+      </div>
+      <button class="mini remove" onclick="removeMaterial(${m.id})" title="Remove"><i class="fa-solid fa-trash"></i></button>
+    `;
+    list.appendChild(div);
+  });
+  updateSummary();
+}
+async function materialFileChange(e,id){
+  const f = e.target.files[0]; if(!f) return;
+  // store name + dataURL for persistence/preview
+  const idx = materials.findIndex(x=>x.id===id);
+  if(idx===-1) return;
+  const dataURL = await fileToDataURL(f);
+  materials[idx].fileName = f.name;
+  materials[idx].fileDataURL = dataURL;
+  renderMaterials();
+}
+function updateMaterial(id,field,value){
+  materials = materials.map(m=>{ if(m.id===id){ if(field==='points') m.points = Number(value)||0; else m[field]=value; } return m; });
+  updateSummary();
+}
+
+/* -------------- Activities -------------- */
+function addActivity(data={}){
+  activities.push({
+    id: genId(),
+    name: data.name || '',
+    difficulty: data.difficulty || '',
+    desc: data.desc || '',
+    points: Number(data.points || 0)
+  });
+  renderActivities();
+}
+function removeActivity(id){
+  activities = activities.filter(a=>a.id!==id);
+  renderActivities();
+}
+function renderActivities(){
+  const list = $('activitiesList'); list.innerHTML='';
+  activities.forEach(a=>{
+    const div = document.createElement('div'); div.className='activity'; div.style.flexDirection='column';
+    div.innerHTML = `
+      <div style="display:flex;gap:10px;width:100%;align-items:center">
+        <input type="text" placeholder="Activity Name" value="${escapeHtml(a.name)}" onchange="updateActivity(${a.id},'name',this.value)">
+        <select onchange="updateActivity(${a.id},'difficulty',this.value)" style="color:#777;">
+          <option value="">Select difficulty</option>
+          <option ${a.difficulty==='Easy'?'selected':''}>Easy (10 Pts)</option>
+          <option ${a.difficulty==='Medium'?'selected':''}>Medium (20 Pts)</option>
+          <option ${a.difficulty==='Hard'?'selected':''}>Hard (35 Pts)</option>
+        </select>
+        <input type="number" min="0" placeholder="Points" value="${a.points}" onchange="updateActivity(${a.id},'points',this.value)" style="width:100px;padding:8px;border-radius:6px;border:1px solid #e6eef6;">
+        <button class="mini remove" onclick="removeActivity(${a.id})" title="Remove"><i class="fa-solid fa-trash"></i></button>
+      </div>
+      <div style="width:100%;margin-top:8px">
+        <textarea placeholder="Description the Activity Objects and Requirements..." onchange="updateActivity(${a.id},'desc',this.value)">${escapeHtml(a.desc)}</textarea>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+  updateSummary();
+}
+function updateActivity(id,field,value){
+  activities = activities.map(a=>{ if(a.id===id){ if(field==='points') a.points=Number(value)||0; else a[field]=value; } return a; });
+  updateSummary();
+}
+
+/* -------------- Summary -------------- */
+function updateSummary(){
+  $('totalMaterials').textContent = materials.length;
+  $('totalActivities').textContent = activities.length;
+  const totalPoints = materials.reduce((s,m)=>s+(m.points||0),0) + activities.reduce((s,a)=>s+(a.points||0),0);
+  $('totalPointsSummary').textContent = totalPoints + ' pts';
+  $('totalPointsBottom').textContent = totalPoints + ' points';
+  $('sumUniversity').textContent = $('university').value || 'Not selected';
+  $('sumType').textContent = $('workType').value || 'Not selected';
+  const sd = $('startDate').value, ed = $('endDate').value, st = $('startTime').value, et = $('endTime').value;
+  $('sumDate').textContent = (sd?sd:'') + (st? ' ' + st : '') + (ed? ' → ' + ed : '') + (et? ' ' + et : '');
+}
+
+/* -------------- Persist: save draft / publish -------------- */
+async function saveEvent(status){
+  const title = $('title').value.trim();
+  const desc = $('description').value.trim();
+  if(!title){ alert('Enter title'); $('title').focus(); return; }
+  if(!desc){ alert('Enter description'); $('description').focus(); return; }
+  if(!$('university').value){ alert('Choose university'); $('university').focus(); return; }
+  if(!$('workType').value){ alert('Choose workshop type'); $('workType').focus(); return; }
+
+  // banner dataURL if selected
+  const bannerFile = $('banner').files[0];
+  let bannerDataURL = null;
+  if(bannerFile){
+    if(bannerFile.size > MAX_BANNER_BYTES){ alert('Banner must be ≤ 5 MB'); return; }
+    bannerDataURL = await fileToDataURL(bannerFile);
+  } else if(editId){
+    const existing = (JSON.parse(localStorage.getItem('workshops')||'[]')).find(w=>w.id===editId);
+    if(existing) bannerDataURL = existing.bannerDataURL || null;
+  }
+
+  const item = {
+    id: editId || genId(),
+    title,
+    description: desc,
+    university: $('university').value,
+    location: $('location').value,
+    startDate: $('startDate').value,
+    endDate: $('endDate').value,
+    startTime: $('startTime').value,
+    endTime: $('endTime').value,
+    capacity: $('capacity').value,
+    workType: $('workType').value,
+    materials,
+    activities,
+    reqCv: $('reqCv').checked,
+    reqRoadmap: $('reqRoadmap').checked,
+    bannerDataURL,
+    status,
+    createdAt: Date.now()
+  };
+
+  const arr = JSON.parse(localStorage.getItem('workshops')||'[]');
+  if(editId){
+    const updated = arr.map(w => w.id === item.id ? item : w);
+    localStorage.setItem('workshops', JSON.stringify(updated));
+    localStorage.removeItem('editWorkshopId');
+    editId = null;
+  } else {
+    arr.push(item);
+    localStorage.setItem('workshops', JSON.stringify(arr));
+  }
+
+  // go to listing
+  window.location.href = 'workshop-company.html';
+}
+
+/* -------------- Cancel -------------- */
+function cancelForm(){
+  if(confirm('Cancel and clear this form?')){
+    localStorage.removeItem('editWorkshopId');
+    // clear
+    $('title').value=''; $('description').value=''; $('university').value='';
+    $('location').value=''; $('startDate').value=''; $('endDate').value='';
+    $('startTime').value=''; $('endTime').value=''; $('capacity').value=''; $('workType').value='';
+    $('banner').value=''; $('bannerPreview').style.display='none';
+    materials=[]; activities=[]; renderMaterials(); renderActivities(); updateSummary();
+  }
+}
+
+/* -------------- Edit load -------------- */
+function loadEdit(){
+  const id = localStorage.getItem('editWorkshopId');
+  if(!id) return;
+  try{
+    const arr = JSON.parse(localStorage.getItem('workshops')||'[]');
+    const obj = arr.find(w => String(w.id) === String(id));
+    if(!obj) return;
+    editId = obj.id;
+    $('title').value = obj.title || '';
+    $('description').value = obj.description || '';
+    $('university').value = obj.university || '';
+    $('location').value = obj.location || '';
+    $('startDate').value = obj.startDate || '';
+    $('endDate').value = obj.endDate || '';
+    $('startTime').value = obj.startTime || '';
+    $('endTime').value = obj.endTime || '';
+    $('capacity').value = obj.capacity || '';
+    $('workType').value = obj.workType || '';
+    $('reqCv').checked = !!obj.reqCv;
+    $('reqRoadmap').checked = !!obj.reqRoadmap;
+    materials = obj.materials || [];
+    activities = obj.activities || [];
+    if(obj.bannerDataURL){ $('bannerPreview').src = obj.bannerDataURL; $('bannerPreview').style.display='block'; }
+    renderMaterials(); renderActivities(); updateSummary();
+  }catch(e){ console.warn(e) }
+}
+
+/* -------------- Utilities -------------- */
+function escapeHtml(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+function applyAI(){ alert('AI suggestions placeholder — implement algorithm here'); }
+
+/* -------------- Init -------------- */
+renderMaterials(); renderActivities(); loadEdit(); updateSummary();
+
+// wire live summary updates for inputs that affect summary
+['university','workType','startDate','endDate','startTime','endTime'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', updateSummary);
+});
+
+async function materialFileChange(e, id){
+  const file = e.target.files[0];
+  if(!file) return;
+
+  // ✔ Validate size (<= 100 MB)
+  if(file.size > MAX_MATERIAL_BYTES){
+      alert("File must be 100 MB or less.");
+      e.target.value = ""; // reset file input
+      return;
+  }
+
+  const idx = materials.findIndex(x => x.id === id);
+  if(idx === -1) return;
+
+  // Convert to dataURL
+  const dataURL = await fileToDataURL(file);
+
+  materials[idx].fileName = file.name;
+  materials[idx].fileDataURL = dataURL;
+
+  renderMaterials();  
+}
+
+</script>
+</body>
+</html>
+
