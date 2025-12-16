@@ -70,6 +70,55 @@
   }
 
   .empty { color:#666; margin-top:12px; }
+
+ /* ===== Description Modal ===== */
+.modal-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-box {
+  background: #fff;
+  width: 500px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,.2);
+  animation: fadeIn 0.3s;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-box h3 {
+  color: #155fc4;
+  margin-bottom: 10px;
+}
+
+.modal-content p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.modal-close {
+  background: #ff6b6b;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  float: right;
+  cursor: pointer;
+  border: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
 </style>
 </head>
 
@@ -85,12 +134,19 @@
     <button class="create-btn" onclick="goCreateJob()"><i class="fa-solid fa-plus"></i> Create New Job</button>
   </div>
 </div>
+<!-- ===== Description Modal ===== -->
+<div id="descModal" class="modal-bg">
+  <div class="modal-box">
+    <button onclick="closeModal()" class="modal-close">Close</button>
+    <h3>Job Details</h3>
+    <div id="modalContent" class="modal-content"></div>
+  </div>
+</div>
 
 <div id="jobsGrid" class="grid"></div>
 <div id="empty" class="empty" style="display:none;">No jobs found.</div>
-
-
 <div id="job-list"></div>
+
 <script>
 const API_URL = "http://smartcareerhub.runasp.net/api/Jobs";
 
@@ -123,7 +179,51 @@ function escapeHTML(text) {
   }[m]));
 }
 
-/* Load Jobs from API */
+/* ===== Show Description Modal ===== */
+function showDescription(job) {
+
+  // قراءة الـ Required Skills مهما كان اسم الحقل
+  let skills =
+       job.requiredSkills ||
+       job.required_skills ||
+       job.skills ||
+       job.requiredSkill ||
+       job.skill;
+
+  if (Array.isArray(skills)) skills = skills.join(", ");
+  if (!skills) skills = "Not specified";
+
+  let imgSrc = "https://via.placeholder.com/350x200?text=No+Image";
+
+  if (job.companyLogo) {
+    if (job.companyLogo.startsWith("http")) {
+        imgSrc = job.companyLogo;
+    } else {
+        imgSrc = `http://smartcareerhub.runasp.net${job.companyLogo}`;
+    }
+  }
+
+  const content = document.getElementById("modalContent");
+  content.innerHTML = `
+    <img src="${imgSrc}" style="width:100%; max-height:200px; object-fit:contain; border-radius:10px; margin-bottom:10px;">
+
+    <p><strong>Title:</strong> ${escapeHTML(job.title)}</p>
+    <p><strong>Location:</strong> ${escapeHTML(job.location || "Not specified")}</p>
+    <p><strong>Salary:</strong> ${escapeHTML(job.salaryRange || "Not specified")}</p>
+    <p><strong>Experience:</strong> ${escapeHTML(job.experienceLevel || "Not specified")}</p>
+    <p><strong>Job Type:</strong> ${escapeHTML(job.jobType || "Not specified")}</p>
+    <p><strong>Required Skills:</strong> ${escapeHTML(String(skills))}</p>
+    <p><strong>Description:</strong> ${escapeHTML(job.description || "Not specified")}</p>
+  `;
+
+  document.getElementById("descModal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("descModal").style.display = "none";
+}
+
+/* Load Jobs */
 async function loadJobs() {
   const grid = document.getElementById("jobsGrid");
   const empty = document.getElementById("empty");
@@ -141,17 +241,14 @@ async function loadJobs() {
 
   let jobs = await res.json();
 
-  // Fill dropdown
   dropdown.innerHTML += jobs
     .map(j => `<option value="${j.id}">${escapeHTML(j.title)}</option>`)
     .join("");
 
-  // Apply dropdown filter
   if (dropdown.value !== "") {
     jobs = jobs.filter(j => String(j.id) === String(dropdown.value));
   }
 
-  // Apply search filter
   if (search) {
     jobs = jobs.filter(j =>
       j.title.toLowerCase().includes(search) ||
@@ -166,43 +263,44 @@ async function loadJobs() {
 
   empty.style.display = "none";
 
-  
-jobs.forEach(job => {
-let imgSrc = "https://via.placeholder.com/350x200?text=No+Image";
+  jobs.forEach(job => {
+    let imgSrc = "https://via.placeholder.com/350x200?text=No+Image";
 
-if (job.companyLogo) {
-    if (job.companyLogo.startsWith("http")) {
-        imgSrc = job.companyLogo;
-    } else {
-        imgSrc = `http://smartcareerhub.runasp.net${job.companyLogo}`;
+    if (job.companyLogo) {
+      if (job.companyLogo.startsWith("http")) {
+          imgSrc = job.companyLogo;
+      } else {
+          imgSrc = `http://smartcareerhub.runasp.net${job.companyLogo}`;
+      }
     }
-}
 
+    const card = document.createElement("div");
+    card.className = "job-card";
 
+    card.innerHTML = `
+      <img src="${imgSrc}" alt="Logo">
 
-  const card = document.createElement("div");
-  card.className = "job-card";
+      <div class="job-title">${escapeHTML(job.title)}</div>
 
-  card.innerHTML = `
-    <img src="${imgSrc}" alt="Logo">
+      <div class="meta"><b>Location:</b> ${escapeHTML(job.location || "Not specified")}</div>
+      <div class="meta"><b>Salary:</b> ${escapeHTML(job.salaryRange || "Not specified")}</div>
+      <div class="meta"><b>Experience:</b> ${escapeHTML(job.experienceLevel)}</div>
+      <div class="meta"><b>Job Type:</b> ${escapeHTML(job.jobType)}</div>
 
-    <div class="job-title">${escapeHTML(job.title)}</div>
+      <div class="meta"><b>Description:</b> ${escapeHTML(job.description.substring(0, 140))}...</div>
 
-    <div class="meta"><b>Location:</b> ${escapeHTML(job.location || "Not specified")}</div>
-    <div class="meta"><b>Salary:</b> ${escapeHTML(job.salaryRange || "Not specified")}</div>
-    <div class="meta"><b>Experience:</b> ${escapeHTML(job.experienceLevel)}</div>
-    <div class="meta"><b>Job Type:</b> ${escapeHTML(job.jobType)}</div>
+      <div class="job-actions">
+        <button class="action edit" onclick="editJob('${job.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+        <button class="action delete" onclick="deleteJob('${job.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
 
-    <div class="meta">${escapeHTML(job.description.substring(0, 140))}...</div>
+        <button class="action analysis" onclick='showDescription(${JSON.stringify(job)})'>
+          <i class="fa-solid fa-circle-info"></i> View Details
+        </button>
+      </div>
+    `;
 
-    <div class="job-actions">
-      <button class="action edit" onclick="editJob('${job.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
-      <button class="action delete" onclick="deleteJob('${job.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
-    </div>
-  `;
-
-  grid.appendChild(card);
-});
+    grid.appendChild(card);
+  });
 }
 
 document.getElementById("searchInput").addEventListener("input", loadJobs);
