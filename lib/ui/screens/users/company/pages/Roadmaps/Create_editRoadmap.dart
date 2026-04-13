@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../../../data/repositories/roadmap_repository.dart';
 import '../../../../../widgets/common/CustomDropdown.dart';
 import '../../../../../widgets/roadmapwidgets/LearningMaterialsWidget .dart';
+import '../../../../../widgets/roadmapwidgets/ManualQuizWidget.dart';
 import '../../../../../widgets/roadmapwidgets/ProjectsListWidget.dart';
 import '../../../../../widgets/roadmapwidgets/QuizListWidget.dart';
 import '../../../../../widgets/roadmapwidgets/SkillsListWidget.dart';
@@ -12,7 +13,6 @@ import '../../../../../widgets/common/_buildSection.dart';
 import '../../../../../widgets/common/_buildTextArea.dart';
 import '../../../../../widgets/common/_buildTextField.dart';
 import '../../../../../widgets/common/_buildUploadContainer.dart';
-import 'Mock data.dart';
 
 class Create_editRoadmap extends StatefulWidget {
   final Map<String, dynamic>? roadmapData;
@@ -38,13 +38,12 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
   final GlobalKey<SkillsListWidgetState> skillsKey = GlobalKey();
   final GlobalKey<LearningMaterialsWidgetState> materialsKey = GlobalKey();
   final GlobalKey<ProjectsListWidgetState> projectsKey = GlobalKey();
-  final GlobalKey<QuizListWidgetState> quizzesKey = GlobalKey();
+  final GlobalKey<ManualQuizWidgetState> manualQuizKey = GlobalKey();
 
   // State variables
   String? coverImagePath;
   String? _targetRole;
   Map<String, String> _errors = {};
-  bool _isLoading = false;
   bool _isFree = true;
 
   bool get isEdit => widget.roadmapData != null;
@@ -69,14 +68,14 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
         _endDateController.text = widget.roadmapData!['endDate'];
       }
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _initializeWidgetData();
-      });
-
       _isFree = widget.roadmapData!['isFree'] ?? true;
       if (!_isFree && widget.roadmapData!['price'] != null) {
         _priceController.text = widget.roadmapData!['price'].toString();
       }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _initializeWidgetData();
+      });
     }
   }
 
@@ -110,7 +109,6 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
       for (var skill in skillsData) {
         String name = skill['name']?.toString() ?? skill['skillName']?.toString() ?? '';
         if (name.isEmpty) continue;
-
         String level = skill['level']?.toString() ?? 'Beginner';
         int points = skill['points'] as int? ?? skill['levelPoints'] as int? ?? 0;
         dynamic skillId = skill['id'];
@@ -189,7 +187,7 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
   }
 
   void _initQuizzes() {
-    final q = quizzesKey.currentState;
+    final q = manualQuizKey.currentState;
     final data = widget.roadmapData;
     if (q == null || data == null || data['quizzes'] == null) return;
 
@@ -240,7 +238,8 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
       for (var skill in skills) {
         String name = (skill['nameController'] as TextEditingController?)?.text.trim() ?? '';
         if (name.isEmpty) continue;
-        int points = int.tryParse((skill['pointsController'] as TextEditingController?)?.text.trim() ?? '0') ?? 0;
+        int points = int.tryParse(
+            (skill['pointsController'] as TextEditingController?)?.text.trim() ?? '0') ?? 0;
         result.add({
           if (skill['id'] != null) "id": skill['id'].toString(),
           "name": name,
@@ -261,10 +260,13 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
     try {
       final materials = (materialsState as dynamic).materials as List? ?? [];
       return materials.map<Map<String, dynamic>>((material) {
-        int points = int.tryParse((material['pointsController'] as TextEditingController?)?.text.trim() ?? '0') ?? 0;
+        int points = int.tryParse(
+            (material['pointsController'] as TextEditingController?)?.text.trim() ?? '0') ?? 0;
         File? file = _getFileFromPath(material['file']);
-        String? filePath = file?.path ?? material['filePath']?.toString() ?? material['existingFilePath']?.toString() ?? '';
-
+        String? filePath = file?.path ??
+            material['filePath']?.toString() ??
+            material['existingFilePath']?.toString() ??
+            '';
         return {
           if (material['id'] != null) "id": material['id'].toString(),
           "title": material['title'] ?? '',
@@ -300,7 +302,7 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
   }
 
   List<Map<String, dynamic>> _processQuizzes() {
-    final quizzesState = quizzesKey.currentState;
+    final quizzesState = manualQuizKey.currentState;
     if (quizzesState == null) return [];
     try {
       final quizzes = (quizzesState as dynamic).quizzes as List? ?? [];
@@ -357,26 +359,51 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
     setState(() => _errors.clear());
     bool isValid = true;
 
-    if (_titleController.text.trim().isEmpty) { _errors['title'] = 'Title is required'; isValid = false; }
-    if (_descController.text.trim().isEmpty) { _errors['description'] = 'Description is required'; isValid = false; }
-    if (_targetRole == null) { _errors['targetRole'] = 'Please select a target role'; isValid = false; }
-    if (_startDateController.text.isEmpty) { _errors['startDate'] = 'Start date is required'; isValid = false; }
-    if (_endDateController.text.isEmpty) { _errors['endDate'] = 'End date is required'; isValid = false; }
+    if (_titleController.text.trim().isEmpty) {
+      _errors['title'] = 'Title is required';
+      isValid = false;
+    }
+    if (_descController.text.trim().isEmpty) {
+      _errors['description'] = 'Description is required';
+      isValid = false;
+    }
+    if (_targetRole == null) {
+      _errors['targetRole'] = 'Please select a target role';
+      isValid = false;
+    }
+    if (_startDateController.text.isEmpty) {
+      _errors['startDate'] = 'Start date is required';
+      isValid = false;
+    }
+    if (_endDateController.text.isEmpty) {
+      _errors['endDate'] = 'End date is required';
+      isValid = false;
+    }
 
     if (_startDateController.text.isNotEmpty && _endDateController.text.isNotEmpty) {
       try {
         DateTime start = DateFormat('yyyy-MM-dd').parse(_startDateController.text);
         DateTime end = DateFormat('yyyy-MM-dd').parse(_endDateController.text);
-        if (end.isBefore(start)) { _errors['endDate'] = 'End date must be after start date'; isValid = false; }
-      } catch (_) { _errors['endDate'] = 'Invalid date format'; isValid = false; }
+        if (end.isBefore(start)) {
+          _errors['endDate'] = 'End date must be after start date';
+          isValid = false;
+        }
+      } catch (_) {
+        _errors['endDate'] = 'Invalid date format';
+        isValid = false;
+      }
     }
 
     if (!_isFree) {
       if (_priceController.text.trim().isEmpty) {
-        _errors['price'] = 'Price is required when not free'; isValid = false;
+        _errors['price'] = 'Price is required when not free';
+        isValid = false;
       } else {
         double? price = double.tryParse(_priceController.text.trim());
-        if (price == null || price < 0) { _errors['price'] = 'Please enter a valid price'; isValid = false; }
+        if (price == null || price < 0) {
+          _errors['price'] = 'Please enter a valid price';
+          isValid = false;
+        }
       }
     }
 
@@ -395,15 +422,16 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
     if (skills.isEmpty) missing.add('• At least one Skill is required');
     if (learningMaterials.isEmpty) missing.add('• At least one Learning Material is required');
     if (projects.isEmpty) missing.add('• At least one Project is required');
-    if (quizzes.isEmpty) {
-      missing.add('• At least one Quiz is required');
-    } else {
+
+    // ✅ Quizzes are now OPTIONAL - only validate if they exist
+    if (quizzes.isNotEmpty) {
       for (int i = 0; i < quizzes.length; i++) {
         if ((quizzes[i]['questions'] as List?)?.isEmpty ?? true) {
           missing.add('• Quiz "${quizzes[i]['title'] ?? 'Quiz ${i + 1}'}" must have at least one question');
         }
       }
     }
+
     if (missing.isNotEmpty) { _showValidationDialog(missing); return false; }
     return true;
   }
@@ -417,17 +445,26 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
         title: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [Color(0xff1676C4), Color(0xff0d7de8)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            gradient: const LinearGradient(
+              colors: [Color(0xff1676C4), Color(0xff0d7de8)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(children: [
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
               child: const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 28),
             ),
             const SizedBox(width: 12),
-            const Expanded(child: Text('Required Items Missing', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))),
+            const Expanded(
+              child: Text('Required Items Missing',
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
           ]),
         ),
         content: Column(
@@ -435,14 +472,17 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            const Text('Please add the following required items:', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: Color(0xff1676C4))),
+            const Text('Please add the following required items:',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600, fontSize: 15, color: Color(0xff1676C4))),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Color(0xff1676C4).withOpacity(0.08),
+                color: const Color(0xff1676C4).withOpacity(0.08),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Color(0xff1676C4).withOpacity(0.3), width: 2),
+                border: Border.all(
+                    color: const Color(0xff1676C4).withOpacity(0.3), width: 2),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,12 +492,19 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
                     Container(
                       margin: const EdgeInsets.only(top: 4),
                       padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(color: Color(0xff1676C4), shape: BoxShape.circle),
+                      decoration: const BoxDecoration(
+                          color: Color(0xff1676C4), shape: BoxShape.circle),
                       child: const Icon(Icons.error_outline, color: Colors.white, size: 14),
                     ),
                     const SizedBox(width: 10),
-                    Expanded(child: Text(item.replaceFirst('• ', ''),
-                        style: const TextStyle(color: Color(0xff1676C4), fontSize: 14, height: 1.5, fontWeight: FontWeight.w500))),
+                    Expanded(
+                      child: Text(item.replaceFirst('• ', ''),
+                          style: const TextStyle(
+                              color: Color(0xff1676C4),
+                              fontSize: 14,
+                              height: 1.5,
+                              fontWeight: FontWeight.w500)),
+                    ),
                   ]),
                 )).toList(),
               ),
@@ -471,7 +518,8 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
             child: ElevatedButton.icon(
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.check_circle_outline, size: 20),
-              label: const Text('Got it!', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              label: const Text('Got it!',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xff1676C4),
                 foregroundColor: Colors.white,
@@ -488,7 +536,10 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
 
   void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: color, duration: const Duration(seconds: 3)),
+      SnackBar(
+          content: Text(message),
+          backgroundColor: color,
+          duration: const Duration(seconds: 3)),
     );
   }
 
@@ -515,99 +566,62 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
     _showLoadingDialog();
 
     try {
-      // ✅ Simulate small delay (mock backend call)
-      await Future.delayed(const Duration(milliseconds: 500));
-
       double? price;
       if (!_isFree && _priceController.text.trim().isNotEmpty) {
         price = double.tryParse(_priceController.text.trim());
       }
 
-      final String status = isPublished ? "Published" : "Draft";
-
-      // ─── BUILD the roadmap map ───────────────────────────
-      final Map<String, dynamic> roadmapMap = {
-        "title":            _titleController.text.trim(),
-        "description":      _descController.text.trim(),
-        "targetRole":       _targetRole!,
-        "target":           [_targetRole!],
-        "startDate":        _startDateController.text,
-        "endDate":          _endDateController.text,
-        "isPublished":      isPublished,
-        "status":           status,
-        "coverImage":       coverImagePath,
-        "isFree":           _isFree,
-        "price":            _isFree ? null : price,
-        "skills":           skills,
-        "learningMaterials": learningMaterials,
-        "materials":        learningMaterials,
-        "videos":           learningMaterials,
-        "projects":         projects,
-        "quizzes":          quizzes,
-      };
+      DateTime startDate = DateFormat('yyyy-MM-dd').parse(_startDateController.text);
+      DateTime endDate = DateFormat('yyyy-MM-dd').parse(_endDateController.text);
+      File? coverImageFile = _getFileFromPath(coverImagePath);
 
       if (isEdit && widget.roadmapData?['id'] != null) {
-        // ─── ✅ MOCK: Update ─────────────────────────────────
-        final String roadmapId = widget.roadmapData!['id'].toString();
-        roadmapMap['id'] = roadmapId;
-
-        RoadmapMockData.updateRoadmap(roadmapId, roadmapMap);
-        debugPrint('✅ Mock: Roadmap UPDATED — id=$roadmapId');
-
-        // ❌ BACKEND: استبدل السطرين فوق بـ:
-        // await _roadmapRepo.updateRoadmap(
-        //   roadmapId: roadmapId,
-        //   title: _titleController.text.trim(),
-        //   description: _descController.text.trim(),
-        //   targetRole: _targetRole!,
-        //   startDate: DateFormat('yyyy-MM-dd').parse(_startDateController.text),
-        //   endDate: DateFormat('yyyy-MM-dd').parse(_endDateController.text),
-        //   isPublished: isPublished,
-        //   coverImage: _getFileFromPath(coverImagePath),
-        //   skills: skills, learningMaterials: learningMaterials,
-        //   projects: projects, quizzes: quizzes,
-        //   isFree: _isFree, price: price,
-        // );
-
+        await _roadmapRepo.updateRoadmap(
+          roadmapId: widget.roadmapData!['id'].toString(),
+          title: _titleController.text.trim(),
+          description: _descController.text.trim(),
+          targetRole: _targetRole!,
+          startDate: startDate,
+          endDate: endDate,
+          isPublished: isPublished,
+          coverImage: coverImageFile,
+          skills: skills,
+          learningMaterials: learningMaterials,
+          projects: projects,
+          quizzes: quizzes,
+          isFree: _isFree,
+          price: price,
+        );
       } else {
-        // ─── ✅ MOCK: Create ─────────────────────────────────
-        roadmapMap['id']         = RoadmapMockData.generateMockId();
-        roadmapMap['date']       = DateTime.now().toIso8601String();
-        roadmapMap['enrolled']   = 0;
-        roadmapMap['completion'] = 0;
-
-        RoadmapMockData.addRoadmap(roadmapMap);
-        debugPrint('✅ Mock: Roadmap CREATED — id=${roadmapMap['id']}');
-
-        // ❌ BACKEND: استبدل السطرين فوق بـ:
-        // await _roadmapRepo.createRoadmap(
-        //   title: _titleController.text.trim(),
-        //   description: _descController.text.trim(),
-        //   targetRole: _targetRole!,
-        //   startDate: DateFormat('yyyy-MM-dd').parse(_startDateController.text),
-        //   endDate: DateFormat('yyyy-MM-dd').parse(_endDateController.text),
-        //   isPublished: isPublished,
-        //   coverImage: _getFileFromPath(coverImagePath),
-        //   skills: skills, learningMaterials: learningMaterials,
-        //   projects: projects, quizzes: quizzes,
-        //   isFree: _isFree, price: price,
-        // );
+        await _roadmapRepo.createRoadmap(
+          title: _titleController.text.trim(),
+          description: _descController.text.trim(),
+          targetRole: _targetRole!,
+          startDate: startDate,
+          endDate: endDate,
+          isPublished: isPublished,
+          coverImage: coverImageFile,
+          skills: skills,
+          learningMaterials: learningMaterials,
+          projects: projects,
+          quizzes: quizzes,
+          isFree: _isFree,
+          price: price,
+        );
       }
 
       Navigator.pop(context); // close loading
-
       _showSnackBar(
         isEdit
             ? 'Roadmap updated successfully!'
             : 'Roadmap ${isPublished ? "published" : "saved as draft"} successfully!',
         Colors.green,
       );
-
-      Navigator.pop(context, true); // ← بيخلي MyRoadmapsScreen يعمل refresh
+      Navigator.pop(context, true);
 
     } catch (e, stackTrace) {
-      Navigator.pop(context); // close loading
-      debugPrint('❌ Error saving roadmap: $e\n$stackTrace');
+      Navigator.pop(context);
+      debugPrint('❌ Error: $e\n$stackTrace');
       _showSnackBar('Failed to save roadmap. Please try again.', Colors.red);
     }
   }
@@ -620,7 +634,11 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
       lastDate: DateTime(2100),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(primary: Color(0xff1676C4), onPrimary: Colors.white, onSurface: Colors.black),
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xff1676C4),
+            onPrimary: Colors.white,
+            onSurface: Colors.black,
+          ),
         ),
         child: child!,
       ),
@@ -639,168 +657,208 @@ class _Create_editRoadmapState extends State<Create_editRoadmap> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEdit ? "Edit Roadmap" : "Create Roadmap",
-            style: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500)),
+        title: Text(
+          isEdit ? "Edit Roadmap" : "Create Roadmap",
+          style: const TextStyle(
+              fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500),
+        ),
         backgroundColor: const Color(0xff1676C4),
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
       ),
       backgroundColor: Colors.grey[100],
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // ── Basic Information ──────────────────────────────
-                  SectionWidget(
-                    title: "Basic Information",
-                    children: [
-                      TextFieldWidget(
-                        controller: _titleController,
-                        label: "Roadmap Title",
-                        hint: "e.g., Flutter Developer Roadmap",
-                        onChanged: (_) => setState(() => _errors.remove('title')),
-                      ),
-                      if (_errors['title'] != null)
-                        Padding(padding: const EdgeInsets.only(top: 4),
-                            child: Text(_errors['title']!, style: const TextStyle(color: Colors.red, fontSize: 12))),
-
-                      const SizedBox(height: 12),
-                      TextAreaWidget(
-                        controller: _descController,
-                        label: "Description",
-                        hint: "Write a brief overview...",
-                        onChanged: (_) => setState(() => _errors.remove('description')),
-                      ),
-                      if (_errors['description'] != null)
-                        Padding(padding: const EdgeInsets.only(top: 4),
-                            child: Text(_errors['description']!, style: const TextStyle(color: Colors.red, fontSize: 12))),
-
-                      const SizedBox(height: 12),
-                      CustomDropdown(
-                        label: "Target Role",
-                        items: const ["Student", "Graduate", "Both"],
-                        value: _targetRole,
-                        onChanged: (v) => setState(() { _targetRole = v; _errors.remove('targetRole'); }),
-                      ),
-                      if (_errors['targetRole'] != null)
-                        Padding(padding: const EdgeInsets.only(top: 4),
-                            child: Text(_errors['targetRole']!, style: const TextStyle(color: Colors.red, fontSize: 12))),
-
-                      const SizedBox(height: 16),
-                      UploadContainerWidget(
-                        title: "Upload Cover Image",
-                        selectedImagePath: coverImagePath,
-                        onImageChanged: (path) => setState(() => coverImagePath = path),
-                      ),
-                    ],
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // ── Basic Information ──────────────────────────────
+            SectionWidget(
+              title: "Basic Information",
+              children: [
+                TextFieldWidget(
+                  controller: _titleController,
+                  label: "Roadmap Title",
+                  hint: "e.g., Flutter Developer Roadmap",
+                  onChanged: (_) => setState(() => _errors.remove('title')),
+                ),
+                if (_errors['title'] != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(_errors['title']!,
+                        style: const TextStyle(color: Colors.red, fontSize: 12)),
                   ),
 
-                  // ── Skills ────────────────────────────────────────
-                  SectionWidget(title: "Required Skills *", children: [SkillsListWidget(key: skillsKey)]),
-
-                  // ── Learning Materials ────────────────────────────
-                  SectionWidget(title: "Learning Materials *", children: [LearningMaterialsWidget(key: materialsKey)]),
-
-                  // ── Projects ──────────────────────────────────────
-                  SectionWidget(title: "Projects *", children: [ProjectsListWidget(key: projectsKey)]),
-
-                  // ── Quizzes ───────────────────────────────────────
-                  SectionWidget(title: "Quizzes *", children: [QuizListWidget(key: quizzesKey)]),
-
-                  // ── Pricing ───────────────────────────────────────
-                  SectionWidget(
-                    title: "Pricing",
-                    children: [
-                      Row(children: [
-                        Checkbox(
-                          value: _isFree,
-                          onChanged: (value) => setState(() {
-                            _isFree = value!;
-                            if (_isFree) { _priceController.clear(); _errors.remove('price'); }
-                          }),
-                          activeColor: const Color(0xff1676C4),
-                        ),
-                        const Text('Free Roadmap', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                      ]),
-                      if (!_isFree) ...[
-                        const SizedBox(height: 12),
-                        TextFieldWidget(
-                          controller: _priceController,
-                          label: "Price (USD)",
-                          hint: "e.g., 29.99",
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                          prefixIcon: const Icon(Icons.attach_money, color: Color(0xff1676C4)),
-                          onChanged: (_) => setState(() => _errors.remove('price')),
-                        ),
-                        if (_errors['price'] != null)
-                          Padding(padding: const EdgeInsets.only(top: 4),
-                              child: Text(_errors['price']!, style: const TextStyle(color: Colors.red, fontSize: 12))),
-                      ],
-                    ],
+                const SizedBox(height: 12),
+                TextAreaWidget(
+                  controller: _descController,
+                  label: "Description",
+                  hint: "Write a brief overview...",
+                  onChanged: (_) => setState(() => _errors.remove('description')),
+                ),
+                if (_errors['description'] != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(_errors['description']!,
+                        style: const TextStyle(color: Colors.red, fontSize: 12)),
                   ),
 
-                  // ── Timeline ──────────────────────────────────────
-                  const SizedBox(height: 20),
-                  SectionWidget(
-                    title: "Timeline",
-                    children: [
-                      Row(children: [
-                        Expanded(child: DateFieldWidget(
-                          controller: _startDateController, label: "Start Date", hint: "Select Date",
-                          errorText: _errors['startDate'], onTap: () => _pickDate(_startDateController, 'startDate'),
-                        )),
-                        const SizedBox(width: 10),
-                        Expanded(child: DateFieldWidget(
-                          controller: _endDateController, label: "End Date", hint: "Select Date",
-                          errorText: _errors['endDate'], onTap: () => _pickDate(_endDateController, 'endDate'),
-                        )),
-                      ]),
-                    ],
+                const SizedBox(height: 12),
+                CustomDropdown(
+                  label: "Target Role",
+                  items: const ["Student", "Graduate", "Both"],
+                  value: _targetRole,
+                  onChanged: (v) => setState(() {
+                    _targetRole = v;
+                    _errors.remove('targetRole');
+                  }),
+                ),
+                if (_errors['targetRole'] != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(_errors['targetRole']!,
+                        style: const TextStyle(color: Colors.red, fontSize: 12)),
                   ),
 
-                  const SizedBox(height: 20),
-
-                  // ── Action Buttons ────────────────────────────────
-                  Row(children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _saveRoadmap(false),
-                        icon: const Icon(Icons.save_outlined),
-                        label: const Text("Save Draft"),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xff1676C4),
-                          backgroundColor: Colors.white,
-                          side: const BorderSide(color: Color(0xff1676C4), width: 2),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () => _saveRoadmap(true),
-                        icon: const Icon(Icons.publish),
-                        label: const Text("Publish"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff1676C4),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                      ),
-                    ),
-                  ]),
-
-                  const SizedBox(height: 50),
-                ],
-              ),
+                const SizedBox(height: 16),
+                UploadContainerWidget(
+                  title: "Upload Cover Image",
+                  selectedImagePath: coverImagePath,
+                  onImageChanged: (path) => setState(() => coverImagePath = path),
+                ),
+              ],
             ),
-          ),
-        ],
+
+            // ── Skills ────────────────────────────────────────
+            SectionWidget(
+              title: "Required Skills *",
+              children: [SkillsListWidget(key: skillsKey)],
+            ),
+
+            // ── Learning Materials ────────────────────────────
+            SectionWidget(
+              title: "Learning Materials *",
+              children: [LearningMaterialsWidget(key: materialsKey)],
+            ),
+
+            // ── Projects ──────────────────────────────────────
+            SectionWidget(
+              title: "Projects *",
+              children: [ProjectsListWidget(key: projectsKey)],
+            ),
+
+            // ── Quizzes ───────────────────────────────────────────────────────────────
+            SectionWidget(
+              title: "Quizzes",
+              children: [ManualQuizWidget(key: manualQuizKey)],
+            ),
+
+            // ── Pricing ───────────────────────────────────────
+            SectionWidget(
+              title: "Pricing",
+              children: [
+                Row(children: [
+                  Checkbox(
+                    value: _isFree,
+                    onChanged: (value) => setState(() {
+                      _isFree = value!;
+                      if (_isFree) {
+                        _priceController.clear();
+                        _errors.remove('price');
+                      }
+                    }),
+                    activeColor: const Color(0xff1676C4),
+                  ),
+                  const Text('Free Roadmap',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                ]),
+                if (!_isFree) ...[
+                  const SizedBox(height: 12),
+                  TextFieldWidget(
+                    controller: _priceController,
+                    label: "Price (USD)",
+                    hint: "e.g., 29.99",
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    prefixIcon: const Icon(Icons.attach_money, color: Color(0xff1676C4)),
+                    onChanged: (_) => setState(() => _errors.remove('price')),
+                  ),
+                  if (_errors['price'] != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(_errors['price']!,
+                          style: const TextStyle(color: Colors.red, fontSize: 12)),
+                    ),
+                ],
+              ],
+            ),
+
+            // ── Timeline ──────────────────────────────────────
+            const SizedBox(height: 20),
+            SectionWidget(
+              title: "Timeline",
+              children: [
+                Row(children: [
+                  Expanded(
+                    child: DateFieldWidget(
+                      controller: _startDateController,
+                      label: "Start Date",
+                      hint: "Select Date",
+                      errorText: _errors['startDate'],
+                      onTap: () => _pickDate(_startDateController, 'startDate'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: DateFieldWidget(
+                      controller: _endDateController,
+                      label: "End Date",
+                      hint: "Select Date",
+                      errorText: _errors['endDate'],
+                      onTap: () => _pickDate(_endDateController, 'endDate'),
+                    ),
+                  ),
+                ]),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            // ── Action Buttons ────────────────────────────────
+            Row(children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _saveRoadmap(false),
+                  icon: const Icon(Icons.save_outlined),
+                  label: const Text("Save Draft"),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xff1676C4),
+                    backgroundColor: Colors.white,
+                    side: const BorderSide(color: Color(0xff1676C4), width: 2),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _saveRoadmap(true),
+                  icon: const Icon(Icons.publish),
+                  label: const Text("Publish"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xff1676C4),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+            ]),
+
+            const SizedBox(height: 50),
+          ],
+        ),
       ),
     );
   }

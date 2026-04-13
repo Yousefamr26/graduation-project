@@ -7,26 +7,29 @@ class RoadmapAnalytics extends StatelessWidget {
 
   const RoadmapAnalytics({required this.roadmap, super.key});
 
+  // ─── Helpers ────────────────────────────────────────────
+
+  /// يجيب قائمة الـ learning materials من أي key موجود
+  List _getLearningMaterials() {
+    return roadmap["learningMaterials"] ??
+        roadmap["materials"] ??
+        roadmap["videos"] ??
+        [];
+  }
+
   int _calculateTotalPoints() {
     int total = 0;
 
-    final skills = roadmap["skills"] ?? [];
-    for (var skill in skills) {
+    for (var skill in (roadmap["skills"] ?? [])) {
       total += _safeToInt(skill['points']);
     }
-
-    final learningMaterials = roadmap["learningMaterials"] ?? [];
-    for (var learningMaterial in learningMaterials) {
-      total += _safeToInt(learningMaterial['points']);
+    for (var material in _getLearningMaterials()) {
+      total += _safeToInt(material['points']);
     }
-
-    final projects = roadmap["projects"] ?? [];
-    for (var project in projects) {
+    for (var project in (roadmap["projects"] ?? [])) {
       total += _safeToInt(project['points']);
     }
-
-    final quizzes = roadmap["quizzes"] ?? [];
-    for (var quiz in quizzes) {
+    for (var quiz in (roadmap["quizzes"] ?? [])) {
       total += _safeToInt(quiz['points']);
     }
 
@@ -35,12 +38,9 @@ class RoadmapAnalytics extends StatelessWidget {
 
   int _calculateTotalQuestions() {
     int total = 0;
-    final quizzes = roadmap["quizzes"] ?? [];
-    for (var quiz in quizzes) {
-      final questions = quiz['questions'] ?? [];
-      if (questions is List) {
-        total += questions.length;
-      }
+    for (var quiz in (roadmap["quizzes"] ?? [])) {
+      final questions = quiz['questions'];
+      if (questions is List) total += questions.length;
     }
     return total;
   }
@@ -49,57 +49,39 @@ class RoadmapAnalytics extends StatelessWidget {
     if (roadmap['startDate'] == null || roadmap['endDate'] == null) {
       return 'Not set';
     }
-
     try {
       DateTime start = DateFormat('yyyy-MM-dd').parse(roadmap['startDate']);
       DateTime end = DateFormat('yyyy-MM-dd').parse(roadmap['endDate']);
       int days = end.difference(start).inDays;
 
-      if (days == 0) {
-        return 'Same day';
-      } else if (days < 7) {
-        return '$days ${days == 1 ? "day" : "days"}';
-      } else if (days < 30) {
+      if (days == 0) return 'Same day';
+      if (days < 7) return '$days ${days == 1 ? "day" : "days"}';
+      if (days < 30) {
         int weeks = (days / 7).ceil();
         return '$weeks ${weeks == 1 ? "week" : "weeks"}';
-      } else {
-        int months = (days / 30).ceil();
-        return '$months ${months == 1 ? "month" : "months"}';
       }
+      int months = (days / 30).ceil();
+      return '$months ${months == 1 ? "month" : "months"}';
     } catch (e) {
       return 'Invalid dates';
     }
   }
 
   Map<String, int> _getSkillsBreakdown() {
-    Map<String, int> breakdown = {
-      'Beginner': 0,
-      'Intermediate': 0,
-      'Advanced': 0,
-    };
-
-    final skills = roadmap["skills"] ?? [];
-    for (var skill in skills) {
+    Map<String, int> breakdown = {'Beginner': 0, 'Intermediate': 0, 'Advanced': 0};
+    for (var skill in (roadmap["skills"] ?? [])) {
       String level = skill['level'] ?? 'Beginner';
       breakdown[level] = (breakdown[level] ?? 0) + 1;
     }
-
     return breakdown;
   }
 
   Map<String, int> _getProjectsDifficulty() {
-    Map<String, int> difficulty = {
-      'Easy': 0,
-      'Medium': 0,
-      'Hard': 0,
-    };
-
-    final projects = roadmap["projects"] ?? [];
-    for (var project in projects) {
+    Map<String, int> difficulty = {'Easy': 0, 'Medium': 0, 'Hard': 0};
+    for (var project in (roadmap["projects"] ?? [])) {
       String diff = project['difficulty'] ?? 'Easy';
       difficulty[diff] = (difficulty[diff] ?? 0) + 1;
     }
-
     return difficulty;
   }
 
@@ -113,24 +95,22 @@ class RoadmapAnalytics extends StatelessWidget {
 
   String _formatDate(String? dateStr) {
     if (dateStr == null || dateStr.isEmpty) return 'Not set';
-
     try {
-      DateTime date;
-      if (dateStr.contains('T')) {
-        date = DateTime.parse(dateStr);
-      } else {
-        date = DateFormat('yyyy-MM-dd').parse(dateStr);
-      }
+      DateTime date = dateStr.contains('T')
+          ? DateTime.parse(dateStr)
+          : DateFormat('yyyy-MM-dd').parse(dateStr);
       return DateFormat('MMM dd, yyyy').format(date);
     } catch (e) {
       return dateStr;
     }
   }
 
+  // ─── BUILD ───────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
-    final videosCount = (roadmap["learningMaterials"] ?? []).length;
-    final materialsCount = (roadmap["materials"] ?? []).length;
+    final materials = _getLearningMaterials();
+    final materialsCount = materials.length;
     final quizzesCount = (roadmap["quizzes"] ?? []).length;
     final skillsCount = (roadmap["skills"] ?? []).length;
     final projectsCount = (roadmap["projects"] ?? []).length;
@@ -140,7 +120,6 @@ class RoadmapAnalytics extends StatelessWidget {
     final skillsBreakdown = _getSkillsBreakdown();
     final projectsDifficulty = _getProjectsDifficulty();
 
-    // ✅ Pricing data
     final bool isFree = roadmap['isFree'] ?? true;
     final double? price = roadmap['price'] != null
         ? (roadmap['price'] as num).toDouble()
@@ -148,13 +127,13 @@ class RoadmapAnalytics extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Analytics",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
         ),
-        backgroundColor: Color(0xff1676C4),
+        backgroundColor: const Color(0xff1676C4),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         elevation: 0,
@@ -163,43 +142,41 @@ class RoadmapAnalytics extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header Section
+            // ── Header ──────────────────────────────────────
             Container(
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Color(0xff1676C4), Color(0xff0d7ce8)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
               ),
-              padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
               child: Column(
                 children: [
-                  Icon(Icons.map, size: 48, color: Colors.white),
-                  SizedBox(height: 12),
+                  const Icon(Icons.map, size: 48, color: Colors.white),
+                  const SizedBox(height: 12),
                   Text(
                     roadmap['title'] ?? 'Roadmap',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       roadmap['status'] ?? 'Draft',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
@@ -211,57 +188,51 @@ class RoadmapAnalytics extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Overview Cards
+                  // ── Overview Cards ─────────────────────────
                   _buildSectionTitle("Overview", Icons.dashboard),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Expanded(
                         child: _buildOverviewCard(
-                          "Total Points",
-                          totalPoints.toString(),
-                          Icons.stars,
-                          Colors.amber,
+                          "Total Points", totalPoints.toString(),
+                          Icons.stars, Colors.amber,
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: _buildOverviewCard(
-                          "Duration",
-                          duration,
-                          Icons.schedule,
-                          Colors.purple,
+                          "Duration", duration,
+                          Icons.schedule, Colors.purple,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Expanded(
                         child: _buildOverviewCard(
                           "Enrolled",
                           _safeToInt(roadmap['enrolled']).toString(),
-                          Icons.people,
-                          Colors.green,
+                          Icons.people, Colors.green,
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: _buildOverviewCard(
                           "Completion",
                           "${_safeToInt(roadmap['completion'])}%",
-                          Icons.trending_up,
-                          Color(0xff1676C4),
+                          Icons.trending_up, const Color(0xff1676C4),
                         ),
                       ),
                     ],
                   ),
 
-                  // ✅ Pricing Card
-                  SizedBox(height: 12),
+                  // ── Pricing Card ───────────────────────────
+                  const SizedBox(height: 12),
                   Container(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: isFree
@@ -273,16 +244,17 @@ class RoadmapAnalytics extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: (isFree ? Colors.green : Colors.amber).withOpacity(0.3),
+                          color: (isFree ? Colors.green : Colors.amber)
+                              .withOpacity(0.3),
                           blurRadius: 10,
-                          offset: Offset(0, 4),
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
                     child: Row(
                       children: [
                         Container(
-                          padding: EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
                             shape: BoxShape.circle,
@@ -293,7 +265,7 @@ class RoadmapAnalytics extends StatelessWidget {
                             size: 32,
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,16 +273,15 @@ class RoadmapAnalytics extends StatelessWidget {
                               Text(
                                 'Pricing',
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 14,
-                                ),
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontSize: 14),
                               ),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Text(
                                 isFree
                                     ? 'Free'
                                     : '\$${price?.toStringAsFixed(2) ?? '0.00'}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
@@ -323,9 +294,10 @@ class RoadmapAnalytics extends StatelessWidget {
                     ),
                   ),
 
-                  SizedBox(height: 24),
+                  // ── Content Statistics ─────────────────────
+                  const SizedBox(height: 24),
                   _buildSectionTitle("Content Statistics", Icons.library_books),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   _buildStatCard(
                     title: "Skills",
                     value: skillsCount,
@@ -333,16 +305,10 @@ class RoadmapAnalytics extends StatelessWidget {
                     color: Colors.teal,
                   ),
                   _buildStatCard(
-                    title: "Videos",
-                    value: videosCount,
+                    title: "Learning Materials",
+                    value: materialsCount,
                     icon: Icons.play_circle_outline,
                     color: Colors.red,
-                  ),
-                  _buildStatCard(
-                    title: "Materials",
-                    value: materialsCount,
-                    icon: Icons.description_outlined,
-                    color: Colors.orange,
                   ),
                   _buildStatCard(
                     title: "Projects",
@@ -363,11 +329,11 @@ class RoadmapAnalytics extends StatelessWidget {
                     color: Colors.deepPurple,
                   ),
 
-                  SizedBox(height: 24),
-
+                  // ── Skills Breakdown ───────────────────────
                   if (skillsCount > 0) ...[
+                    const SizedBox(height: 24),
                     _buildSectionTitle("Skills Breakdown", Icons.bar_chart),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     _buildBreakdownCard(
                       items: [
                         _BreakdownItem("Beginner", skillsBreakdown['Beginner']!, Colors.green),
@@ -376,12 +342,13 @@ class RoadmapAnalytics extends StatelessWidget {
                       ],
                       total: skillsCount,
                     ),
-                    SizedBox(height: 24),
                   ],
 
+                  // ── Projects Difficulty ────────────────────
                   if (projectsCount > 0) ...[
+                    const SizedBox(height: 24),
                     _buildSectionTitle("Projects Difficulty", Icons.work_outline),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     _buildBreakdownCard(
                       items: [
                         _BreakdownItem("Easy", projectsDifficulty['Easy']!, Colors.green),
@@ -390,15 +357,15 @@ class RoadmapAnalytics extends StatelessWidget {
                       ],
                       total: projectsCount,
                     ),
-                    SizedBox(height: 24),
                   ],
 
-                  // Timeline
+                  // ── Timeline ───────────────────────────────
+                  const SizedBox(height: 24),
                   _buildSectionTitle("Timeline", Icons.calendar_today),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   _buildTimelineCard(),
 
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -408,62 +375,56 @@ class RoadmapAnalytics extends StatelessWidget {
     );
   }
 
+  // ─── Widgets ─────────────────────────────────────────────
+
   Widget _buildSectionTitle(String title, IconData icon) {
     return Row(
       children: [
-        Icon(icon, color: Color(0xff1676C4), size: 24),
-        SizedBox(width: 8),
+        Icon(icon, color: const Color(0xff1676C4), size: 24),
+        const SizedBox(width: 8),
         Text(
           title,
           style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey[800],
-          ),
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
         ),
       ],
     );
   }
 
-  Widget _buildOverviewCard(String title, String value, IconData icon, Color color) {
+  Widget _buildOverviewCard(
+      String title, String value, IconData icon, Color color) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2)),
         ],
       ),
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
+                color: color.withOpacity(0.1), shape: BoxShape.circle),
             child: Icon(icon, color: color, size: 28),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
             value,
             style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[800],
-            ),
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[800]),
           ),
-          SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-            textAlign: TextAlign.center,
-          ),
+          const SizedBox(height: 4),
+          Text(title,
+              style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+              textAlign: TextAlign.center),
         ],
       ),
     );
@@ -476,48 +437,39 @@ class RoadmapAnalytics extends StatelessWidget {
     required Color color,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2)),
         ],
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 24),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
-            child: Text(
-              title,
+            child: Text(title,
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[800])),
+          ),
+          Text(value.toString(),
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[800],
-              ),
-            ),
-          ),
-          Text(
-            value.toString(),
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
+                  fontSize: 20, fontWeight: FontWeight.bold, color: color)),
         ],
       ),
     );
@@ -528,16 +480,15 @@ class RoadmapAnalytics extends StatelessWidget {
     required int total,
   }) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -551,25 +502,21 @@ class RoadmapAnalytics extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      item.label,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[700],
-                      ),
-                    ),
+                    Text(item.label,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[700])),
                     Text(
                       "${item.count} (${percentage.toStringAsFixed(0)}%)",
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: item.color,
-                      ),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: item.color),
                     ),
                   ],
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
@@ -589,16 +536,15 @@ class RoadmapAnalytics extends StatelessWidget {
 
   Widget _buildTimelineCard() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -609,23 +555,23 @@ class RoadmapAnalytics extends StatelessWidget {
             icon: Icons.play_arrow,
             color: Colors.green,
           ),
-          SizedBox(height: 12),
-          Divider(height: 1),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
+          const Divider(height: 1),
+          const SizedBox(height: 12),
           TimelineRowWidget(
             label: "End Date",
             value: _formatDate(roadmap['endDate']),
             icon: Icons.flag,
             color: Colors.red,
           ),
-          SizedBox(height: 12),
-          Divider(height: 1),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
+          const Divider(height: 1),
+          const SizedBox(height: 12),
           TimelineRowWidget(
             label: "Created",
-            value: _formatDate(roadmap['date']),
+            value: _formatDate(roadmap['date'] ?? roadmap['createdAt']),
             icon: Icons.access_time,
-            color: Color(0xff1676C4),
+            color: const Color(0xff1676C4),
           ),
         ],
       ),

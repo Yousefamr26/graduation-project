@@ -3,7 +3,6 @@ import 'package:SmartCareerHub/ui/screens/users/university/pages/profile/univers
 import 'package:flutter/material.dart';
 
 import '../../../../../data/models/university/dashboardmodel.dart';
-import '../../chooseUser.dart';
 import '../../company/pages/Calendar/Calendar.dart';
 import '../../company/pages/Event/eventscreen.dart';
 import '../../company/pages/workshops/workshopsScreen.dart';
@@ -118,7 +117,7 @@ class _UniversityDashboardState extends State<UniversityDashboard> {
       _buildHomePage(),
       // Placeholder pages - replace with actual screens
       WorkshopsScreen(),
-      EventsScreen(),
+      //EventsScreen(),
       UniversityProfileScreen(),
     ];
   }
@@ -629,7 +628,7 @@ class _UniversityDashboardState extends State<UniversityDashboard> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                     child: InkWell(
                       onTap: () {
-                         Navigator.push(context, MaterialPageRoute(builder: (_) => ChooseRoleScreen()));
+                         //Navigator.push(context, MaterialPageRoute(builder: (_) => ChooseRoleScreen()));
                       },
                       child: const Row(
                         children: [

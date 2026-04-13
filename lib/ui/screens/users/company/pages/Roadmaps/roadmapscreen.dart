@@ -5,7 +5,6 @@ import '../../../../../widgets/common/CustomDropdown.dart';
 import '../../../../../widgets/common/NetworkImageWidget.dart';
 import '../../../../../widgets/common/action_button.dart';
 import '../../../../../../data/repositories/roadmap_repository.dart';
-import 'Mock data.dart';
 import 'RoadmapAnalytics.dart';
 import 'Create_editRoadmap.dart';
 import 'package:intl/intl.dart';
@@ -25,7 +24,7 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
   final List<Map<String, dynamic>> roadmapHistory = [];
 
   static const String _historyKey = 'roadmap_history_ids';
-  static const int _itemsPerPage = 1; // غيريه لـ 4 لما تضيفي roadmaps أكتر
+  static const int _itemsPerPage = 4;
 
   String searchText = "";
   String selectedFilter = "All";
@@ -80,13 +79,16 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
     if (!mounted) return;
     setState(() => isLoading = true);
     try {
-      await Future.delayed(const Duration(milliseconds: 600));
-      final fetchedRoadmaps = RoadmapMockData.getRoadmaps();
+      // ─── جلب الـ roadmaps من الباك اند ───────────────────
+      final fetchedRoadmaps = await _roadmapRepo.getAllRoadmaps();
+
       if (!mounted) return;
+
       final Set<String> historyIds = roadmapHistory
           .map((r) => r['id']?.toString() ?? '')
           .where((id) => id.isNotEmpty)
           .toSet();
+
       setState(() {
         roadmaps.clear();
         for (var item in fetchedRoadmaps) {
@@ -137,7 +139,7 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
             _listContains(roadmap["projects"], s) ||
             _listContains(roadmap["quizzes"], s);
       }).toList();
-      _currentPage = 1; // reset to first page on filter change
+      _currentPage = 1;
     });
   }
 
@@ -381,13 +383,6 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
             );
             if (result == true && mounted) {
               await _fetchRoadmaps();
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Roadmap created successfully!'),
-                      backgroundColor: Colors.green),
-                );
-              }
             }
           },
           backgroundColor: const Color(0xff1676C4),
@@ -559,18 +554,21 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
             Icon(Icons.map_outlined, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-                searchText.isEmpty ? "No roadmaps yet" : "No roadmaps found",
+                searchText.isEmpty
+                    ? "No roadmaps yet"
+                    : "No roadmaps found",
                 style: TextStyle(fontSize: 18, color: Colors.grey[600])),
             const SizedBox(height: 8),
             Text(
-                searchText.isEmpty ? "Create your first roadmap!" : "Try a different search",
+                searchText.isEmpty
+                    ? "Create your first roadmap!"
+                    : "Try a different search",
                 style: TextStyle(fontSize: 14, color: Colors.grey[500])),
           ],
         ),
       )
           : Column(
         children: [
-          // ── Cards للصفحة الحالية فقط ─────────
           Expanded(
             child: RefreshIndicator(
               onRefresh: _fetchRoadmaps,
@@ -578,7 +576,6 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 itemCount: _currentPageItems.length,
                 itemBuilder: (context, index) {
-                  // globalIndex = مكانه في الـ filteredRoadmaps الكاملة
                   final globalIndex =
                       (_currentPage - 1) * _itemsPerPage + index;
                   return _buildRoadmapCard(globalIndex);
@@ -586,8 +583,6 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
               ),
             ),
           ),
-
-          // ── Pagination Bar ──────────────────────
           _buildPaginationBar(),
         ],
       ),
@@ -613,7 +608,6 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // « زرار السابق
           _pageBtn(
             label: '«',
             isActive: false,
@@ -621,8 +615,6 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
             onTap: () => setState(() => _currentPage--),
           ),
           const SizedBox(width: 6),
-
-          // أرقام الصفحات كلها جمب بعض
           for (int i = 1; i <= _totalPages; i++) ...[
             _pageBtn(
               label: '$i',
@@ -632,9 +624,7 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
             ),
             if (i != _totalPages) const SizedBox(width: 6),
           ],
-
           const SizedBox(width: 6),
-          // » زرار التالي
           _pageBtn(
             label: '»',
             isActive: false,
@@ -666,9 +656,7 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
               : Colors.grey[100],
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isActive
-                ? const Color(0xff1676C4)
-                : Colors.grey[300]!,
+            color: isActive ? const Color(0xff1676C4) : Colors.grey[300]!,
             width: isActive ? 2 : 1,
           ),
           boxShadow: isActive
@@ -743,8 +731,8 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
                     Expanded(
                       child: Text(
                         "${_formatDate(item['startDate'])} → ${_formatDate(item['endDate'])}",
-                        style: TextStyle(
-                            color: Colors.grey[700], fontSize: 12),
+                        style:
+                        TextStyle(color: Colors.grey[700], fontSize: 12),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -752,7 +740,7 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                    "Target: ${item['target']?.join(", ") ?? 'Not specified'}",
+                    "Target: ${item['target']?.join(", ") ?? item['targetRole'] ?? 'Not specified'}",
                     style: TextStyle(color: Colors.grey[700]),
                     overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 10),

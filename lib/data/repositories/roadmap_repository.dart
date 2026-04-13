@@ -4,8 +4,18 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class RoadmapRepository {
-  final Dio _dio = Dio();
-  static const String _baseUrl = "http://smartcareerhub.runasp.net/api/Roadmaps";
+  late Dio _dio;
+  static const String _baseUrl = "https://smartcareerhub.runasp.net/api/Roadmaps";
+
+  RoadmapRepository() {
+    _dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(minutes: 5),
+        receiveTimeout: const Duration(minutes: 10),
+        sendTimeout: const Duration(minutes: 10),
+      ),
+    );
+  }
 
   String _getMimeType(String filePath) {
     final extension = filePath.split('.').last.toLowerCase();
@@ -60,21 +70,6 @@ class RoadmapRepository {
       errors.add("❌ Projects list cannot be empty! Add at least one project.");
     }
 
-    if (quizzes.isEmpty) {
-      errors.add("❌ Quizzes list cannot be empty! Add at least one quiz.");
-    } else {
-      for (int i = 0; i < quizzes.length; i++) {
-        List<Map<String, dynamic>> questions = quizzes[i]["questions"] ?? [];
-        bool hasPDF = quizzes[i]["pdfBytes"] != null && quizzes[i]["pdfFileName"] != null;
-
-        if (questions.isEmpty && !hasPDF) {
-          errors.add(
-              "❌ Quiz '${quizzes[i]["title"] ?? "Quiz ${i + 1}"}' must have at least one question or a PDF file!"
-          );
-        }
-      }
-    }
-
     if (errors.isNotEmpty) {
       debugPrint("=" * 60);
       debugPrint("❌ VALIDATION FAILED:");
@@ -85,7 +80,24 @@ class RoadmapRepository {
       throw Exception(errors.join("\n"));
     }
 
+    // No validation for quizzes - they are optional
     debugPrint("✅ All required lists validation passed!");
+  }
+
+  // Validate file size (max 100MB per file)
+  bool _validateFileSize(File file, {int maxSizeMB = 100}) {
+    if (!file.existsSync()) return false;
+
+    final fileSizeInBytes = file.lengthSync();
+    final fileSizeInMB = fileSizeInBytes / (1024 * 1024);
+
+    if (fileSizeInMB > maxSizeMB) {
+      debugPrint("⚠️ File too large: ${file.path}");
+      debugPrint("   Size: ${fileSizeInMB.toStringAsFixed(2)} MB (max: $maxSizeMB MB)");
+      return false;
+    }
+
+    return true;
   }
 
   Future<Response?> createRoadmap({
@@ -193,15 +205,21 @@ class RoadmapRepository {
           File file = material["file"];
           if (file.existsSync()) {
             final mimeType = _getMimeType(file.path);
-            formData.files.add(MapEntry(
-              "LearningMaterialRequests[$i].FilePath",
-              await MultipartFile.fromFile(
-                file.path,
-                filename: '${type}_${i}_${DateTime.now().millisecondsSinceEpoch}.${file.path.split('.').last}',
-                contentType: DioMediaType.parse(mimeType),
-              ),
-            ));
-            debugPrint("    ✅ File attached");
+
+            // Validate file size (max 100MB)
+            if (_validateFileSize(file, maxSizeMB: 100)) {
+              formData.files.add(MapEntry(
+                "LearningMaterialRequests[$i].FilePath",
+                await MultipartFile.fromFile(
+                  file.path,
+                  filename: '${type}_${i}_${DateTime.now().millisecondsSinceEpoch}.${file.path.split('.').last}',
+                  contentType: DioMediaType.parse(mimeType),
+                ),
+              ));
+              debugPrint("    ✅ File attached");
+            } else {
+              debugPrint("    ❌ File not attached due to size limit");
+            }
           }
         }
       }
@@ -283,21 +301,17 @@ class RoadmapRepository {
       debugPrint("📤 Sending to: $_baseUrl");
       debugPrint("=" * 60);
 
-      final response = await _dio.post(
+      final response = await _retryablePost(
         _baseUrl,
-        data: formData,
-        options: Options(
-          headers: {"Content-Type": "multipart/form-data"},
-          validateStatus: (status) => true,
-        ),
+        formData,
       );
 
-      debugPrint("✅ Response Status: ${response.statusCode}");
+      debugPrint("✅ Response Status: ${response?.statusCode}");
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response?.statusCode == 200 || response?.statusCode == 201) {
         debugPrint("✅ Roadmap created successfully!");
       } else {
-        debugPrint("⚠️ Warning: Status ${response.statusCode}");
+        debugPrint("⚠️ Warning: Status ${response?.statusCode}");
       }
 
       return response;
@@ -308,6 +322,12 @@ class RoadmapRepository {
       debugPrint("   Message: ${e.message}");
       debugPrint("   Status Code: ${e.response?.statusCode}");
       debugPrint("   Response Data: ${e.response?.data}");
+
+      // Handle connection errors specifically
+      if (e.type == DioExceptionType.unknown && e.error is SocketException) {
+        debugPrint("   ❌ Network Error: Connection interrupted (Broken pipe)");
+        debugPrint("   → Try increasing timeouts or reducing file sizes");
+      }
       rethrow;
     } catch (e) {
       debugPrint("❌ Error creating roadmap: $e");
@@ -422,15 +442,21 @@ class RoadmapRepository {
           File file = material["file"];
           if (file.existsSync()) {
             final mimeType = _getMimeType(file.path);
-            formData.files.add(MapEntry(
-              "LearningMaterialRequests[$i].FilePath",
-              await MultipartFile.fromFile(
-                file.path,
-                filename: '${type}_${i}_${DateTime.now().millisecondsSinceEpoch}.${file.path.split('.').last}',
-                contentType: DioMediaType.parse(mimeType),
-              ),
-            ));
-            debugPrint("    ✅ File attached");
+
+            // Validate file size (max 100MB)
+            if (_validateFileSize(file, maxSizeMB: 100)) {
+              formData.files.add(MapEntry(
+                "LearningMaterialRequests[$i].FilePath",
+                await MultipartFile.fromFile(
+                  file.path,
+                  filename: '${type}_${i}_${DateTime.now().millisecondsSinceEpoch}.${file.path.split('.').last}',
+                  contentType: DioMediaType.parse(mimeType),
+                ),
+              ));
+              debugPrint("    ✅ File attached");
+            } else {
+              debugPrint("    ❌ File not attached due to size limit");
+            }
           }
         }
       }
@@ -508,24 +534,20 @@ class RoadmapRepository {
       debugPrint("📤 Sending UPDATE to: $_baseUrl/$roadmapId");
       debugPrint("=" * 60);
 
-      final response = await _dio.put(
+      final response = await _retryablePut(
         "$_baseUrl/$roadmapId",
-        data: formData,
-        options: Options(
-          headers: {'Content-Type': 'multipart/form-data'},
-          validateStatus: (status) => status! < 500,
-        ),
+        formData,
       );
 
-      debugPrint("✅ Response Status: ${response.statusCode}");
+      debugPrint("✅ Response Status: ${response?.statusCode}");
 
-      if (response.statusCode == 200 || response.statusCode == 204) {
+      if (response?.statusCode == 200 || response?.statusCode == 204) {
         debugPrint("✅ Roadmap updated successfully!");
         return response;
       } else {
-        debugPrint("⚠️ Update failed: ${response.data}");
+        debugPrint("⚠️ Update failed: ${response?.data}");
         throw DioException(
-          requestOptions: response.requestOptions,
+          requestOptions: response!.requestOptions,
           response: response,
           type: DioExceptionType.badResponse,
           message: 'Update failed: ${response.data}',
@@ -621,5 +643,39 @@ class RoadmapRepository {
 
   Future<Response?> permanentlyDeleteRoadmap(dynamic roadmapId) async {
     return await deleteRoadmap(roadmapId);
+  }
+
+  // ✅ بدون retry — مرة واحدة بس
+  Future<Response?> _retryablePost(
+    String url,
+    FormData data,
+  ) async {
+    debugPrint("📤 Sending request...");
+    final response = await _dio.post(
+      url,
+      data: data,
+      options: Options(
+        headers: {"Content-Type": "multipart/form-data"},
+        validateStatus: (status) => true,
+      ),
+    );
+    return response;
+  }
+
+  // ✅ بدون retry — مرة واحدة بس
+  Future<Response?> _retryablePut(
+    String url,
+    FormData data,
+  ) async {
+    debugPrint("🔄 Sending update...");
+    final response = await _dio.put(
+      url,
+      data: data,
+      options: Options(
+        headers: {'Content-Type': 'multipart/form-data'},
+        validateStatus: (status) => status! < 500,
+      ),
+    );
+    return response;
   }
 }

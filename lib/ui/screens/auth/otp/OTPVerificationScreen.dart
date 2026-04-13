@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-import 'reset_password_screen.dart';
+
+import '../../../../data/repositories/auth_repository.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final String email;
+  final String userType;
 
   const OTPVerificationScreen({
     super.key,
     required this.email,
+    required this.userType,
   });
 
   @override
@@ -16,14 +19,10 @@ class OTPVerificationScreen extends StatefulWidget {
 }
 
 class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
-  final List<TextEditingController> _otpControllers = List.generate(
-    6,
-        (index) => TextEditingController(),
-  );
-  final List<FocusNode> _focusNodes = List.generate(
-    6,
-        (index) => FocusNode(),
-  );
+  final List<TextEditingController> _otpControllers =
+  List.generate(6, (_) => TextEditingController());
+  final List<FocusNode> _focusNodes =
+  List.generate(6, (_) => FocusNode());
 
   bool _isLoading = false;
   bool _canResend = false;
@@ -39,128 +38,165 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    for (var controller in _otpControllers) {
-      controller.dispose();
+    for (final c in _otpControllers) {
+      c.dispose();
     }
-    for (var node in _focusNodes) {
-      node.dispose();
+    for (final n in _focusNodes) {
+      n.dispose();
     }
     super.dispose();
   }
 
+  // ─── Timer ────────────────────────────────────────────────────────────────
   void _startTimer() {
     setState(() {
       _canResend = false;
       _remainingSeconds = 60;
     });
 
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
       setState(() {
         if (_remainingSeconds > 0) {
           _remainingSeconds--;
         } else {
           _canResend = true;
-          _timer?.cancel();
+          timer.cancel();
         }
       });
     });
   }
 
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+  String get _otp => _otpControllers.map((c) => c.text).join();
+
+  void _showSnackBar(String message, Color color) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _clearFields() {
+    for (final c in _otpControllers) {
+      c.clear();
+    }
+    _focusNodes[0].requestFocus();
+  }
+
+  // ─── Verify OTP ──────────────────────────────────────────────────────────
   Future<void> _verifyOTP() async {
-    String otp = _otpControllers.map((c) => c.text).join();
+    final otp = _otp;
 
     if (otp.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter all 6 digits'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _showSnackBar('Please enter all 6 digits', Colors.red);
       return;
     }
 
     setState(() => _isLoading = true);
-
-    // Simulate API call
-    await Future.delayed(Duration(seconds: 2));
-
-    setState(() => _isLoading = false);
-
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ResetPasswordScreen(
-            email: widget.email,
-            otp: otp,
-          ),
-        ),
+    try {
+      final authRepo = AuthRepository();
+      final response = await authRepo.verifyEmail(
+        email: widget.email,
+        otp: otp,
+        userType: widget.userType,
       );
+
+      if (authRepo.isSuccessResponse(response)) {
+        _showSnackBar('Email verified successfully!', Colors.green);
+        if (mounted) {
+          // ✅ FIXED: go to login screen specifically, not just popUntil(isFirst)
+          // because the first route might be RegisterScreen, not LoginScreen.
+          // Using pushNamedAndRemoveUntil assumes you have a named route '/login'.
+          // If you use a different routing approach, replace accordingly.
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/login',
+                (route) => false,
+          );
+        }
+      } else {
+        _showSnackBar(authRepo.getErrorMessage(response), Colors.red);
+      }
+    } catch (e) {
+      _showSnackBar('Verification failed: $e', Colors.red);
+    } finally {
+      // ✅ FIXED: mounted check before setState
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
+  // ─── Resend OTP ───────────────────────────────────────────────────────────
+  // ✅ FIXED: was using a fake Future.delayed — now calls real API
   Future<void> _resendOTP() async {
     setState(() => _isLoading = true);
-
-    // Simulate API call
-    await Future.delayed(Duration(seconds: 2));
-
-    setState(() => _isLoading = false);
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('OTP sent successfully!'),
-          backgroundColor: Colors.green,
-        ),
+    try {
+      final authRepo = AuthRepository();
+      final response = await authRepo.resendOtp(
+        email: widget.email,
+        userType: widget.userType,
       );
 
-      _startTimer();
-
-      // Clear all fields
-      for (var controller in _otpControllers) {
-        controller.clear();
+      if (authRepo.isSuccessResponse(response)) {
+        _showSnackBar('OTP sent successfully!', Colors.green);
+        if (mounted) {
+          _clearFields();
+          _startTimer();
+        }
+      } else {
+        _showSnackBar(authRepo.getErrorMessage(response), Colors.red);
       }
-      _focusNodes[0].requestFocus();
+    } catch (e) {
+      _showSnackBar('Failed to resend OTP: $e', Colors.red);
+    } finally {
+      // ✅ FIXED: mounted check before setState
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
+  // ─── Build ────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              // Header
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back, color: Color(0xff1676C4)),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
+              // Back button
+              Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Color(0xff1676C4)),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
-              // Icon
+              // Email icon
               Container(
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Color(0xff1676C4).withOpacity(0.1),
+                  color: const Color(0xff1676C4).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.mail_lock,
                   size: 60,
                   color: Color(0xff1676C4),
                 ),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-              Text(
+              const Text(
                 'Verify Your Email',
                 style: TextStyle(
                   fontSize: 28,
@@ -168,44 +204,41 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   color: Color(0xff1676C4),
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
                 'We sent a verification code to',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 widget.email,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 15,
                   color: Color(0xff1676C4),
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
-              // Blue Container
+              // OTP card
               Container(
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Color(0xff1676C4),
+                  color: const Color(0xff1676C4),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0xff1676C4).withOpacity(0.3),
+                      color: const Color(0xff1676C4).withOpacity(0.3),
                       blurRadius: 20,
-                      offset: Offset(0, 10),
+                      offset: const Offset(0, 10),
                     ),
                   ],
                 ),
                 child: Column(
                   children: [
-                    Text(
+                    const Text(
                       'Enter Verification Code',
                       style: TextStyle(
                         fontSize: 16,
@@ -213,18 +246,16 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-                    // OTP Input Fields
+                    // OTP fields
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: List.generate(6, (index) {
-                        return _buildOTPField(index);
-                      }),
+                      children: List.generate(6, _buildOTPField),
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-                    // Verify Button
+                    // Verify button
                     SizedBox(
                       width: double.infinity,
                       height: 50,
@@ -232,80 +263,74 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                         onPressed: _isLoading ? null : _verifyOTP,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: Color(0xff1676C4),
+                          foregroundColor: const Color(0xff1676C4),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                              borderRadius: BorderRadius.circular(12)),
                           elevation: 0,
                         ),
                         child: _isLoading
-                            ? SizedBox(
+                            ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Color(0xff1676C4),
-                            ),
+                                Color(0xff1676C4)),
                           ),
                         )
-                            : Text(
+                            : const Text(
                           'Verify',
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                    // Resend Timer
-                    if (!_canResend)
-                      Text(
-                        'Resend code in $_remainingSeconds seconds',
+                    // Resend / timer
+                    _canResend
+                        ? TextButton(
+                      onPressed: _isLoading ? null : _resendOTP,
+                      child: const Text(
+                        'Resend Code',
                         style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.white.withOpacity(0.8),
-                        ),
-                      )
-                    else
-                      TextButton(
-                        onPressed: _isLoading ? null : _resendOTP,
-                        child: Text(
-                          'Resend Code',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
                         ),
                       ),
+                    )
+                        : Text(
+                      'Resend code in $_remainingSeconds seconds',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-              // Info Box
+              // Info box
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.blue[50],
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.blue[200]!),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
-                    Icon(Icons.info_outline, color: Color(0xff1676C4), size: 20),
+                    Icon(Icons.info_outline,
+                        color: Color(0xff1676C4), size: 20),
                     SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Check your spam folder if you don\'t see the email',
                         style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xff1676C4),
-                        ),
+                            fontSize: 12, color: Color(0xff1676C4)),
                       ),
                     ),
                   ],
@@ -318,6 +343,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     );
   }
 
+  // ─── OTP single field ──────────────────────────────────────────────────────
   Widget _buildOTPField(int index) {
     return Container(
       width: 45,
@@ -329,7 +355,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 5,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -339,30 +365,28 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
         maxLength: 1,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
           color: Color(0xff1676C4),
         ),
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           counterText: '',
           border: InputBorder.none,
           contentPadding: EdgeInsets.zero,
         ),
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-        ],
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         onChanged: (value) {
           if (value.isNotEmpty) {
-            // Move to next field
             if (index < 5) {
               _focusNodes[index + 1].requestFocus();
             } else {
-              // Last field - unfocus to hide keyboard
               _focusNodes[index].unfocus();
+              // ✅ Auto-submit when last digit is entered
+              _verifyOTP();
             }
           } else {
-            // Move to previous field on backspace
+            // Backspace → go to previous field
             if (index > 0) {
               _focusNodes[index - 1].requestFocus();
             }

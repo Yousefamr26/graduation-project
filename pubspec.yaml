@@ -43,6 +43,7 @@ dependencies:
   flutter_bloc: ^8.1.6
   bloc: ^8.1.4
   uuid: ^4.4.0
+  flutter_image_compress: ^2.1.0
 
 
 dev_dependencies:

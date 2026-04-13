@@ -2,13 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../../screens/users/company/pages/Roadmaps/quizess/QuizAIGenerationScreen.dart';
-import '../../screens/users/company/pages/Roadmaps/quizess/QuizEditorScreen.dart';
-
-
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CONSTANTS
-// ─────────────────────────────────────────────────────────────────────────────
 
 const _kPrimary      = Color(0xff1893ff);
 const _kPrimaryLight = Color(0xffE8F4FF);
@@ -18,39 +11,29 @@ const _kTextDark     = Color(0xff1A1A2E);
 const _kTextMuted    = Color(0xff9CA3AF);
 const _kBorder       = Color(0xffE5E7EB);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ENUMS — MCQ و TrueFalse فقط
-// ─────────────────────────────────────────────────────────────────────────────
-
 enum _QuestionType { mcq, trueFalse }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// QUIZ LIST WIDGET
-// ─────────────────────────────────────────────────────────────────────────────
-
-class QuizListWidget extends StatefulWidget {
-  final Map<String, dynamic>? roadmap;
-  final String? roadmapId;
+class AIQuizWidget extends StatefulWidget {
+  final String roadmapId;
   final List<Map<String, dynamic>> Function()? getMaterials;
 
-  const QuizListWidget({
+  const AIQuizWidget({
     Key? key,
-    this.roadmap,
-    this.roadmapId,
+    required this.roadmapId,
     this.getMaterials,
   }) : super(key: key);
 
   @override
-  State<QuizListWidget> createState() => QuizListWidgetState();
+  State<AIQuizWidget> createState() => AIQuizWidgetState();
 }
 
-class QuizListWidgetState extends State<QuizListWidget> {
+class AIQuizWidgetState extends State<AIQuizWidget> {
   final List<Map<String, dynamic>> _quizzes = [];
 
   List<Map<String, dynamic>> getQuizzesForBackend() =>
       _quizzes.map(_serializeQuiz).toList();
 
-  // ── Quiz CRUD ───────────────────────────────────────────────────────────────
+  // ── Quiz CRUD ───────────────────────────────────────────
 
   void _addQuiz() {
     setState(() {
@@ -72,7 +55,7 @@ class QuizListWidgetState extends State<QuizListWidget> {
     });
   }
 
-  // ── Material selection ──────────────────────────────────────────────────────
+  // ── Material selection ──────────────────────────────────
 
   void _toggleMaterial(int quizIndex, String materialId) {
     setState(() {
@@ -90,49 +73,23 @@ class QuizListWidgetState extends State<QuizListWidget> {
   }
 
   List<Map<String, dynamic>> _allMaterials() {
-    if (widget.getMaterials != null) {
-      return widget.getMaterials!();
-    }
-    if (widget.roadmap == null) return [];
-
-    final raw = widget.roadmap!['learningMaterials']
-        ?? widget.roadmap!['materials']
-        ?? widget.roadmap!['videos']
-        ?? [];
-
-    if (raw is! List) return [];
-
-    return (raw as List).map<Map<String, dynamic>>((m) => {
-      'id':       'material_${m['id'] ?? m['title']}',
-      'title':    m['title'] ?? m['titleVideos'] ?? 'Untitled',
-      'subtitle': '${m['type']?.toString().toUpperCase() ?? "MATERIAL"} • ${m['duration'] ?? ''}',
-      'type':     m['type']?.toString().toLowerCase() ?? 'video',
-    }).toList();
+    if (widget.getMaterials != null) return widget.getMaterials!();
+    return [];
   }
 
-  // ── AI Generate ─────────────────────────────────────────────────────────────
+  // ── AI Generate ─────────────────────────────────────────
 
   Future<void> _generateQuestions(int quizIndex) async {
-    if (widget.roadmapId == null || widget.roadmapId!.isEmpty) {
-      _showSnackBar(
-        'Please save the roadmap first to use AI generation',
-        isError: true,
-      );
-      return;
-    }
-
     final quiz         = _quizzes[quizIndex];
     final questionType = quiz['questionType'] as _QuestionType;
     final count        = quiz['questionCount'] as int;
-
-    final String quizTypeParam =
-    questionType == _QuestionType.mcq ? 'MCQ' : 'TrueFalse';
+    final quizTypeParam = questionType == _QuestionType.mcq ? 'MCQ' : 'TrueFalse';
 
     final result = await Navigator.push<List<Map<String, dynamic>>>(
       context,
       MaterialPageRoute(
         builder: (_) => QuizAIGenerationScreen(
-          roadmapId:    widget.roadmapId!,
+          roadmapId:    widget.roadmapId,
           quizType:     quizTypeParam,
           numQuestions: count,
         ),
@@ -142,30 +99,14 @@ class QuizListWidgetState extends State<QuizListWidget> {
     if (result != null && result.isNotEmpty) {
       setState(() {
         final current = List<Map<String, dynamic>>.from(
-          _quizzes[quizIndex]['questions'] as List,
-        );
+            _quizzes[quizIndex]['questions'] as List);
         _quizzes[quizIndex]['questions'] = [...current, ...result];
       });
       _showSnackBar('${result.length} questions added!');
     }
   }
 
-  // ── Manual editor ───────────────────────────────────────────────────────────
-
-  void _openQuizEditor(int quizIndex) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => QuizEditorScreen(
-          quiz: _quizzes[quizIndex],
-          onSave: (updated) => setState(() =>
-          _quizzes[quizIndex]['questions'] = updated['questions']),
-        ),
-      ),
-    );
-  }
-
-  // ── Helpers ─────────────────────────────────────────────────────────────────
+  // ── Helpers ─────────────────────────────────────────────
 
   int _totalPoints(int quizIndex) {
     final questions = _quizzes[quizIndex]['questions'] as List;
@@ -198,13 +139,13 @@ class QuizListWidgetState extends State<QuizListWidget> {
     ));
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // BUILD
-  // ─────────────────────────────────────────────────────────────────────────────
+  // ── BUILD ───────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     return Column(children: [
+      _buildGlobalAICard(),
+      const SizedBox(height: 16),
       if (_quizzes.isEmpty) _buildEmptyState(),
       ..._quizzes.asMap().entries.map((e) => _buildQuizCard(e.key)),
       const SizedBox(height: 12),
@@ -212,7 +153,42 @@ class QuizListWidgetState extends State<QuizListWidget> {
     ]);
   }
 
-  // ── Empty state ─────────────────────────────────────────────────────────────
+  Widget _buildGlobalAICard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [_kPrimary, Color(0xff0B5ED7)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: const Icon(Icons.auto_awesome, color: Colors.white, size: 22),
+        ),
+        const SizedBox(width: 14),
+        const Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('AI Quiz Generator',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700)),
+            SizedBox(height: 4),
+            Text('Configure each quiz below and tap Generate',
+                style: TextStyle(color: Colors.white70, fontSize: 12)),
+          ]),
+        ),
+      ]),
+    );
+  }
 
   Widget _buildEmptyState() {
     return Container(
@@ -231,15 +207,14 @@ class QuizListWidgetState extends State<QuizListWidget> {
         ),
         const SizedBox(height: 20),
         const Text('No Quizzes Yet',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: _kTextDark)),
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.w700, color: _kTextDark)),
         const SizedBox(height: 6),
         Text('Start by adding a quiz',
             style: TextStyle(fontSize: 14, color: Colors.grey[600])),
       ]),
     );
   }
-
-  // ── Quiz card ───────────────────────────────────────────────────────────────
 
   Widget _buildQuizCard(int i) {
     final quiz            = _quizzes[i];
@@ -255,7 +230,10 @@ class QuizListWidgetState extends State<QuizListWidget> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: _kPrimary.withOpacity(0.15)),
         boxShadow: [
-          BoxShadow(color: _kPrimary.withOpacity(0.07), blurRadius: 20, offset: const Offset(0, 6)),
+          BoxShadow(
+              color: _kPrimary.withOpacity(0.07),
+              blurRadius: 20,
+              offset: const Offset(0, 6)),
         ],
       ),
       child: Column(children: [
@@ -270,15 +248,11 @@ class QuizListWidgetState extends State<QuizListWidget> {
             _buildMaterialsSection(i),
             const SizedBox(height: 16),
             _buildAIGeneratorCard(i),
-            const SizedBox(height: 16),
-            _buildManualQuestionsButton(i),
           ]),
         ),
       ]),
     );
   }
-
-  // ── Quiz header ─────────────────────────────────────────────────────────────
 
   Widget _buildQuizHeader(int i, TextEditingController titleController) {
     return Container(
@@ -301,20 +275,29 @@ class QuizListWidgetState extends State<QuizListWidget> {
           child: const Icon(Icons.quiz_outlined, color: Colors.white, size: 24),
         ),
         const SizedBox(width: 14),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('QUIZ ${i + 1}',
-              style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 11,
-                  fontWeight: FontWeight.w600, letterSpacing: 1.2)),
-          const SizedBox(height: 2),
-          ValueListenableBuilder(
-            valueListenable: titleController,
-            builder: (_, __, ___) => Text(
-              titleController.text.isEmpty ? 'Untitled Quiz' : titleController.text,
-              style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w700),
-              maxLines: 1, overflow: TextOverflow.ellipsis,
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('QUIZ ${i + 1}',
+                style: TextStyle(
+                    color: Colors.white.withOpacity(0.75),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.2)),
+            const SizedBox(height: 2),
+            ValueListenableBuilder(
+              valueListenable: titleController,
+              builder: (_, __, ___) => Text(
+                titleController.text.isEmpty ? 'Untitled Quiz' : titleController.text,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-        ])),
+          ]),
+        ),
         IconButton(
           icon: const Icon(Icons.delete_outline, color: Colors.white, size: 22),
           onPressed: () => _removeQuiz(i),
@@ -322,8 +305,6 @@ class QuizListWidgetState extends State<QuizListWidget> {
       ]),
     );
   }
-
-  // ── Title field ─────────────────────────────────────────────────────────────
 
   Widget _buildTitleField(TextEditingController controller) {
     return Container(
@@ -338,18 +319,19 @@ class QuizListWidgetState extends State<QuizListWidget> {
         decoration: InputDecoration(
           hintText: 'e.g., Week 1 Assessment',
           labelText: 'Quiz Title',
-          labelStyle: const TextStyle(color: _kPrimary, fontWeight: FontWeight.w600, fontSize: 13),
+          labelStyle: const TextStyle(
+              color: _kPrimary, fontWeight: FontWeight.w600, fontSize: 13),
           hintStyle: const TextStyle(color: _kTextMuted),
           prefixIcon: const Icon(Icons.edit_outlined, color: _kPrimary, size: 20),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         ),
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: _kTextDark),
+        style: const TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w500, color: _kTextDark),
       ),
     );
   }
-
-  // ── Stats row ───────────────────────────────────────────────────────────────
 
   Widget _buildStatsRow(int questionCount, int totalPoints) {
     return Container(
@@ -359,23 +341,34 @@ class QuizListWidgetState extends State<QuizListWidget> {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: _kPrimary.withOpacity(0.2)),
       ),
-      child: IntrinsicHeight(child: Row(children: [
-        Expanded(child: _buildStatItem(
-          icon: Icons.help_outline_rounded, iconBg: _kCardBg,
-          iconColor: _kPrimary, value: '$questionCount', label: 'Questions',
-        )),
-        VerticalDivider(color: _kPrimary.withOpacity(0.2), width: 32),
-        Expanded(child: _buildStatItem(
-          icon: Icons.stars_rounded, iconBg: _kPrimary,
-          iconColor: Colors.white, value: '$totalPoints', label: 'Points',
-        )),
-      ])),
+      child: IntrinsicHeight(
+        child: Row(children: [
+          Expanded(child: _buildStatItem(
+            icon: Icons.help_outline_rounded,
+            iconBg: _kCardBg,
+            iconColor: _kPrimary,
+            value: '$questionCount',
+            label: 'Questions',
+          )),
+          VerticalDivider(color: _kPrimary.withOpacity(0.2), width: 32),
+          Expanded(child: _buildStatItem(
+            icon: Icons.stars_rounded,
+            iconBg: _kPrimary,
+            iconColor: Colors.white,
+            value: '$totalPoints',
+            label: 'Points',
+          )),
+        ]),
+      ),
     );
   }
 
   Widget _buildStatItem({
-    required IconData icon, required Color iconBg,
-    required Color iconColor, required String value, required String label,
+    required IconData icon,
+    required Color iconBg,
+    required Color iconColor,
+    required String value,
+    required String label,
   }) {
     return Column(mainAxisSize: MainAxisSize.min, children: [
       Container(
@@ -384,12 +377,16 @@ class QuizListWidgetState extends State<QuizListWidget> {
         child: Icon(icon, color: iconColor, size: 22),
       ),
       const SizedBox(height: 8),
-      Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: _kPrimary)),
-      Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[600], fontWeight: FontWeight.w600)),
+      Text(value,
+          style: const TextStyle(
+              fontSize: 20, fontWeight: FontWeight.w700, color: _kPrimary)),
+      Text(label,
+          style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w600)),
     ]);
   }
-
-  // ── Materials section ───────────────────────────────────────────────────────
 
   Widget _buildMaterialsSection(int quizIndex) {
     final materials   = _allMaterials();
@@ -400,11 +397,13 @@ class QuizListWidgetState extends State<QuizListWidget> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         const Text('Select Materials',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _kTextDark)),
+            style: TextStyle(
+                fontSize: 14, fontWeight: FontWeight.w700, color: _kTextDark)),
         GestureDetector(
           onTap: () => _selectAllMaterials(quizIndex),
           child: Text(allSelected ? 'Deselect All' : 'Select All',
-              style: const TextStyle(fontSize: 13, color: _kPrimary, fontWeight: FontWeight.w600)),
+              style: const TextStyle(
+                  fontSize: 13, color: _kPrimary, fontWeight: FontWeight.w600)),
         ),
       ]),
       const SizedBox(height: 10),
@@ -412,7 +411,8 @@ class QuizListWidgetState extends State<QuizListWidget> {
         _buildNoMaterialsPlaceholder()
       else
         ...materials.map((m) => _buildMaterialTile(
-          quizIndex: quizIndex, material: m,
+          quizIndex: quizIndex,
+          material: m,
           isSelected: selectedIds.contains(m['id']),
         )),
     ]);
@@ -422,7 +422,8 @@ class QuizListWidgetState extends State<QuizListWidget> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
       decoration: BoxDecoration(
-        color: _kBackground, borderRadius: BorderRadius.circular(12),
+        color: _kBackground,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _kBorder),
       ),
       child: Row(children: [
@@ -447,26 +448,33 @@ class QuizListWidgetState extends State<QuizListWidget> {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: _kCardBg, borderRadius: BorderRadius.circular(12),
+        color: _kCardBg,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isSelected ? _kPrimary.withOpacity(0.5) : _kBorder,
           width: isSelected ? 1.5 : 1,
         ),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+        contentPadding:
+        const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
         leading: Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: iconBg, borderRadius: BorderRadius.circular(8)),
+          decoration: BoxDecoration(
+              color: iconBg, borderRadius: BorderRadius.circular(8)),
           child: Icon(icon, color: iconColor, size: 20),
         ),
         title: Text(material['title'] as String,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _kTextDark)),
+            style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: _kTextDark)),
         subtitle: Text(material['subtitle'] as String,
             style: const TextStyle(fontSize: 11, color: _kTextMuted)),
         trailing: Checkbox(
           value: isSelected,
-          onChanged: (_) => _toggleMaterial(quizIndex, material['id'] as String),
+          onChanged: (_) =>
+              _toggleMaterial(quizIndex, material['id'] as String),
           activeColor: _kPrimary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
@@ -474,8 +482,6 @@ class QuizListWidgetState extends State<QuizListWidget> {
       ),
     );
   }
-
-  // ── AI Generator card ───────────────────────────────────────────────────────
 
   Widget _buildAIGeneratorCard(int i) {
     final quiz        = _quizzes[i];
@@ -504,46 +510,52 @@ class QuizListWidgetState extends State<QuizListWidget> {
           ),
           const SizedBox(width: 10),
           const Text('AI Generator',
-              style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w700)),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700)),
         ]),
-
         const SizedBox(height: 16),
-
-        // Question type tabs — MCQ / True-False فقط
         Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.15),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Row(children: _QuestionType.values.map((type) {
-            final isActive = currentType == type;
-            final label    = type == _QuestionType.mcq ? 'MCQ' : 'True / False';
-            return Expanded(child: GestureDetector(
-              onTap: () => setState(() => _quizzes[i]['questionType'] = type),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  color: isActive ? Colors.white : Colors.transparent,
-                  borderRadius: BorderRadius.circular(9),
+          child: Row(
+            children: _QuestionType.values.map((type) {
+              final isActive = currentType == type;
+              final label = type == _QuestionType.mcq ? 'MCQ' : 'True / False';
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _quizzes[i]['questionType'] = type),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: isActive ? Colors.white : Colors.transparent,
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(label,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: isActive ? _kPrimary : Colors.white,
+                        )),
+                  ),
                 ),
-                alignment: Alignment.center,
-                child: Text(label, style: TextStyle(
-                  fontSize: 13, fontWeight: FontWeight.w700,
-                  color: isActive ? _kPrimary : Colors.white,
-                )),
-              ),
-            ));
-          }).toList()),
+              );
+            }).toList(),
+          ),
         ),
-
         const SizedBox(height: 16),
-
-        // Questions count slider — min 1, max 20
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           const Text('Questions count',
-              style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500)),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
@@ -551,7 +563,10 @@ class QuizListWidgetState extends State<QuizListWidget> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text('$count',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14)),
           ),
         ]),
         Slider(
@@ -562,11 +577,10 @@ class QuizListWidgetState extends State<QuizListWidget> {
           activeColor: Colors.white,
           inactiveColor: Colors.white.withOpacity(0.3),
           thumbColor: Colors.white,
-          onChanged: (v) => setState(() => _quizzes[i]['questionCount'] = v.round()),
+          onChanged: (v) =>
+              setState(() => _quizzes[i]['questionCount'] = v.round()),
         ),
-
         const SizedBox(height: 4),
-
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
@@ -578,7 +592,8 @@ class QuizListWidgetState extends State<QuizListWidget> {
               backgroundColor: Colors.white,
               foregroundColor: _kPrimary,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               elevation: 0,
             ),
           ),
@@ -587,33 +602,12 @@ class QuizListWidgetState extends State<QuizListWidget> {
     );
   }
 
-  // ── Manual questions button ─────────────────────────────────────────────────
-
-  Widget _buildManualQuestionsButton(int i) {
-    final count = (_quizzes[i]['questions'] as List).length;
-    return ElevatedButton.icon(
-      onPressed: () => _openQuizEditor(i),
-      icon: Icon(count == 0 ? Icons.add_circle_outline : Icons.edit_note_rounded, size: 20),
-      label: Text(
-        count == 0 ? 'Add Manual Questions' : 'Edit Questions ($count)',
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: _kPrimary, foregroundColor: Colors.white,
-        minimumSize: const Size(double.infinity, 52),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 3, shadowColor: _kPrimary.withOpacity(0.3),
-      ),
-    );
-  }
-
-  // ── Add quiz button ─────────────────────────────────────────────────────────
-
   Widget _buildAddQuizButton() {
     return OutlinedButton.icon(
       onPressed: _addQuiz,
       icon: const Icon(Icons.add_circle_outline, size: 22),
-      label: const Text('Add New Quiz', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+      label: const Text('Add New Quiz',
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
       style: OutlinedButton.styleFrom(
         foregroundColor: _kPrimary,
         side: const BorderSide(color: _kPrimary, width: 2),

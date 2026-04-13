@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 import '../../../../../../data/models/company/CompanyActivity.dart';
 import '../../../../../../data/models/company/CompanyInfoModel.dart';
@@ -57,18 +59,40 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _loadUserData();
+  }
 
-    companyInfo = CompanyInfoModel(
-      name: 'TechCorp',
-      industry: 'Technology & Software',
-      description: 'Leading technology company focused on innovative solutions and talent development.',
-      location: 'San Francisco, CA',
-      email: 'careers@techcorp.com',
-      phone: '+1 (555) 123-4567',
-      website: 'www.techcorp.com',
-      founded: '2015',
-      size: '500-1000 employees',
-    );
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userDataString = prefs.getString('user_data');
+    if (userDataString != null) {
+      final userData = jsonDecode(userDataString);
+      setState(() {
+        companyInfo = CompanyInfoModel(
+          name: userData['name'] ?? 'TechCorp',
+          industry: userData['industry'] ?? 'Technology & Software',
+          description: userData['description'] ?? 'Leading technology company focused on innovative solutions and talent development.',
+          location: '${userData['city'] ?? 'San Francisco'}, ${userData['country'] ?? 'CA'}',
+          email: userData['email'] ?? 'careers@techcorp.com',
+          phone: userData['phoneNumber'] ?? '+1 (555) 123-4567',
+          website: userData['website'] ?? 'www.techcorp.com',
+          founded: userData['founded'] ?? '2015',
+          size: userData['size'] ?? '500-1000 employees',
+        );
+      });
+    } else {
+      companyInfo = CompanyInfoModel(
+        name: 'TechCorp',
+        industry: 'Technology & Software',
+        description: 'Leading technology company focused on innovative solutions and talent development.',
+        location: 'San Francisco, CA',
+        email: 'careers@techcorp.com',
+        phone: '+1 (555) 123-4567',
+        website: 'www.techcorp.com',
+        founded: '2015',
+        size: '500-1000 employees',
+      );
+    }
   }
 
   @override
