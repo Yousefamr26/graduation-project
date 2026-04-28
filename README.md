@@ -1,4 +1,4 @@
-<img width="14043" height="8140" alt="Container Diagram drawio" src="https://github.com/user-attachments/assets/2d452eb6-65e2-4c6f-a677-c74909a71919" /><img width="866" height="904" alt="image" src="https://github.com/user-attachments/assets/7d9ebd6a-5c99-4465-b6fc-fb663a9ec6c8" />Problem Statement
+Problem Statement
 
 There is a clear and growing gap between academic education and real market needs, which leads to several challenges in the employment ecosystem.
 
