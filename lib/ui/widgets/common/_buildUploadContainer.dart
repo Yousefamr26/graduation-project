@@ -27,12 +27,9 @@ class _UploadContainerWidgetState extends State<UploadContainerWidget> {
     _imagePath = widget.selectedImagePath;
   }
 
-  // ✅ إضافة didUpdateWidget - مهم جداً!
   @override
   void didUpdateWidget(UploadContainerWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    // لو الـ selectedImagePath اتغير من برة، حدث الـ state
     if (widget.selectedImagePath != oldWidget.selectedImagePath) {
       setState(() {
         _imagePath = widget.selectedImagePath;
@@ -44,8 +41,8 @@ class _UploadContainerWidgetState extends State<UploadContainerWidget> {
     try {
       final pickedFile = await ImagePicker().pickImage(
         source: ImageSource.gallery,
-        imageQuality: 85, // ✅ ضغط الصورة
-        maxWidth: 1920, // ✅ حد أقصى للعرض
+        imageQuality: 85,
+        maxWidth: 1920,
       );
 
       if (pickedFile != null) {
@@ -75,71 +72,102 @@ class _UploadContainerWidgetState extends State<UploadContainerWidget> {
   }
 
   Widget _buildImagePreview() {
-    // ✅ معالجة الصورة من Network أو File
     final imagePath = _imagePath!;
-
     debugPrint("🖼️ Building preview for: $imagePath");
 
-    // صورة من الإنترنت
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       debugPrint("🌐 Loading network image");
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Image.network(
-          imagePath,
-          width: double.infinity,
-          height: double.infinity,
-          fit: BoxFit.cover,
-          headers: const {
-            'Accept': 'image/*',
-            'Cache-Control': 'no-cache',
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) {
-              debugPrint("✅ Network image loaded");
-              return child;
-            }
-            return Container(
-              color: Colors.grey[200],
-              child: Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                      : null,
-                  color: Colors.blue,
+      return SizedBox.expand(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.network(
+            imagePath,
+            fit: BoxFit.cover,
+            headers: const {
+              'Accept': 'image/*',
+              'Cache-Control': 'no-cache',
+            },
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) {
+                debugPrint("✅ Network image loaded");
+                return child;
+              }
+              return Container(
+                color: Colors.grey[200],
+                child: Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                        : null,
+                    color: Colors.blue,
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+            errorBuilder: (context, error, stackTrace) {
+              debugPrint("❌ Network image error: $error");
+              return Container(
+                color: Colors.red[50],
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.broken_image,
+                          size: 40, color: Colors.red),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Failed to load image',
+                        style: TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                      const SizedBox(height: 4),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          imagePath.length > 40
+                              ? '...${imagePath.substring(imagePath.length - 40)}'
+                              : imagePath,
+                          style: TextStyle(
+                            color: Colors.red[700],
+                            fontSize: 10,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+    }
+
+    debugPrint("📁 Loading file image");
+    return SizedBox.expand(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Image.file(
+          File(imagePath),
+          fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            debugPrint("❌ Network image error: $error");
+            debugPrint("❌ File image error: $error");
             return Container(
-              color: Colors.red[50],
-              child: Center(
+              color: Colors.orange[50],
+              child: const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.broken_image, size: 40, color: Colors.red),
+                    Icon(Icons.image_not_supported,
+                        size: 40, color: Colors.orange),
                     SizedBox(height: 8),
                     Text(
-                      'Failed to load image',
-                      style: TextStyle(color: Colors.red, fontSize: 12),
-                    ),
-                    SizedBox(height: 4),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        imagePath.length > 40
-                            ? '...${imagePath.substring(imagePath.length - 40)}'
-                            : imagePath,
-                        style: TextStyle(
-                          color: Colors.red[700],
-                          fontSize: 10,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                      ),
+                      'Image file not found',
+                      style: TextStyle(color: Colors.orange, fontSize: 12),
                     ),
                   ],
                 ),
@@ -147,37 +175,6 @@ class _UploadContainerWidgetState extends State<UploadContainerWidget> {
             );
           },
         ),
-      );
-    }
-
-    // صورة محلية
-    debugPrint("📁 Loading file image");
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Image.file(
-        File(imagePath),
-        width: double.infinity,
-        height: double.infinity,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          debugPrint("❌ File image error: $error");
-          return Container(
-            color: Colors.orange[50],
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.image_not_supported, size: 40, color: Colors.orange),
-                  SizedBox(height: 8),
-                  Text(
-                    'Image file not found',
-                    style: TextStyle(color: Colors.orange, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
       ),
     );
   }
@@ -198,16 +195,16 @@ class _UploadContainerWidgetState extends State<UploadContainerWidget> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.upload, size: 40, color: Colors.blue),
-              SizedBox(height: 8),
+              const Icon(Icons.upload, size: 40, color: Colors.blue),
+              const SizedBox(height: 8),
               Text(
                 widget.title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 15,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'Tap to select image',
                 style: TextStyle(
@@ -222,19 +219,18 @@ class _UploadContainerWidgetState extends State<UploadContainerWidget> {
           children: [
             _buildImagePreview(),
 
-            // زر الحذف
             Positioned(
               top: 8,
               right: 8,
               child: GestureDetector(
                 onTap: _removeImage,
                 child: Container(
-                  padding: EdgeInsets.all(6),
-                  decoration: BoxDecoration(
+                  padding: const EdgeInsets.all(6),
+                  decoration: const BoxDecoration(
                     color: Colors.black54,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.close,
                     color: Colors.white,
                     size: 20,
@@ -243,14 +239,13 @@ class _UploadContainerWidgetState extends State<UploadContainerWidget> {
               ),
             ),
 
-            // زر تغيير الصورة
             Positioned(
               bottom: 8,
               right: 8,
               child: GestureDetector(
                 onTap: _pickImage,
                 child: Container(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 6,
                   ),
@@ -258,14 +253,10 @@ class _UploadContainerWidgetState extends State<UploadContainerWidget> {
                     color: Colors.black54,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                        size: 16,
-                      ),
+                      Icon(Icons.edit, color: Colors.white, size: 16),
                       SizedBox(width: 4),
                       Text(
                         'Change',

@@ -6,12 +6,11 @@ import '../../../../../widgets/common/NetworkImageWidget.dart';
 
 class HistoryScreen extends StatefulWidget {
   final List<Map<String, dynamic>> roadmapHistory;
-  final RoadmapRepository roadmapRepository;
 
+  // حذفنا الـ parameters القديمة من هنا لأننا مش محتاجين نمررها من بره
   const HistoryScreen({
     Key? key,
     required this.roadmapHistory,
-    required this.roadmapRepository,
   }) : super(key: key);
 
   @override
@@ -19,6 +18,9 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  // ✅ تعريف الـ repository هنا مرة واحدة لكل الصفحة
+  final RoadmapRepository roadmapRepo = RoadmapRepository();
+
   String _searchQuery = '';
   String _sortBy = 'date';
   bool _isDeleting = false;
@@ -512,7 +514,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     try {
       debugPrint("🗑️ Starting permanent delete for roadmap ID: $roadmapId");
 
-      final response = await widget.roadmapRepository.permanentlyDeleteRoadmap(roadmapId);
+      // في صفحة الـ UI اللي فيها زرار المسح
+      final response = await roadmapRepo.deleteRoadmap(roadmapId);
 
       if (!mounted) {
         setState(() => _isDeleting = false);

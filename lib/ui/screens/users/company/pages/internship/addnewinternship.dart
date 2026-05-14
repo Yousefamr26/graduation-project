@@ -1,80 +1,99 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../../../../data/models/company/internship-model.dart';
+import 'package:dio/dio.dart';
+import '../../../../../../data/repositories/Internship repository.dart';
 import '../../../../../widgets/common/CustomDropdown.dart';
 import '../../../../../widgets/common/_buildDateField.dart';
 import '../../../../../widgets/common/_buildSection.dart';
 import '../../../../../widgets/common/_buildTextArea.dart';
 import '../../../../../widgets/common/_buildTextField.dart';
-import '../../../../../widgets/common/_buildUploadContainer.dart';
-import 'Internship mock data.dart';
-
 
 class CreateEditInternshipScreen extends StatefulWidget {
-  final InternshipModel? internship;
+  // بنستقبل Map زي الـ Roadmap بدل InternshipModel
+  final Map<String, dynamic>? internship;
 
   const CreateEditInternshipScreen({this.internship, super.key});
 
   @override
-  State<CreateEditInternshipScreen> createState() => _CreateEditInternshipScreenState();
+  State<CreateEditInternshipScreen> createState() =>
+      _CreateEditInternshipScreenState();
 }
 
-class _CreateEditInternshipScreenState extends State<CreateEditInternshipScreen> {
-  final _formKey = GlobalKey<FormState>();
+class _CreateEditInternshipScreenState
+    extends State<CreateEditInternshipScreen> {
+  final _internshipRepo = InternshipRepository();
 
-  late TextEditingController _titleController;
-  late TextEditingController _descController;
-  late TextEditingController _companyNameController;
-  late TextEditingController _locationController;
-  late TextEditingController _maxTraineesController;
-  late TextEditingController _deadlineController;
-  late TextEditingController _requirementsController;
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _maxTraineesController = TextEditingController();
+  final TextEditingController _deadlineController = TextEditingController();
+  final TextEditingController _requirementsController =
+  TextEditingController();
+  final TextEditingController _skillController = TextEditingController();
 
   String? _internshipType;
   String? _duration;
 
-  final List<String> _internshipTypes = ["On-site 🏢", "Remote 🌐", "Hybrid 🔄"];
-  final List<String> _durations = ["1 month", "2 months", "3 months", "6 months", "1 year"];
+  final List<String> _internshipTypes = [
+    "On-site 🏢",
+    "Remote 🌐",
+    "Hybrid 🔄"
+  ];
+  final List<String> _durations = [
+    "1 month",
+    "2 months",
+    "3 months",
+    "6 months",
+    "12 months"
+  ];
 
-  String? _logoPath;
   bool _isPaid = false;
   List<String> _skills = [];
-  final TextEditingController _skillController = TextEditingController();
-
   Map<String, String?> _errors = {};
-  bool _isSubmitting = false;
+  bool _isLoading = false;
 
-  bool get isEditMode => widget.internship != null;
+  bool get isEdit => widget.internship != null;
 
   @override
   void initState() {
     super.initState();
-    _initializeControllers();
+    _initializeData();
   }
 
-  void _initializeControllers() {
-    if (isEditMode) {
-      final internship = widget.internship!;
-      _titleController = TextEditingController(text: internship.title);
-      _descController = TextEditingController(text: internship.description);
-      _companyNameController = TextEditingController(text: internship.companyName);
-      _locationController = TextEditingController(text: internship.location);
-      _maxTraineesController = TextEditingController(text: internship.maxTrainees?.toString() ?? '');
-      _deadlineController = TextEditingController(text: internship.deadline);
-      _requirementsController = TextEditingController(text: internship.requirements.join('\n'));
-      _internshipType = internship.type;
-      _duration = internship.duration;
-      _logoPath = internship.logoPath;
-      _isPaid = internship.isPaid;
-      _skills = List<String>.from(internship.skills);
-    } else {
-      _titleController = TextEditingController();
-      _descController = TextEditingController();
-      _companyNameController = TextEditingController();
-      _locationController = TextEditingController();
-      _maxTraineesController = TextEditingController();
-      _deadlineController = TextEditingController();
-      _requirementsController = TextEditingController();
+  void _initializeData() {
+    if (widget.internship != null) {
+      final d = widget.internship!;
+      _titleController.text    = d['title']       ?? '';
+      _descController.text     = d['description'] ?? '';
+      _locationController.text = d['location']    ?? '';
+      _maxTraineesController.text =
+          (d['maxTrainees'] ?? d['maxtrainees'] ?? '').toString();
+      _isPaid        = d['isPaid']   ?? false;
+      _internshipType = d['type'];      // already converted to String by repo
+      _duration       = d['duration']; // already "3 months" etc.
+
+      // deadline
+      final deadline =
+      (d['applicationDeadline'] ?? d['deadline'] ?? '').toString();
+      if (deadline.isNotEmpty) {
+        _deadlineController.text = deadline.split('T')[0];
+      }
+
+      // ✅ FIX: safe cast — بييجي List<dynamic> من الـ API
+      final rawSkills = d['requiredSkills'] ?? d['skills'] ?? [];
+      if (rawSkills is List) {
+        _skills = rawSkills.map((e) => e.toString()).toList();
+      }
+
+      // requirements
+      final rawReqs = d['requirements'] ?? [];
+      if (rawReqs is List) {
+        _requirementsController.text =
+            rawReqs.map((e) => e.toString()).join('\n');
+      } else {
+        _requirementsController.text = rawReqs.toString();
+      }
     }
   }
 
@@ -82,7 +101,6 @@ class _CreateEditInternshipScreenState extends State<CreateEditInternshipScreen>
   void dispose() {
     _titleController.dispose();
     _descController.dispose();
-    _companyNameController.dispose();
     _locationController.dispose();
     _maxTraineesController.dispose();
     _deadlineController.dispose();
@@ -91,168 +109,158 @@ class _CreateEditInternshipScreenState extends State<CreateEditInternshipScreen>
     super.dispose();
   }
 
-  bool _validateForm({required bool isDraft}) {
-    setState(() => _errors = {});
-    bool isValid = true;
+  // ── Validation ───────────────────────────────────────────
 
-    if (isDraft) return true;
+  bool _validateForm() {
+    _errors.clear();
 
-    if (_titleController.text.trim().isEmpty) {
+    if (_titleController.text.trim().isEmpty)
       _errors['title'] = 'Internship title is required';
-      isValid = false;
-    }
-    if (_descController.text.trim().isEmpty) {
+    if (_descController.text.trim().isEmpty)
       _errors['description'] = 'Description is required';
-      isValid = false;
-    }
-    if (_internshipType == null) {
-      _errors['type'] = 'Internship type is required';
-      isValid = false;
-    }
-    if ((_internshipType == "On-site 🏢" || _internshipType == "Hybrid 🔄") &&
-        _locationController.text.trim().isEmpty) {
-      _errors['location'] = 'Location is required for on-site/hybrid internships';
-      isValid = false;
-    }
-    if (_duration == null) {
-      _errors['duration'] = 'Duration is required';
-      isValid = false;
-    }
-    if (_deadlineController.text.trim().isEmpty) {
+    if (_internshipType == null) _errors['type'] = 'Type is required';
+    if (_duration == null) _errors['duration'] = 'Duration is required';
+    if (_deadlineController.text.trim().isEmpty)
       _errors['deadline'] = 'Application deadline is required';
-      isValid = false;
+    if ((_internshipType == "On-site 🏢" ||
+        _internshipType == "Hybrid 🔄") &&
+        _locationController.text.trim().isEmpty) {
+      _errors['location'] =
+      'Location is required for on-site/hybrid internships';
     }
 
-    if (!isValid) {
-      setState(() {});
+    setState(() {});
+    return _errors.isEmpty;
+  }
+
+  // ── Save ─────────────────────────────────────────────────
+
+  Future<void> _save(bool isPublished) async {
+    if (!_validateForm()) return;
+
+    setState(() => _isLoading = true);
+    try {
+      final deadline =
+      DateFormat('yyyy-MM-dd').parse(_deadlineController.text.trim());
+
+      final requirements = _requirementsController.text
+          .split('\n')
+          .where((l) => l.trim().isNotEmpty)
+          .map((l) => l.trim())
+          .toList();
+
+      final maxTrainees =
+          int.tryParse(_maxTraineesController.text.trim()) ?? 0;
+
+      final durationInMonths =
+      _parseDurationToMonths(_duration ?? '1 month');
+
+      Response? response;
+
+      if (isEdit) {
+        response = await _internshipRepo.updateInternship(
+          internshipId: widget.internship!['id'],
+          title: _titleController.text.trim(),
+          type: _internshipType!,
+          isPaid: _isPaid,
+          maxTrainees: maxTrainees,
+          durationInMonths: durationInMonths,
+          applicationDeadline: deadline,
+          location: _locationController.text.trim(),
+          description: _descController.text.trim(),
+          requiredSkills: _skills,
+          requirements: requirements,
+        );
+      } else {
+        response = await _internshipRepo.createInternship(
+          title: _titleController.text.trim(),
+          type: _internshipType!,
+          isPaid: _isPaid,
+          maxTrainees: maxTrainees,
+          durationInMonths: durationInMonths,
+          applicationDeadline: deadline,
+          location: _locationController.text.trim(),
+          description: _descController.text.trim(),
+          requiredSkills: _skills,
+          requirements: requirements,
+        );
+      }
+
+      if (response != null &&
+          (response.statusCode == 200 || response.statusCode == 201)) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(isEdit
+                ? 'تم التحديث بنجاح!'
+                : isPublished
+                ? 'تم النشر بنجاح!'
+                : 'تم الحفظ كمسودة!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context, true);
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'فشل الحفظ: ${response?.statusCode}\n${response?.data ?? ''}'),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    } on DioException catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill in all required fields'),
+        SnackBar(
+          content: Text(
+              'خطأ في الشبكة: ${e.response?.statusCode}\n${e.response?.data ?? e.message}'),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 5),
         ),
       );
-    }
-    return isValid;
-  }
-
-  Future<void> _handleSubmit({required bool isDraft}) async {
-    if (_isSubmitting) return;
-    if (!_validateForm(isDraft: isDraft)) return;
-
-    setState(() => _isSubmitting = true);
-
-    try {
-      final internshipModel = _createInternshipModel(
-        status: isEditMode ? widget.internship!.status : (isDraft ? "Draft" : "Published"),
-        // ✅ FIX: ?? fallback لو الـ id كان null
-        id: isEditMode
-            ? (widget.internship!.id ?? InternshipMockData.generateMockId())
-            : InternshipMockData.generateMockId(),
-      );
-
-      // ✅ MOCK: Create/Update في الـ static list
-      if (isEditMode) {
-        InternshipMockData.updateInternship(internshipModel.id, internshipModel);
-      } else {
-        InternshipMockData.addInternship(internshipModel);
-      }
-
-      // ❌ BACKEND:
-      // if (isEditMode) {
-      //   await _internshipRepo.updateInternship(internshipModel);
-      // } else {
-      //   await _internshipRepo.createInternship(internshipModel);
-      // }
-
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      if (mounted) {
-        String message = isEditMode
-            ? 'Changes saved successfully!'
-            : isDraft
-            ? 'Draft saved successfully!'
-            : 'Internship published successfully!';
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        Navigator.pop(context, internshipModel);
-      }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('خطأ غير متوقع: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
-      if (mounted) setState(() => _isSubmitting = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  InternshipModel _createInternshipModel({required String status, required String id}) {
-    final requirements = _requirementsController.text
-        .split('\n')
-        .where((line) => line.trim().isNotEmpty)
-        .map((line) => line.trim())
-        .toList();
-
-    return InternshipModel(
-      id: id,
-      title: _titleController.text.trim(),
-      description: _descController.text.trim(),
-      companyName: _companyNameController.text.trim(),
-      logoPath: _logoPath,
-      type: _internshipType!,
-      location: _locationController.text.trim(),
-      isPaid: _isPaid,
-      duration: _duration!,
-      maxTrainees: _maxTraineesController.text.isEmpty
-          ? null
-          : int.tryParse(_maxTraineesController.text),
-      skills: _skills,
-      requirements: requirements,
-      postedDate: isEditMode
-          ? widget.internship!.postedDate
-          : DateFormat('yyyy-MM-dd').format(DateTime.now()),
-      deadline: _deadlineController.text,
-      applicantsCount: isEditMode ? widget.internship!.applicantsCount : 0,
-      status: status,
-      isFeatured: isEditMode ? widget.internship!.isFeatured : false,
-    );
+  int _parseDurationToMonths(String duration) {
+    final match = RegExp(r'(\d+)').firstMatch(duration);
+    if (match != null) return int.tryParse(match.group(1)!) ?? 1;
+    return 1;
   }
 
-  Future<void> _pickDate(TextEditingController controller, String field) async {
+  Future<void> _pickDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xff1676C4),
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xff1676C4),
+            onPrimary: Colors.white,
           ),
-          child: child!,
-        );
-      },
+        ),
+        child: child!,
+      ),
     );
     if (picked != null) {
       setState(() {
-        controller.text = DateFormat('yyyy-MM-dd').format(picked);
-        _errors[field] = null;
+        _deadlineController.text =
+            DateFormat('yyyy-MM-dd').format(picked);
+        _errors['deadline'] = null;
       });
     }
   }
@@ -276,18 +284,17 @@ class _CreateEditInternshipScreenState extends State<CreateEditInternshipScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isEditMode ? "Edit Internship" : "Create New Internship",
+              isEdit ? "Edit Internship" : "Create Internship",
               style: const TextStyle(color: Colors.white, fontSize: 18),
             ),
             Text(
-              isEditMode
+              isEdit
                   ? "Update internship details"
-                  : "Fill in the details to post a new internship opportunity",
+                  : "Fill in the details to post a new internship",
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
-                fontSize: 12,
-                fontWeight: FontWeight.w300,
-              ),
+                  color: Colors.white.withOpacity(0.9),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w300),
             ),
           ],
         ),
@@ -296,280 +303,306 @@ class _CreateEditInternshipScreenState extends State<CreateEditInternshipScreen>
         elevation: 0,
       ),
       backgroundColor: Colors.grey[100],
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              // Internship Information
-              SectionWidget(
-                title: "Internship Information",
-                children: [
-                  TextFieldWidget(
-                    controller: _titleController,
-                    label: "Internship Title",
-                    hint: "e.g., Software Development Intern",
-                  ),
-                  if (_errors['title'] != null) ...[
-                    const SizedBox(height: 4),
-                    Text(_errors['title']!, style: const TextStyle(color: Colors.red, fontSize: 12)),
-                  ],
-                  const SizedBox(height: 12),
-                  TextFieldWidget(
-                    controller: _companyNameController,
-                    label: "Company Name (Optional)",
-                    hint: "e.g., TechCorp Solutions",
-                  ),
-                  const SizedBox(height: 12),
-                  UploadContainerWidget(
-                    title: "Upload Company Logo",
-                    selectedImagePath: _logoPath,
-                    onImageChanged: (path) => setState(() => _logoPath = path),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomDropdown(
-                          label: "Type",
-                          items: _internshipTypes,
-                          value: _internshipType,
-                          onChanged: (v) => setState(() { _internshipType = v; _errors['type'] = null; }),
-                          hint: "Select type",
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: CustomDropdown(
-                          label: "Duration",
-                          items: _durations,
-                          value: _duration,
-                          onChanged: (v) => setState(() { _duration = v; _errors['duration'] = null; }),
-                          hint: "Select duration",
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (_errors['type'] != null) ...[
-                    const SizedBox(height: 4),
-                    Text(_errors['type']!, style: const TextStyle(color: Colors.red, fontSize: 12)),
-                  ],
-                  const SizedBox(height: 12),
-                  if (_internshipType == "On-site 🏢" || _internshipType == "Hybrid 🔄") ...[
-                    TextFieldWidget(
-                      controller: _locationController,
-                      label: "Location",
-                      hint: "e.g., Cairo, Egypt",
-                    ),
-                    if (_errors['location'] != null) ...[
-                      const SizedBox(height: 4),
-                      Text(_errors['location']!, style: const TextStyle(color: Colors.red, fontSize: 12)),
-                    ],
-                    const SizedBox(height: 12),
-                  ],
-                  SwitchListTile(
-                    title: const Text("This internship is paid"),
-                    value: _isPaid,
-                    onChanged: (v) => setState(() => _isPaid = v),
-                    activeColor: const Color(0xff1676C4),
-                    activeTrackColor: const Color(0xffa3c9ff),
-                    inactiveThumbColor: Colors.grey,
-                    inactiveTrackColor: Colors.grey[300],
-                  ),
-                  const SizedBox(height: 12),
-                  TextFieldWidget(
-                    controller: _maxTraineesController,
-                    label: "Maximum Trainees (Optional)",
-                    hint: "Optional - Maximum number of trainees to accept",
-                    keyboardType: TextInputType.number,
-                  ),
-                ],
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // ── Error summary ────────────────────────
+            if (_errors.values.any((e) => e != null))
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _errors.values
+                      .where((e) => e != null)
+                      .map((e) => Text("• $e",
+                      style:
+                      const TextStyle(color: Colors.red)))
+                      .toList(),
+                ),
               ),
 
-              const SizedBox(height: 16),
-
-              // Internship Description
-              SectionWidget(
-                title: "Internship Description",
-                children: [
-                  TextAreaWidget(
-                    controller: _descController,
-                    label: "Description",
-                    hint: "This will be shown in the internship details",
-                    maxLines: 6,
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "${_descController.text.length} characters • This will be shown in the internship details",
-                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+            // ── Internship Information ───────────────
+            SectionWidget(
+              title: "Internship Information",
+              children: [
+                TextFieldWidget(
+                  controller: _titleController,
+                  label: "Internship Title",
+                  hint: "e.g., Software Development Intern",
+                ),
+                if (_errors['title'] != null)
+                  _errorText(_errors['title']!),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomDropdown(
+                        label: "Type",
+                        items: _internshipTypes,
+                        value: _internshipType,
+                        onChanged: (v) => setState(() {
+                          _internshipType = v;
+                          _errors['type'] = null;
+                        }),
+                        hint: "Select type",
+                      ),
                     ),
-                  ),
-                  if (_errors['description'] != null) ...[
-                    const SizedBox(height: 4),
-                    Text(_errors['description']!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: CustomDropdown(
+                        label: "Duration",
+                        items: _durations,
+                        value: _duration,
+                        onChanged: (v) => setState(() {
+                          _duration = v;
+                          _errors['duration'] = null;
+                        }),
+                        hint: "Select duration",
+                      ),
+                    ),
                   ],
+                ),
+                if (_errors['type'] != null)
+                  _errorText(_errors['type']!),
+                if (_errors['duration'] != null)
+                  _errorText(_errors['duration']!),
+                const SizedBox(height: 12),
+                if (_internshipType == "On-site 🏢" ||
+                    _internshipType == "Hybrid 🔄") ...[
+                  TextFieldWidget(
+                    controller: _locationController,
+                    label: "Location",
+                    hint: "e.g., Cairo, Egypt",
+                  ),
+                  if (_errors['location'] != null)
+                    _errorText(_errors['location']!),
+                  const SizedBox(height: 12),
                 ],
-              ),
+                SwitchListTile(
+                  title: const Text("This internship is paid"),
+                  value: _isPaid,
+                  onChanged: (v) => setState(() => _isPaid = v),
+                  activeColor: const Color(0xff1676C4),
+                  activeTrackColor: const Color(0xffa3c9ff),
+                  inactiveThumbColor: Colors.grey,
+                  inactiveTrackColor: Colors.grey[300],
+                ),
+                const SizedBox(height: 12),
+                TextFieldWidget(
+                  controller: _maxTraineesController,
+                  label: "Maximum Trainees",
+                  hint: "Optional",
+                  keyboardType: TextInputType.number,
+                ),
+              ],
+            ),
 
-              const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-              // Required Skills
-              SectionWidget(
-                title: "Required Skills",
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _skillController,
-                          decoration: InputDecoration(
-                            hintText: "Add a skill",
-                            hintStyle: TextStyle(color: Colors.grey[400]),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(color: Color(0xff1676C4), width: 2),
-                            ),
+            // ── Description ──────────────────────────
+            SectionWidget(
+              title: "Internship Description",
+              children: [
+                TextAreaWidget(
+                  controller: _descController,
+                  label: "Description",
+                  hint: "What will trainees do?",
+                  maxLines: 6,
+                ),
+                if (_errors['description'] != null)
+                  _errorText(_errors['description']!),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Skills ───────────────────────────────
+            SectionWidget(
+              title: "Required Skills",
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _skillController,
+                        decoration: InputDecoration(
+                          hintText: "Add a skill",
+                          border: OutlineInputBorder(
+                              borderRadius:
+                              BorderRadius.circular(8)),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius:
+                            BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                                color: Color(0xff1676C4),
+                                width: 2),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: _addSkill,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff1676C4),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        child: const Text('Add'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  if (_skills.isEmpty)
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[300]!),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(Icons.stars, color: Colors.grey[400], size: 32),
-                          const SizedBox(height: 8),
-                          Text(
-                            'No skills added yet. Add required skills above.',
-                            style: TextStyle(color: Colors.grey[600], fontSize: 13),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Examples: Python, Java, JavaScript, React, Machine Learning, etc.',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 11),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    )
-                  else
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: _skills.asMap().entries.map((entry) {
-                        return Chip(
-                          label: Text(entry.value),
-                          deleteIcon: const Icon(Icons.close, size: 18),
-                          onDeleted: () => _removeSkill(entry.key),
-                          backgroundColor: const Color(0xff1676C4).withOpacity(0.1),
-                          deleteIconColor: const Color(0xff1676C4),
-                        );
-                      }).toList(),
                     ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Requirements
-              SectionWidget(
-                title: "Requirements",
-                children: [
-                  TextAreaWidget(
-                    controller: _requirementsController,
-                    label: "Requirements",
-                    hint: "Enter each requirement on a separate line. Each line will appear as a bullet point.",
-                    maxLines: 8,
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Deadline
-              SectionWidget(
-                title: "Application Deadline",
-                children: [
-                  DateFieldWidget(
-                    controller: _deadlineController,
-                    label: "Deadline",
-                    hint: "Select Date",
-                    errorText: _errors['deadline'],
-                    onTap: () => _pickDate(_deadlineController, 'deadline'),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              // Action Buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _isSubmitting ? null : () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.grey[700],
-                        side: BorderSide(color: Colors.grey[400]!),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: const Text("Cancel"),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _isSubmitting ? null : () => _handleSubmit(isDraft: false),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: _addSkill,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff1676C4),
+                        backgroundColor:
+                        const Color(0xff1676C4),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.circular(8)),
                       ),
-                      child: _isSubmitting
-                          ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                          : Text(isEditMode ? "Save Changes" : "Post Internship"),
+                      child: const Text('Add'),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                if (_skills.isEmpty)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(8),
+                      border:
+                      Border.all(color: Colors.grey[300]!),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(Icons.stars,
+                            color: Colors.grey[400], size: 32),
+                        const SizedBox(height: 8),
+                        Text(
+                          'No skills added yet.',
+                          style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 13),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _skills
+                        .asMap()
+                        .entries
+                        .map((entry) => Chip(
+                      label: Text(entry.value),
+                      deleteIcon: const Icon(
+                          Icons.close,
+                          size: 18),
+                      onDeleted: () =>
+                          _removeSkill(entry.key),
+                      backgroundColor: const Color(
+                          0xff1676C4)
+                          .withOpacity(0.1),
+                      deleteIconColor:
+                      const Color(0xff1676C4),
+                    ))
+                        .toList(),
                   ),
-                ],
-              ),
-              const SizedBox(height: 30),
-            ],
-          ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Requirements ─────────────────────────
+            SectionWidget(
+              title: "Requirements",
+              children: [
+                TextAreaWidget(
+                  controller: _requirementsController,
+                  label: "Requirements",
+                  hint:
+                  "Enter each requirement on a separate line.",
+                  maxLines: 8,
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Deadline ─────────────────────────────
+            SectionWidget(
+              title: "Application Deadline",
+              children: [
+                DateFieldWidget(
+                  controller: _deadlineController,
+                  label: "Deadline",
+                  hint: "Select Date",
+                  errorText: _errors['deadline'],
+                  onTap: _pickDate,
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // ── Action Buttons ───────────────────────
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _isLoading
+                        ? null
+                        : () => _save(false),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.grey[700],
+                      side: BorderSide(color: Colors.grey[400]!),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius.circular(12)),
+                    ),
+                    child: const Text("Draft"),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed:
+                    _isLoading ? null : () => _save(true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                      const Color(0xff1676C4),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius.circular(12)),
+                    ),
+                    child: Text(
+                        isEdit ? "Save Changes" : "Publish"),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+          ],
         ),
       ),
     );
   }
+
+  Widget _errorText(String message) => Padding(
+    padding: const EdgeInsets.only(top: 4, left: 4),
+    child: Text(message,
+        style: const TextStyle(color: Colors.red, fontSize: 12)),
+  );
 }

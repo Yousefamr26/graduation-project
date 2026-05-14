@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../../../data/repositories/roadmap_repository.dart';
+
 const _kPrimary      = Color(0xff1893ff);
 const _kPrimaryLight = Color(0xffE8F4FF);
 const _kBackground   = Color(0xffF5F7FA);
@@ -12,8 +14,8 @@ const _kBorder       = Color(0xffE5E7EB);
 
 class QuizAIGenerationScreen extends StatefulWidget {
   final String roadmapId;
-  final String quizType;     // 'MCQ' or 'TrueFalse'
-  final int    numQuestions; // 1-20
+  final String quizType;
+  final int    numQuestions;
 
   const QuizAIGenerationScreen({
     Key? key,
@@ -27,7 +29,7 @@ class QuizAIGenerationScreen extends StatefulWidget {
 }
 
 class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
-  static const _baseUrl = 'http://smartcareerhub.runasp.net/api/roadmaps';
+  final RoadmapRepository _repo = RoadmapRepository();
 
   bool    _isLoading = true;
   String? _error;
@@ -37,94 +39,154 @@ class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchQuestions();
+    _generateAndPoll();
   }
 
-  // ── API ─────────────────────────────────────────────────
-
-  Future<void> _fetchQuestions() async {
-    setState(() { _isLoading = true; _error = null; });
+  // ── Step 1: trigger generation ─────────────────────────────
+  Future<void> _generateAndPoll() async {
+    if (!mounted) return;
+    setState(() { _isLoading = true; _error = null; _generated = []; _selected.clear(); });
 
     try {
-      final dio = Dio();
-      final url =
-          '$_baseUrl/${widget.roadmapId}/generate-quiz'
-          '?quizType=${widget.quizType}'
-          '&numQuestions=${widget.numQuestions}';
-
-      debugPrint('🤖 AI Generate: GET $url');
-
-      final response = await dio.get(
-        url,
-        options: Options(
-          validateStatus: (s) => true,
-          receiveTimeout: const Duration(seconds: 60),
-          sendTimeout:    const Duration(seconds: 30),
-        ),
+      // ✅ Step 1: POST لتشغيل الـ AI generation
+      final genResponse = await _repo.generateAiQuiz(
+        roadmapId:    int.parse(widget.roadmapId),
+        quizType:     widget.quizType,
+        numQuestions: widget.numQuestions,
       );
 
-      debugPrint('✅ Status: ${response.statusCode}');
-      debugPrint('📦 Data: ${response.data}');
+      debugPrint('🤖 [GENERATE] Status: ${genResponse?.statusCode}');
 
-      if (response.statusCode == 200) {
-        final raw = response.data;
-        List<dynamic> list = [];
-
-        if (raw is List) {
-          list = raw;
-        } else if (raw is Map) {
-          list = raw['questions'] as List?
-              ?? raw['data']      as List?
-              ?? raw['result']    as List?
-              ?? [];
-        }
-
-        final parsed = list.map<Map<String, dynamic>>((item) {
-          List<String> options = [];
-          if (item['options'] is List) {
-            options = List<String>.from(
-                (item['options'] as List).map((o) => o.toString()));
-          } else if (item['optionsJson'] is String) {
-            try {
-              options = List<String>.from(
-                  jsonDecode(item['optionsJson'] as String));
-            } catch (_) {}
-          }
-
-          return {
-            'text':          item['text']?.toString() ?? item['question']?.toString() ?? '',
-            'type':          item['type']?.toString() ?? widget.quizType,
-            'options':       options,
-            'correctAnswer': item['correctAnswer']?.toString() ?? item['answer']?.toString() ?? '',
-            'points':        (item['points'] as num?)?.toInt() ?? 5,
-          };
-        }).where((q) => (q['text'] as String).isNotEmpty).toList();
-
+      if (genResponse == null ||
+          (genResponse.statusCode != 200 &&
+              genResponse.statusCode != 201 &&
+              genResponse.statusCode != 202)) {
         setState(() {
-          _generated = parsed;
-          _selected.addAll(List.generate(parsed.length, (i) => i));
+          _error     = 'Failed to start generation (${genResponse?.statusCode})';
           _isLoading = false;
         });
-      } else {
-        setState(() {
-          _error     = 'Server returned ${response.statusCode}.\n${response.data?.toString() ?? ''}';
-          _isLoading = false;
-        });
+        return;
       }
-    } on DioException catch (e) {
-      setState(() {
-        _error     = 'Network error: ${e.message}';
-        _isLoading = false;
-      });
+
+      // ✅ Step 2: Poll حتى تكتمل
+      await _pollForResult();
+
     } catch (e) {
+      debugPrint('❌ [GENERATE ERROR] $e');
+      if (!mounted) return;
+      setState(() { _error = 'Error: $e'; _isLoading = false; });
+    }
+  }
+
+  // ── Step 2: poll until COMPLETED ───────────────────────────
+  Future<void> _pollForResult() async {
+    const maxRetries = 20;
+    const delay      = Duration(seconds: 3);
+
+    for (int i = 0; i < maxRetries; i++) {
+      await Future.delayed(delay);
+      if (!mounted) return;
+
+      try {
+        final fetchResponse = await _repo.getGeneratedQuiz(
+          int.parse(widget.roadmapId),
+        );
+        if (fetchResponse == null) continue;
+
+        debugPrint('🔄 [POLL $i] Status: ${fetchResponse.statusCode}');
+
+        final responseData = fetchResponse.data;
+
+        if (responseData is Map) {
+          final status = responseData['status'];
+          final code   = responseData['code'];
+
+          // لسه شغال
+          if (status == 'PENDING' || code == 'QUIZ_NOT_READY') continue;
+
+          // اكتمل
+          if (status == 'COMPLETED' || responseData['data'] != null) {
+            final questions = _parseQuestions(responseData);
+            debugPrint('✅ [POLL] Parsed ${questions.length} questions');
+
+            if (!mounted) return;
+            setState(() {
+              _generated = questions;
+              _selected.addAll(List.generate(questions.length, (i) => i));
+              _isLoading = false;
+            });
+            return;
+          }
+        }
+      } catch (e) {
+        debugPrint('⚠️ [POLL $i] Error: $e');
+        continue;
+      }
+    }
+
+    // timeout
+    if (mounted) {
       setState(() {
-        _error     = 'Unexpected error: $e';
+        _error     = 'Quiz generation timed out. Please try again.';
         _isLoading = false;
       });
     }
   }
 
-  // ── Actions ─────────────────────────────────────────────
+  // ── Parse questions from API response ──────────────────────
+  List<Map<String, dynamic>> _parseQuestions(Map responseData) {
+    try {
+      final dataList = responseData['data'];
+      if (dataList == null || dataList is! List || dataList.isEmpty) return [];
+
+      final firstQuiz = dataList[0];
+      if (firstQuiz is! Map) return [];
+
+      final rawQuestions    = firstQuiz['questions'];
+      if (rawQuestions == null || rawQuestions is! List) return [];
+
+      // ✅ احسب points لكل question
+      final quizTotalPoints   = (firstQuiz['points'] as num? ?? 0).toInt();
+      final questionCount     = rawQuestions.length;
+      final pointsPerQuestion = questionCount > 0
+          ? (quizTotalPoints / questionCount).round()
+          : 5;
+
+      debugPrint('✅ [POINTS] Quiz total: $quizTotalPoints | Per Q: $pointsPerQuestion');
+
+      return rawQuestions.map<Map<String, dynamic>>((q) {
+        final question  = Map<String, dynamic>.from(q as Map);
+        final optionsRaw = question['optionsJson'];
+
+        // ✅ parse options
+        if (optionsRaw is String) {
+          try {
+            question['options'] = jsonDecode(optionsRaw) as List;
+          } catch (_) {
+            question['options'] = [];
+          }
+        } else if (optionsRaw is List) {
+          question['options'] = optionsRaw;
+        } else {
+          question['options'] = [];
+        }
+
+        // ✅ اضبط الـ points لو مش موجودة
+        question['points'] ??= pointsPerQuestion;
+
+        // ✅ normalize field names
+        question['text'] ??= question['questionText'] ?? '';
+
+        return question;
+      }).where((q) => (q['text'] as String? ?? '').isNotEmpty).toList();
+
+    } catch (e) {
+      debugPrint('❌ [PARSE] Error: $e');
+      return [];
+    }
+  }
+
+  // ── Actions ─────────────────────────────────────────────────
 
   void _toggle(int index) => setState(() {
     _selected.contains(index) ? _selected.remove(index) : _selected.add(index);
@@ -144,7 +206,7 @@ class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
   int get _mcqCount => _generated.where((q) => q['type'] == 'MCQ').length;
   int get _tfCount  => _generated.where((q) => q['type'] == 'TrueFalse').length;
 
-  // ── BUILD ───────────────────────────────────────────────
+  // ── BUILD ───────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -183,11 +245,8 @@ class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
           TextButton(
             onPressed: _selectAll,
             child: Text(
-              _selected.length == _generated.length
-                  ? 'Deselect All'
-                  : 'Select All',
-              style: const TextStyle(
-                  color: _kPrimary, fontWeight: FontWeight.w600),
+              _selected.length == _generated.length ? 'Deselect All' : 'Select All',
+              style: const TextStyle(color: _kPrimary, fontWeight: FontWeight.w600),
             ),
           ),
       ]),
@@ -206,16 +265,12 @@ class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Container(
           padding: const EdgeInsets.all(24),
-          decoration: const BoxDecoration(
-              color: _kPrimaryLight, shape: BoxShape.circle),
+          decoration: const BoxDecoration(color: _kPrimaryLight, shape: BoxShape.circle),
           child: const CircularProgressIndicator(color: _kPrimary),
         ),
         const SizedBox(height: 24),
-        const Text('Generating questions with AI...',
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: _kTextDark)),
+        const Text('AI is generating your questions...',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: _kTextDark)),
         const SizedBox(height: 8),
         Text('This may take a few seconds',
             style: TextStyle(fontSize: 13, color: Colors.grey[500])),
@@ -230,31 +285,24 @@ class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Container(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-                color: Colors.red[50], shape: BoxShape.circle),
+            decoration: BoxDecoration(color: Colors.red[50], shape: BoxShape.circle),
             child: Icon(Icons.error_outline, size: 48, color: Colors.red[400]),
           ),
           const SizedBox(height: 20),
           const Text('Generation Failed',
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: _kTextDark)),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _kTextDark)),
           const SizedBox(height: 8),
-          Text(_error!,
-              textAlign: TextAlign.center,
+          Text(_error!, textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: Colors.grey[600])),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: _fetchQuestions,
+            onPressed: _generateAndPoll,
             icon: const Icon(Icons.refresh_rounded),
             label: const Text('Try Again'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: _kPrimary,
-              foregroundColor: Colors.white,
+              backgroundColor: _kPrimary, foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
         ]),
@@ -267,11 +315,10 @@ class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Icon(Icons.quiz_outlined, size: 56, color: Colors.grey[400]),
         const SizedBox(height: 16),
-        const Text('No questions generated',
-            style: TextStyle(fontSize: 16, color: _kTextDark)),
+        const Text('No questions generated', style: TextStyle(fontSize: 16, color: _kTextDark)),
         const SizedBox(height: 8),
         ElevatedButton(
-          onPressed: _fetchQuestions,
+          onPressed: _generateAndPoll,
           style: ElevatedButton.styleFrom(backgroundColor: _kPrimary),
           child: const Text('Retry', style: TextStyle(color: Colors.white)),
         ),
@@ -285,7 +332,7 @@ class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
       children: [
         _buildInsightCard(),
         const SizedBox(height: 16),
-        ..._generated.asMap().entries.map((e) => _buildQuestionCard(e.key)),
+        ..._generated.asMap().entries.map((e) => _buildQuestionCard(e.key, e.value)),
       ],
     );
   }
@@ -302,33 +349,23 @@ class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
         Row(children: [
           Container(
             padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-                color: _kCardBg, borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: _kCardBg, borderRadius: BorderRadius.circular(8)),
             child: const Icon(Icons.auto_awesome, color: _kPrimary, size: 16),
           ),
           const SizedBox(width: 8),
           const Text('AI INSIGHT',
-              style: TextStyle(
-                  fontSize: 11,
-                  color: _kPrimary,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1)),
+              style: TextStyle(fontSize: 11, color: _kPrimary,
+                  fontWeight: FontWeight.w700, letterSpacing: 1)),
         ]),
         const SizedBox(height: 12),
         Text('${_generated.length} Questions Generated',
-            style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: _kTextDark)),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: _kTextDark)),
         const SizedBox(height: 4),
         Text('Review and select which to add to the quiz',
             style: TextStyle(fontSize: 13, color: Colors.grey[600])),
         const SizedBox(height: 16),
         Row(children: [
-          if (_mcqCount > 0) ...[
-            _buildBadge('$_mcqCount MCQ'),
-            const SizedBox(width: 12),
-          ],
+          if (_mcqCount > 0) ...[_buildBadge('$_mcqCount MCQ'), const SizedBox(width: 12)],
           if (_tfCount > 0) _buildBadge('$_tfCount True/False'),
         ]),
       ]),
@@ -344,185 +381,188 @@ class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
         border: Border.all(color: _kPrimary.withOpacity(0.3)),
       ),
       child: Text(label,
-          style: const TextStyle(
-              fontSize: 12, color: _kPrimary, fontWeight: FontWeight.w700)),
+          style: const TextStyle(fontSize: 12, color: _kPrimary, fontWeight: FontWeight.w700)),
     );
   }
 
-  Widget _buildQuestionCard(int i) {
-    final q          = _generated[i];
-    final isSelected = _selected.contains(i);
-    final isMCQ      = (q['type'] as String) == 'MCQ';
-    final options    = q['options'] as List<String>;
-    final correct    = q['correctAnswer'] as String;
+  Widget _buildQuestionCard(int index, Map<String, dynamic> question) {
+    final text          = (question['text'] ?? 'Question ${index + 1}').toString();
+    final correctAnswer = (question['correctAnswer'] ?? question['answer'] ?? '').toString().trim();
+    final options       = question['options'] ?? <dynamic>[];
+    final points        = question['points'] ?? 0;
+    final isSelected    = _selected.contains(index);
 
     return GestureDetector(
-      onTap: () => _toggle(i),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      onTap: () => _toggle(index),
+      child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: _kCardBg,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? _kPrimary.withOpacity(0.5) : _kBorder,
-            width: isSelected ? 1.5 : 1,
+            width: isSelected ? 2 : 1,
           ),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2)),
+          ],
         ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            SizedBox(
-              width: 22, height: 22,
-              child: Checkbox(
-                value: isSelected,
-                onChanged: (_) => _toggle(i),
-                activeColor: _kPrimary,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4)),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: isMCQ ? _kPrimaryLight : Colors.green[50],
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(isMCQ ? 'MCQ' : 'True / False',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: isMCQ ? _kPrimary : Colors.green[700],
-                  )),
-            ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                  color: _kPrimaryLight,
-                  borderRadius: BorderRadius.circular(8)),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                const Icon(Icons.stars_rounded, size: 12, color: _kPrimary),
-                const SizedBox(width: 4),
-                Text('${q['points']}',
-                    style: const TextStyle(
-                        fontSize: 11,
-                        color: _kPrimary,
-                        fontWeight: FontWeight.w700)),
-              ]),
-            ),
-          ]),
-
-          const SizedBox(height: 12),
-          Text(q['text'] as String,
-              style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: _kTextDark)),
-
-          // MCQ options
-          if (isMCQ && options.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            ...options.map((opt) {
-              final isCorrect = opt == correct;
-              return Container(
-                margin: const EdgeInsets.only(bottom: 5),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isCorrect ? Colors.green[50] : _kBackground,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: isCorrect
-                        ? Colors.green.withOpacity(0.4)
-                        : Colors.transparent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Header ──────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 8, 0),
+              child: Row(children: [
+                Container(
+                  width: 28, height: 28,
+                  decoration: BoxDecoration(
+                    color: isSelected ? _kPrimary : Colors.grey[300],
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text('${index + 1}',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
                   ),
                 ),
-                child: Row(children: [
-                  Icon(
-                    isCorrect
-                        ? Icons.check_circle_rounded
-                        : Icons.circle_outlined,
-                    size: 14,
-                    color: isCorrect
-                        ? Colors.green[600]
-                        : Colors.grey[400],
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(text,
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: _kTextDark)),
+                ),
+                const SizedBox(width: 8),
+                // ✅ Points badge
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(opt,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: isCorrect
-                              ? Colors.green[700]
-                              : _kTextDark,
-                          fontWeight: isCorrect
-                              ? FontWeight.w600
-                              : FontWeight.w400,
-                        )),
-                  ),
-                ]),
-              );
-            }),
-          ],
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    const Icon(Icons.stars, size: 14, color: Colors.amber),
+                    const SizedBox(width: 3),
+                    Text('$points pts',
+                        style: const TextStyle(fontSize: 11, color: Colors.amber, fontWeight: FontWeight.bold)),
+                  ]),
+                ),
+                // Checkbox
+                Checkbox(
+                  value: isSelected,
+                  onChanged: (_) => _toggle(index),
+                  activeColor: _kPrimary,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                ),
+              ]),
+            ),
 
-          // True/False correct answer
-          if (!isMCQ) ...[
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                  color: _kBackground,
-                  borderRadius: BorderRadius.circular(8)),
-              child: Row(children: [
-                Text('CORRECT: ',
-                    style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[500],
-                        fontWeight: FontWeight.w600)),
-                Text(correct,
-                    style: const TextStyle(
-                        fontSize: 13,
-                        color: _kPrimary,
-                        fontWeight: FontWeight.w600)),
+            // ── Options ──────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+              child: options is List && options.isNotEmpty
+                  ? Column(
+                children: List.generate(options.length, (i) {
+                  final opt = options[i].toString().trim();
+
+                  // ✅ إصلاح correct answer matching
+                  bool isCorrect = false;
+                  if (opt.isNotEmpty && correctAnswer.isNotEmpty) {
+                    // حالة 1: correctAnswer حرف واحد + option يبدأ بـ "X)"
+                    if (correctAnswer.length == 1 && opt.length >= 2 && opt[1] == ')') {
+                      isCorrect = opt[0].toUpperCase() == correctAnswer.toUpperCase();
+                    }
+                    // حالة 2: مطابقة كاملة
+                    else if (opt.toUpperCase() == correctAnswer.toUpperCase()) {
+                      isCorrect = true;
+                    }
+                    // حالة 3: الـ option يبدأ بالـ correctAnswer
+                    else if (opt.toUpperCase().startsWith(correctAnswer.toUpperCase())) {
+                      isCorrect = true;
+                    }
+                  }
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isCorrect ? Colors.green.withOpacity(0.1) : Colors.grey[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isCorrect ? Colors.green.withOpacity(0.4) : Colors.grey[200]!,
+                      ),
+                    ),
+                    child: Row(children: [
+                      Icon(
+                        isCorrect ? Icons.check_circle : Icons.radio_button_unchecked,
+                        size: 16,
+                        color: isCorrect ? Colors.green : Colors.grey[400],
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(opt,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: isCorrect ? Colors.green[800] : Colors.grey[800],
+                              fontWeight: isCorrect ? FontWeight.w600 : FontWeight.normal,
+                            )),
+                      ),
+                    ]),
+                  );
+                }),
+              )
+                  : Row(children: [
+                _tfChip('True',  correctAnswer.toLowerCase() == 'true'),
+                const SizedBox(width: 8),
+                _tfChip('False', correctAnswer.toLowerCase() == 'false'),
               ]),
             ),
           ],
-        ]),
+        ),
       ),
+    );
+  }
+
+  Widget _tfChip(String label, bool isCorrect) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: isCorrect ? Colors.green.withOpacity(0.1) : Colors.grey[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isCorrect ? Colors.green.withOpacity(0.4) : Colors.grey[200]!,
+        ),
+      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(isCorrect ? Icons.check_circle : Icons.radio_button_unchecked,
+            size: 16, color: isCorrect ? Colors.green : Colors.grey[400]),
+        const SizedBox(width: 6),
+        Text(label,
+            style: TextStyle(
+              fontSize: 13,
+              color: isCorrect ? Colors.green[800] : Colors.grey[700],
+              fontWeight: isCorrect ? FontWeight.bold : FontWeight.normal,
+            )),
+      ]),
     );
   }
 
   Widget _buildBottomBar() {
     return Container(
-      padding: EdgeInsets.fromLTRB(
-          16, 12, 16, MediaQuery.of(context).padding.bottom + 12),
+      padding: EdgeInsets.fromLTRB(16, 12, 16, MediaQuery.of(context).padding.bottom + 12),
       decoration: BoxDecoration(
         color: _kCardBg,
         boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 12,
-              offset: const Offset(0, -4))
+          BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 12, offset: const Offset(0, -4))
         ],
       ),
       child: Row(children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-              color: _kPrimaryLight,
-              borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(color: _kPrimaryLight, borderRadius: BorderRadius.circular(10)),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             const Icon(Icons.check_box_rounded, color: _kPrimary, size: 18),
             const SizedBox(width: 6),
             Text('${_selected.length} selected',
-                style: const TextStyle(
-                    fontSize: 13,
-                    color: _kPrimary,
-                    fontWeight: FontWeight.w700)),
+                style: const TextStyle(fontSize: 13, color: _kPrimary, fontWeight: FontWeight.w700)),
           ]),
         ),
         const SizedBox(width: 12),
@@ -535,11 +575,9 @@ class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
                   foregroundColor: _kTextMuted,
                   side: const BorderSide(color: _kBorder),
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Discard',
-                    style: TextStyle(fontWeight: FontWeight.w600)),
+                child: const Text('Discard', style: TextStyle(fontWeight: FontWeight.w600)),
               ),
             ),
             const SizedBox(width: 10),
@@ -547,14 +585,11 @@ class _QuizAIGenerationScreenState extends State<QuizAIGenerationScreen> {
               child: ElevatedButton(
                 onPressed: _selected.isEmpty ? null : _addToQuiz,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _kPrimary,
-                  foregroundColor: Colors.white,
+                  backgroundColor: _kPrimary, foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Add to Quiz',
-                    style: TextStyle(fontWeight: FontWeight.w700)),
+                child: const Text('Add to Quiz', style: TextStyle(fontWeight: FontWeight.w700)),
               ),
             ),
           ]),

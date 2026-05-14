@@ -1,105 +1,137 @@
 class ApplicationModel {
-  final String id;
+  final int    id;
   final String applicantName;
   final String email;
-  final String university;
-  final String major;
-  final String year;
-  final String position;
-  final int points;
-  final List<String> skills;
+  final String position;       // jobTitle
+  final String status;
   final String appliedDate;
-  final String status; // Under Review, Shortlisted, Interview Scheduled, Rejected, Accepted
-  final String applicationType; // Internship, Job
-  final String degreeLevel; // Under Graduate, Graduate
-  final String? profileImagePath;
+  final String applicationType; // 'Job' | 'Internship'
+  final String degreeLevel;
+  final int    points;
+  final List<String> skills;
+
+  // Optional fields
+  final String? university;
+  final String? major;
+  final String? year;
+  final String? phoneNumber;
+  final String? cvUrl;
+  final String? linkedIn;
+  final String? portfolio;
+  final String? coverLetter;
+  final String? companyName;
+  final int?    jobId;
+  final String? userId;
 
   ApplicationModel({
     required this.id,
     required this.applicantName,
     required this.email,
-    required this.university,
-    required this.major,
-    required this.year,
     required this.position,
-    required this.points,
-    required this.skills,
-    required this.appliedDate,
     required this.status,
+    required this.appliedDate,
     required this.applicationType,
     required this.degreeLevel,
-    this.profileImagePath,
+    required this.points,
+    required this.skills,
+    this.university,
+    this.major,
+    this.year,
+    this.phoneNumber,
+    this.cvUrl,
+    this.linkedIn,
+    this.portfolio,
+    this.coverLetter,
+    this.companyName,
+    this.jobId,
+    this.userId,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'applicantName': applicantName,
-      'email': email,
-      'university': university,
-      'major': major,
-      'year': year,
-      'position': position,
-      'points': points,
-      'skills': skills,
-      'appliedDate': appliedDate,
-      'status': status,
-      'applicationType': applicationType,
-      'degreeLevel': degreeLevel,
-      'profileImagePath': profileImagePath,
-    };
-  }
-
+  // ✅ fromJson بيتعامل مع الـ keys اللي بتيجي من الـ API
   factory ApplicationModel.fromJson(Map<String, dynamic> json) {
+    // ✅ status mapping
+    String mapStatus(dynamic s) {
+      switch (s?.toString()) {
+        case 'Applied':             return 'Under Review';
+        case 'UnderReview':         return 'Under Review';
+        case 'Shortlisted':         return 'Shortlisted';
+        case 'InterviewScheduled':  return 'Interview Scheduled';
+        case 'Accepted':            return 'Accepted';
+        case 'Rejected':            return 'Rejected';
+        default:                    return s?.toString() ?? 'Under Review';
+      }
+    }
+
+    // ✅ date format
+    String formatDate(dynamic d) {
+      if (d == null || d.toString().isEmpty) return '';
+      try {
+        final dt = DateTime.parse(d.toString());
+        return '${dt.day.toString().padLeft(2, '0')}/'
+            '${dt.month.toString().padLeft(2, '0')}/'
+            '${dt.year}';
+      } catch (_) {
+        return d.toString().split('T')[0];
+      }
+    }
+
     return ApplicationModel(
-      id: json['id'],
-      applicantName: json['applicantName'],
-      email: json['email'],
-      university: json['university'],
-      major: json['major'],
-      year: json['year'],
-      position: json['position'],
-      points: json['points'],
-      skills: List<String>.from(json['skills'] ?? []),
-      appliedDate: json['appliedDate'],
-      status: json['status'],
-      applicationType: json['applicationType'],
-      degreeLevel: json['degreeLevel'],
-      profileImagePath: json['profileImagePath'],
+      // ✅ API بيبعت applicationId مش id
+      id:              int.tryParse((json['applicationId'] ?? json['id'] ?? 0).toString()) ?? 0,
+      applicantName:   json['applicantName']?.toString() ?? json['name']?.toString() ?? 'Unknown',
+      email:           json['email']?.toString() ?? json['applicantEmail']?.toString() ?? '',
+      // ✅ API بيبعت jobTitle مش position
+      position:        json['jobTitle']?.toString() ?? json['position']?.toString() ?? json['internshipTitle']?.toString() ?? '',
+      status:          mapStatus(json['status']),
+      appliedDate:     formatDate(json['appliedDate'] ?? json['applicationDate']),
+      applicationType: json['applicationType']?.toString() ?? json['_type']?.toString() ?? 'Job',
+      degreeLevel:     json['degreeLevel']?.toString() ?? json['educationLevel']?.toString() ?? 'N/A',
+      points:          int.tryParse((json['points'] ?? json['totalPoints'] ?? 0).toString()) ?? 0,
+      skills:          _parseSkills(json['skills'] ?? json['requiredSkills'] ?? []),
+      university:      json['university']?.toString() ?? json['universityName']?.toString(),
+      major:           json['major']?.toString() ?? json['field']?.toString(),
+      year:            json['year']?.toString() ?? json['academicYear']?.toString(),
+      phoneNumber:     json['phoneNumber']?.toString() ?? json['phone']?.toString(),
+      cvUrl:           json['cvUrl']?.toString() ?? json['resumeUrl']?.toString() ?? json['cv']?.toString(),
+      linkedIn:        json['linkedIn']?.toString() ?? json['linkedInUrl']?.toString(),
+      portfolio:       json['portfolio']?.toString() ?? json['portfolioUrl']?.toString(),
+      coverLetter:     json['coverLetter']?.toString(),
+      companyName:     json['companyName']?.toString(),
+      jobId:           int.tryParse((json['jobId'] ?? json['_jobId'] ?? 0).toString()),
+      userId:          json['userId']?.toString(),
     );
   }
 
-  ApplicationModel copyWith({
-    String? id,
-    String? applicantName,
-    String? email,
-    String? university,
-    String? major,
-    String? year,
-    String? position,
-    int? points,
-    List<String>? skills,
-    String? appliedDate,
-    String? status,
-    String? applicationType,
-    String? degreeLevel,
-    String? profileImagePath,
-  }) {
-    return ApplicationModel(
-      id: id ?? this.id,
-      applicantName: applicantName ?? this.applicantName,
-      email: email ?? this.email,
-      university: university ?? this.university,
-      major: major ?? this.major,
-      year: year ?? this.year,
-      position: position ?? this.position,
-      points: points ?? this.points,
-      skills: skills ?? this.skills,
-      appliedDate: appliedDate ?? this.appliedDate,
-      status: status ?? this.status,
-      applicationType: applicationType ?? this.applicationType,
-      degreeLevel: degreeLevel ?? this.degreeLevel,
-      profileImagePath: profileImagePath ?? this.profileImagePath,
-    );
+  static List<String> _parseSkills(dynamic raw) {
+    if (raw == null) return [];
+    if (raw is List) return raw.map((e) => e.toString()).toList();
+    if (raw is String && raw.isNotEmpty) {
+      return raw.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+    }
+    return [];
   }
+
+  ApplicationModel copyWith({String? status}) => ApplicationModel(
+    id:              id,
+    applicantName:   applicantName,
+    email:           email,
+    position:        position,
+    status:          status ?? this.status,
+    appliedDate:     appliedDate,
+    applicationType: applicationType,
+    degreeLevel:     degreeLevel,
+    points:          points,
+    skills:          skills,
+    university:      university,
+    major:           major,
+    year:            year,
+    phoneNumber:     phoneNumber,
+    cvUrl:           cvUrl,
+    linkedIn:        linkedIn,
+    portfolio:       portfolio,
+    coverLetter:     coverLetter,
+    companyName:     companyName,
+    jobId:           jobId,
+    userId:          userId,
+  );
 }

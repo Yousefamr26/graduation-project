@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+
+import '../../../../data/repositories/Student auth repository.dart';
 import '../../../screens/auth/otp/OTPVerificationScreen.dart';
-import '../../../../data/repositories/auth_repository.dart';
 
 class StudentRegisterForm extends StatefulWidget {
   const StudentRegisterForm({super.key});
@@ -15,37 +16,37 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
   final _formKey = GlobalKey<FormState>();
 
   // Basic Info
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController     = TextEditingController();
+  final _passwordController  = TextEditingController();
   final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
+  final _lastNameController  = TextEditingController();
 
   // Location
-  final _countryController = TextEditingController();
-  final _cityController = TextEditingController();
+  final _countryController   = TextEditingController();
+  final _cityController      = TextEditingController();
 
   // Education
-  final _majorController = TextEditingController();
-  final _universityController = TextEditingController();
-  final _facultyController = TextEditingController();
-  final _expectedGraduationController = TextEditingController();
+  final _majorController              = TextEditingController();
+  final _universityController         = TextEditingController();
+  final _facultyController            = TextEditingController();
+  final _expectedGraduationController = TextEditingController(); // format: YYYY-MM-DD
   String? _selectedDegree;
 
-  // Links
-  final _githubController = TextEditingController();
-  final _linkedInController = TextEditingController();
+  // Optional
+  final _githubController    = TextEditingController();
+  final _linkedInController  = TextEditingController();
+  final _portfolioController = TextEditingController();
 
   // Image
   File? _profileImage;
   bool _obscurePassword = true;
-  bool _isLoading = false;
+  bool _isLoading       = false;
 
   final ImagePicker _imagePicker = ImagePicker();
 
   Future<void> _pickImage() async {
     try {
-      final pickedFile =
-      await _imagePicker.pickImage(source: ImageSource.gallery);
+      final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         setState(() => _profileImage = File(pickedFile.path));
       }
@@ -70,46 +71,54 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
 
     setState(() => _isLoading = true);
     try {
-      final authRepo = AuthRepository();
-      final response = await authRepo.registerStudent(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        firstName: _firstNameController.text.trim(),
-        lastName: _lastNameController.text.trim(),
-        country: _countryController.text.trim(),
-        city: _cityController.text.trim(),
-        major: _majorController.text.trim(),
-        degree: _selectedDegree!,
-        university: _universityController.text.trim(),
-        faculty: _facultyController.text.trim(),
-        expectedGraduation: _expectedGraduationController.text.trim(),
-        github: _githubController.text.trim(),
-        linkedIn: _linkedInController.text.trim(),
-        profileImage: _profileImage,
+      final repo = StudentAuthRepository();
+
+      // API expects ISO 8601 date-time → append time if only date provided
+      final String rawDate = _expectedGraduationController.text.trim();
+      final String expectedGraduation =
+      rawDate.contains('T') ? rawDate : '${rawDate}T00:00:00';
+
+      final response = await repo.register(
+        email:               _emailController.text.trim(),
+        password:            _passwordController.text,
+        firstName:           _firstNameController.text.trim(),
+        lastName:            _lastNameController.text.trim(),
+        university:          _universityController.text.trim(),
+        faculty:             _facultyController.text.trim(),
+        major:               _majorController.text.trim(),
+        degree:              _selectedDegree!,
+        expectedGraduation:  expectedGraduation,
+        city:                _cityController.text.trim(),
+        country:             _countryController.text.trim(),
+        linkedIn:            _linkedInController.text.trim(),
+        gitHub:              _githubController.text.trim(),
+        portfolio:           _portfolioController.text.trim(),
+        profileImage:        _profileImage,
       );
 
-      if (authRepo.isSuccessResponse(response)) {
-        _showSnackBar(
-            'Registration successful! Please verify your email.', Colors.green);
-        // ✅ FIXED: mounted check before navigation
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _showSnackBar('Registration successful! Please verify your email.', Colors.green);
         if (mounted) {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => OTPVerificationScreen(
-                email: _emailController.text.trim(),
+                email:    _emailController.text.trim(),
                 userType: 'student',
               ),
             ),
           );
         }
       } else {
-        _showSnackBar(authRepo.getErrorMessage(response), Colors.red);
+        final msg = response.data?['message']
+            ?? response.data?['error']
+            ?? response.data?['title']
+            ?? 'Registration failed';
+        _showSnackBar(msg.toString(), Colors.red);
       }
     } catch (e) {
       _showSnackBar('Registration failed: $e', Colors.red);
     } finally {
-      // ✅ FIXED: mounted check before setState in finally
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -128,6 +137,7 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
     _expectedGraduationController.dispose();
     _githubController.dispose();
     _linkedInController.dispose();
+    _portfolioController.dispose();
     super.dispose();
   }
 
@@ -143,45 +153,39 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
             _sectionTitle('Basic Information'),
             const SizedBox(height: 16),
             _buildTextField(
-              controller: _emailController,
-              label: 'Email *',
-              hint: 'your.email@example.com',
+              controller:   _emailController,
+              label:        'Email *',
+              hint:         'your.email@example.com',
               keyboardType: TextInputType.emailAddress,
-              prefixIcon: Icons.email_outlined,
-              validator: (v) =>
-              v?.isEmpty ?? true ? 'Email is required' : null,
+              prefixIcon:   Icons.email_outlined,
+              validator:    (v) => v?.isEmpty ?? true ? 'Email is required' : null,
             ),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _firstNameController,
-              label: 'First Name *',
-              hint: 'Enter your first name',
+              label:      'First Name *',
+              hint:       'Enter your first name',
               prefixIcon: Icons.person_outline,
-              validator: (v) =>
-              v?.isEmpty ?? true ? 'First name is required' : null,
+              validator:  (v) => v?.isEmpty ?? true ? 'First name is required' : null,
             ),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _lastNameController,
-              label: 'Last Name *',
-              hint: 'Enter your last name',
+              label:      'Last Name *',
+              hint:       'Enter your last name',
               prefixIcon: Icons.person_outline,
-              validator: (v) =>
-              v?.isEmpty ?? true ? 'Last name is required' : null,
+              validator:  (v) => v?.isEmpty ?? true ? 'Last name is required' : null,
             ),
             const SizedBox(height: 12),
             _buildTextField(
-              controller: _passwordController,
-              label: 'Password *',
-              hint: 'At least 8 characters',
+              controller:  _passwordController,
+              label:       'Password *',
+              hint:        'At least 8 characters',
               obscureText: _obscurePassword,
-              prefixIcon: Icons.lock_outline,
+              prefixIcon:  Icons.lock_outline,
               suffixIcon: IconButton(
-                icon: Icon(_obscurePassword
-                    ? Icons.visibility_off
-                    : Icons.visibility),
-                onPressed: () =>
-                    setState(() => _obscurePassword = !_obscurePassword),
+                icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
               ),
               validator: (v) => (v?.length ?? 0) < 8
                   ? 'Password must be at least 8 characters'
@@ -192,82 +196,82 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
             const SizedBox(height: 16),
             _buildTextField(
               controller: _countryController,
-              label: 'Country *',
-              hint: 'Enter your country',
+              label:      'Country *',
+              hint:       'Enter your country',
               prefixIcon: Icons.public,
-              validator: (v) =>
-              v?.isEmpty ?? true ? 'Country is required' : null,
+              validator:  (v) => v?.isEmpty ?? true ? 'Country is required' : null,
             ),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _cityController,
-              label: 'City *',
-              hint: 'Enter your city',
+              label:      'City *',
+              hint:       'Enter your city',
               prefixIcon: Icons.location_city_outlined,
-              validator: (v) =>
-              v?.isEmpty ?? true ? 'City is required' : null,
+              validator:  (v) => v?.isEmpty ?? true ? 'City is required' : null,
             ),
             const SizedBox(height: 24),
             _sectionTitle('Education'),
             const SizedBox(height: 16),
             _buildTextField(
               controller: _majorController,
-              label: 'Major *',
-              hint: 'e.g., Computer Science',
+              label:      'Major *',
+              hint:       'e.g., Computer Science',
               prefixIcon: Icons.school_outlined,
-              validator: (v) =>
-              v?.isEmpty ?? true ? 'Major is required' : null,
+              validator:  (v) => v?.isEmpty ?? true ? 'Major is required' : null,
             ),
             const SizedBox(height: 12),
             _buildDropdown(
-              label: 'Degree *',
-              value: _selectedDegree,
-              items: const ['Diploma', 'Bachelor', 'Master'],
+              label:     'Degree *',
+              value:     _selectedDegree,
+              items:     const ['Diploma', 'Bachelor', 'Master'],
               onChanged: (v) => setState(() => _selectedDegree = v),
             ),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _universityController,
-              label: 'University *',
-              hint: 'Enter your university name',
-              prefixIcon: Icons.location_city_outlined,
-              validator: (v) =>
-              v?.isEmpty ?? true ? 'University is required' : null,
+              label:      'University *',
+              hint:       'Enter your university name',
+              prefixIcon: Icons.account_balance_outlined,
+              validator:  (v) => v?.isEmpty ?? true ? 'University is required' : null,
             ),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _facultyController,
-              label: 'Faculty *',
-              hint: 'e.g., Engineering',
+              label:      'Faculty *',
+              hint:       'e.g., Engineering',
               prefixIcon: Icons.school_outlined,
-              validator: (v) =>
-              v?.isEmpty ?? true ? 'Faculty is required' : null,
+              validator:  (v) => v?.isEmpty ?? true ? 'Faculty is required' : null,
             ),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _expectedGraduationController,
-              label: 'Expected Graduation *',
-              hint: 'YYYY-MM-DD',
+              label:      'Expected Graduation *',
+              hint:       'YYYY-MM-DD',
               prefixIcon: Icons.date_range_outlined,
-              validator: (v) => v?.isEmpty ?? true
-                  ? 'Expected graduation date is required'
-                  : null,
+              validator:  (v) => v?.isEmpty ?? true ? 'Expected graduation date is required' : null,
             ),
             const SizedBox(height: 24),
-            _sectionTitle('Links'),
+            _sectionTitle('Optional Information'),
             const SizedBox(height: 16),
             _buildTextField(
               controller: _githubController,
-              label: 'GitHub Profile',
-              hint: 'https://github.com/username',
+              label:      'GitHub Profile',
+              hint:       'https://github.com/username',
               prefixIcon: Icons.link,
             ),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _linkedInController,
-              label: 'LinkedIn Profile',
-              hint: 'https://linkedin.com/in/username',
+              label:      'LinkedIn Profile',
+              hint:       'https://linkedin.com/in/username',
               prefixIcon: Icons.link,
+            ),
+            const SizedBox(height: 12),
+            _buildTextField(
+              controller: _portfolioController,
+              label:      'Portfolio',
+              hint:       'https://yourportfolio.com',
+              prefixIcon: Icons.web_outlined,
             ),
             const SizedBox(height: 16),
             _buildImageUpload(),
@@ -280,22 +284,17 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff1676C4),
                   elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: _isLoading
                     ? const SizedBox(
                   height: 24,
                   width: 24,
-                  child: CircularProgressIndicator(
-                      color: Colors.white, strokeWidth: 2),
+                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                 )
                     : const Text(
                   'REGISTER',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
             ),
@@ -308,10 +307,7 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
 
   Widget _sectionTitle(String title) => Text(
     title,
-    style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Color(0xff1676C4)),
+    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xff1676C4)),
   );
 
   Widget _buildTextField({
@@ -329,18 +325,15 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87)),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87)),
         const SizedBox(height: 8),
         TextFormField(
-          controller: controller,
+          controller:   controller,
           keyboardType: keyboardType,
-          obscureText: obscureText,
-          maxLines: maxLines,
-          validator: validator,
-          decoration: _inputDecoration(hint, prefixIcon, suffixIcon),
+          obscureText:  obscureText,
+          maxLines:     maxLines,
+          validator:    validator,
+          decoration:   _inputDecoration(hint, prefixIcon, suffixIcon),
         ),
       ],
     );
@@ -356,16 +349,11 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87)),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87)),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           value: value,
-          items: items
-              .map((item) => DropdownMenuItem(value: item, child: Text(item)))
-              .toList(),
+          items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
           onChanged: onChanged,
           decoration: _inputDecoration(null, Icons.school_outlined, null),
           validator: (v) => v == null ? 'Please select a degree' : null,
@@ -379,10 +367,7 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Profile Image',
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87)),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87)),
         const SizedBox(height: 8),
         GestureDetector(
           onTap: _pickImage,
@@ -390,10 +375,7 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
             width: double.infinity,
             height: 120,
             decoration: BoxDecoration(
-              border: Border.all(
-                  color: const Color(0xff1676C4),
-                  width: 2,
-                  style: BorderStyle.solid),
+              border: Border.all(color: const Color(0xff1676C4), width: 2),
               borderRadius: BorderRadius.circular(12),
               color: const Color(0xff1676C4).withOpacity(0.05),
             ),
@@ -405,13 +387,10 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
                 : const Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.image_outlined,
-                    color: Color(0xff1676C4), size: 40),
+                Icon(Icons.image_outlined, color: Color(0xff1676C4), size: 40),
                 SizedBox(height: 8),
                 Text('Tap to upload image',
-                    style: TextStyle(
-                        color: Color(0xff1676C4),
-                        fontWeight: FontWeight.w600)),
+                    style: TextStyle(color: Color(0xff1676C4), fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -420,31 +399,17 @@ class _StudentRegisterFormState extends State<StudentRegisterForm> {
     );
   }
 
-  InputDecoration _inputDecoration(
-      String? hint, dynamic prefixIcon, Widget? suffixIcon) {
+  InputDecoration _inputDecoration(String? hint, dynamic prefixIcon, Widget? suffixIcon) {
     return InputDecoration(
       hintText: hint,
-      prefixIcon: prefixIcon is IconData
-          ? Icon(prefixIcon, color: const Color(0xff1676C4))
-          : null,
+      prefixIcon: prefixIcon is IconData ? Icon(prefixIcon, color: const Color(0xff1676C4)) : null,
       suffixIcon: suffixIcon,
-      border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.grey, width: 1)),
-      enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.grey, width: 1)),
-      focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xff1676C4), width: 2)),
-      errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 1)),
-      focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2)),
-      contentPadding:
-      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      border:      OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.grey)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.grey)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xff1676C4), width: 2)),
+      errorBorder:   OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.red)),
+      focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.red, width: 2)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
   }
 }

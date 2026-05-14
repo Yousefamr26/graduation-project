@@ -1,12 +1,14 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../../../../../../data/models/company/internship-model.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../../../../data/repositories/Internship repository.dart';
 import '../../../../../widgets/common/CustomDropdown.dart';
 import '../../../../../widgets/common/action_button.dart';
-import 'Internship mock data.dart';
 import 'InternshipHistoryScreen.dart';
 import 'addnewinternship.dart';
-import 'internshipdetails.dart';
+import 'internship_details_from_map.dart';
 
 
 class InternshipsScreen extends StatefulWidget {
@@ -17,209 +19,412 @@ class InternshipsScreen extends StatefulWidget {
 }
 
 class _InternshipsScreenState extends State<InternshipsScreen> {
-  final List<InternshipModel> internships = [];
-  final List<InternshipModel> internshipHistory = [];
+
+  final _internshipRepo = InternshipRepository();
+
+  final List<Map<String, dynamic>> internships = [];
+  final List<Map<String, dynamic>> internshipHistory = [];
+
+  static const String _historyKey = 'internship_history_ids';
+  static const int _itemsPerPage = 4;
 
   String searchText = "";
   String selectedFilter = "All";
-  List<InternshipModel> filteredInternships = [];
+  List<Map<String, dynamic>> filteredInternships = [];
   bool isLoading = true;
+  int _currentPage = 1;
+
+  int get _totalPages =>
+      (filteredInternships.length / _itemsPerPage).ceil().clamp(1, 999);
+
+  List<Map<String, dynamic>> get _currentPageItems {
+    final start = (_currentPage - 1) * _itemsPerPage;
+    final end =
+    (start + _itemsPerPage).clamp(0, filteredInternships.length);
+    return filteredInternships.sublist(start, end);
+  }
 
   @override
   void initState() {
     super.initState();
-    _fetchInternships();
+    _loadHistoryFromStorage();
   }
 
-  // ✅ MOCK: جيب البيانات من الـ static list
+  // ── Storage ──────────────────────────────────────────────
+
+  Future<void> _loadHistoryFromStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? historyJson = prefs.getString(_historyKey);
+      if (historyJson != null && historyJson.isNotEmpty) {
+        final List<dynamic> decoded = jsonDecode(historyJson);
+        setState(() {
+          internshipHistory.clear();
+          internshipHistory.addAll(decoded
+              .map((item) => Map<String, dynamic>.from(item))
+              .toList());
+        });
+      }
+    } catch (e) {
+      debugPrint("Error loading internship history: $e");
+    }
+    await _fetchInternships();
+  }
+
+  Future<void> _saveHistoryToStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_historyKey, jsonEncode(internshipHistory));
+    } catch (e) {
+      debugPrint("Error saving internship history: $e");
+    }
+  }
+
+  // ── Fetch ────────────────────────────────────────────────
+
   Future<void> _fetchInternships() async {
     if (!mounted) return;
     setState(() => isLoading = true);
+    try {
+      final fetched = await _internshipRepo.getAllInternships();
 
-    await Future.delayed(const Duration(milliseconds: 400));
-    final fetched = InternshipMockData.getInternships();
+      debugPrint(
+          "🔍 [SCREEN] Fetched ${fetched.length} internships from API");
 
-    // ❌ BACKEND:
-    // final fetched = await _internshipRepo.getAllInternships();
+      if (!mounted) return;
 
-    if (!mounted) return;
+      final Set<String> historyIds = internshipHistory
+          .map((i) => i['id']?.toString() ?? '')
+          .where((id) => id.isNotEmpty)
+          .toSet();
 
-    final historyIds = internshipHistory.map((i) => i.id).toSet();
-
-    setState(() {
-      internships.clear();
-      for (var item in fetched) {
-        if (!historyIds.contains(item.id)) internships.add(item);
-      }
-      applyFilters();
-      isLoading = false;
-    });
+      setState(() {
+        internships.clear();
+        for (var item in fetched) {
+          final id = item['id']?.toString() ?? '';
+          if (historyIds.contains(id)) continue;
+          internships.add(item);
+        }
+        applyFilters();
+        isLoading = false;
+      });
+    } catch (e) {
+      debugPrint("Error fetching internships: $e");
+      if (!mounted) return;
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Failed to load internships: $e'),
+            backgroundColor: Colors.red),
+      );
+    }
   }
+
+  // ── Filters ──────────────────────────────────────────────
 
   void applyFilters() {
+    if (!mounted) return;
     setState(() {
       filteredInternships = internships.where((internship) {
-        if (selectedFilter != "All" && internship.status != selectedFilter) return false;
+        if (selectedFilter != "All" &&
+            (internship["status"] ?? '') != selectedFilter) return false;
         if (searchText.isEmpty) return true;
-        return _matchesSearch(internship, searchText.toLowerCase());
+        final s = searchText.toLowerCase();
+        return _contains(internship["title"], s) ||
+            _contains(internship["description"], s) ||
+            _contains(internship["type"], s) ||
+            _contains(internship["location"], s);
       }).toList();
+      _currentPage = 1;
     });
   }
 
-  bool _matchesSearch(InternshipModel internship, String searchLower) {
-    if (internship.title.toLowerCase().contains(searchLower)) return true;
-    if (internship.description.toLowerCase().contains(searchLower)) return true;
-    if (internship.companyName?.toLowerCase().contains(searchLower) ?? false) return true;
-    if (internship.type.toLowerCase().contains(searchLower)) return true;
-    if (internship.duration.toLowerCase().contains(searchLower)) return true;
-    if (internship.location?.toLowerCase().contains(searchLower) ?? false) return true;
-    return false;
-  }
+  bool _contains(dynamic value, String search) =>
+      value != null &&
+          value.toString().toLowerCase().contains(search);
 
-  void _deleteInternship(int index) {
-    final internshipToDelete = filteredInternships[index];
+  // ── Delete → History ─────────────────────────────────────
 
-    showDialog(
+  Future<void> _moveToHistory(int globalIndex) async {
+    final internshipToMove = filteredInternships[globalIndex];
+
+    final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.delete_outline, color: Colors.red),
-            SizedBox(width: 8),
-            Text("Delete Internship"),
-          ],
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        title: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xff1676C4), Color(0xff0d7de8)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle),
+                child: const Icon(Icons.archive_outlined,
+                    color: Colors.white, size: 28),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text('Move to History?',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Are you sure you want to delete this internship?"),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
+            Text("This internship will be moved to History.",
+                style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w500)),
+            const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.red[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.red[200]!),
+                color: const Color(0xff1676C4).withOpacity(0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                    color: const Color(0xff1676C4).withOpacity(0.3),
+                    width: 2),
               ),
-              child: Text(
-                internshipToDelete.title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        color: const Color(0xff1676C4),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: const Icon(Icons.school_outlined,
+                        color: Colors.white, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      internshipToMove['title'] ?? 'No Title',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Color(0xff1676C4)),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 8),
-            Text("You can restore it from History later.",
-                style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+            const SizedBox(height: 12),
+            Text(
+              "You can restore it from History or permanently delete it later.",
+              style:
+              TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel", style: TextStyle(color: Color(0xff1676C4))),
-          ),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.pop(context);
-              _performDelete(internshipToDelete);
-            },
-            icon: const Icon(Icons.delete),
-            label: const Text("Delete"),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xff1676C4),
+                      side: const BorderSide(
+                          color: Color(0xff1676C4), width: 2),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text("Cancel",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => Navigator.pop(context, true),
+                    icon: const Icon(Icons.archive_outlined,
+                        size: 20),
+                    label: const Text("Move",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff1676C4),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
+        actionsPadding: EdgeInsets.zero,
       ),
     );
+
+    if (confirm == true) {
+      if (!mounted) return;
+      setState(() {
+        internshipToMove['deletedAt'] =
+            DateTime.now().toIso8601String();
+        internshipHistory.add(internshipToMove);
+        internships
+            .removeWhere((i) => i['id'] == internshipToMove['id']);
+        applyFilters();
+      });
+      await _saveHistoryToStorage();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle),
+                child: const Icon(Icons.check_circle,
+                    color: Colors.white, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                    '${internshipToMove['title']} moved to History',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w600, fontSize: 14)),
+              ),
+            ]),
+            backgroundColor: const Color(0xff1676C4),
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    }
   }
 
-  void _performDelete(InternshipModel internship) {
-    setState(() {
-      internshipHistory.add(internship);
-      internships.remove(internship);
-      applyFilters();
-    });
+  // ── Handle History Result ─────────────────────────────────
 
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Internship moved to History'),
-        action: SnackBarAction(
-          label: 'Undo',
-          textColor: Colors.white,
-          onPressed: () {
-            setState(() {
-              final lastDeleted = internshipHistory.removeLast();
-              internships.add(lastDeleted);
-              applyFilters();
-            });
-          },
-        ),
-        backgroundColor: Colors.green,
-      ),
-    );
+  void _handleHistoryResult(Map<String, dynamic> result) async {
+    if (result['action'] == 'restore') {
+      final restored = result['internship'];
+      setState(() {
+        internships.add(restored);
+        internshipHistory
+            .removeWhere((i) => i['id'] == restored['id']);
+        applyFilters();
+      });
+      await _saveHistoryToStorage();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(children: [
+              const Icon(Icons.restore, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(
+                  child: Text('${restored['title']} restored!',
+                      overflow: TextOverflow.ellipsis)),
+            ]),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } else if (result['action'] == 'deleted') {
+      final deleted = result['internship'];
+      setState(() => internshipHistory
+          .removeWhere((i) => i['id'] == deleted['id']));
+      await _saveHistoryToStorage();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(
+                  child: Text(
+                      '${deleted['title']} permanently deleted',
+                      overflow: TextOverflow.ellipsis)),
+            ]),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
-  Widget _buildLogoWidget(InternshipModel internship) {
-    if (internship.logoPath == null || internship.logoPath!.isEmpty) {
-      return Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: const Color(0xff1676C4).withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Icon(Icons.school, color: Color(0xff1676C4), size: 30),
-      );
+  // ── Helpers ──────────────────────────────────────────────
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return 'N/A';
+    try {
+      return DateFormat('dd/MM/yyyy').format(DateTime.parse(dateStr));
+    } catch (_) {
+      return dateStr;
     }
-    if (internship.logoPath!.startsWith("http")) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(internship.logoPath!, width: 60, height: 60, fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(width: 60, height: 60, color: Colors.grey[300],
-                child: const Icon(Icons.broken_image, size: 30))),
-      );
-    }
-    if (File(internship.logoPath!).existsSync()) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.file(File(internship.logoPath!), width: 60, height: 60, fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(width: 60, height: 60, color: Colors.grey[300],
-                child: const Icon(Icons.broken_image, size: 30))),
-      );
-    }
-    return const SizedBox.shrink();
   }
+
+  // ── Build ────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final newInternship = await Navigator.push<InternshipModel>(
-            context,
-            MaterialPageRoute(builder: (_) => const CreateEditInternshipScreen()),
-          );
-          if (newInternship != null && mounted) {
-            // ✅ MOCK: الـ CreateEditInternshipScreen حط في الـ static list مسبقاً
-            // بس نعمل fetch عشان الـ UI يتحدث
-            await _fetchInternships();
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Internship created successfully!'), backgroundColor: Colors.green),
-              );
+      floatingActionButtonLocation:
+      FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 60),
+        child: FloatingActionButton(
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) =>
+                  const CreateEditInternshipScreen()),
+            );
+            if (result == true && mounted) {
+              await _fetchInternships();
             }
-          }
-        },
-        backgroundColor: const Color(0xff1676C4),
-        child: const Icon(Icons.add, color: Colors.white),
+          },
+          backgroundColor: const Color(0xff1676C4),
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
       ),
       body: Column(
-        children: [_buildAppBar(), _buildSearchAndFilter(), _buildInternshipsList()],
+        children: [
+          _buildAppBar(),
+          _buildSearchAndFilter(),
+          _buildInternshipList(),
+        ],
       ),
     );
   }
@@ -229,7 +434,8 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       width: double.infinity,
       decoration: const BoxDecoration(
         color: Color(0xff1676C4),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        borderRadius:
+        BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
       child: SafeArea(
         bottom: false,
@@ -240,22 +446,30 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
             elevation: 0,
             toolbarHeight: 130,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon:
+              const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () => Navigator.pop(context),
             ),
             title: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("My Internships",
-                    style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500)),
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500)),
                 SizedBox(height: 4),
                 Text("Manage your internship postings",
-                    style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w300)),
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w300)),
               ],
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.refresh, color: Colors.white),
+                icon:
+                const Icon(Icons.refresh, color: Colors.white),
                 onPressed: _fetchInternships,
                 tooltip: 'Refresh',
               ),
@@ -270,12 +484,18 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                         top: -2,
                         child: Container(
                           padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                          constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                          decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle),
+                          constraints: const BoxConstraints(
+                              minWidth: 18, minHeight: 18),
                           child: Center(
                             child: Text(
                               '${internshipHistory.length > 99 ? '99+' : internshipHistory.length}',
-                              style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -283,25 +503,18 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                   ],
                 ),
                 onPressed: () async {
-                  final restoredInternship = await Navigator.push<InternshipModel>(
+                  final result = await Navigator.push<
+                      Map<String, dynamic>?>(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => InternshipHistoryScreen(internshipHistory: internshipHistory),
+                      builder: (_) => InternshipHistoryScreen(
+                          internshipHistory: internshipHistory),
                     ),
                   );
-                  if (restoredInternship != null && mounted) {
-                    setState(() {
-                      internships.add(restoredInternship);
-                      internshipHistory.remove(restoredInternship);
-                      applyFilters();
-                    });
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Internship restored successfully!'), backgroundColor: Colors.green),
-                      );
-                    }
-                  }
+                  if (result != null && mounted)
+                    _handleHistoryResult(result);
                 },
+                tooltip: 'History',
               ),
             ],
           ),
@@ -319,17 +532,24 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
             child: TextField(
               decoration: InputDecoration(
                 hintText: "Search internships...",
-                prefixIcon: const Icon(Icons.search, color: Color(0xff1676C4)),
+                prefixIcon: const Icon(Icons.search,
+                    color: Color(0xff1676C4)),
                 filled: true,
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Colors.grey)),
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide:
+                    const BorderSide(color: Colors.grey)),
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: Color(0xff1676C4), width: 2)),
+                    borderSide: const BorderSide(
+                        color: Color(0xff1676C4), width: 2)),
               ),
               onChanged: (value) {
-                setState(() { searchText = value; applyFilters(); });
+                setState(() {
+                  searchText = value;
+                  applyFilters();
+                });
               },
             ),
           ),
@@ -337,12 +557,22 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
           SizedBox(
             width: 160,
             child: Container(
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10)),
               child: CustomDropdown(
-                items: const ["All", "Draft", "Published", "Closed"],
+                items: const [
+                  "All",
+                  "Draft",
+                  "Published",
+                  "Closed"
+                ],
                 value: selectedFilter,
                 onChanged: (value) {
-                  setState(() { selectedFilter = value!; applyFilters(); });
+                  setState(() {
+                    selectedFilter = value!;
+                    applyFilters();
+                  });
                 },
               ),
             ),
@@ -352,7 +582,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     );
   }
 
-  Widget _buildInternshipsList() {
+  Widget _buildInternshipList() {
     return Expanded(
       child: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -361,67 +591,205 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.school_outlined, size: 80, color: Colors.grey[400]),
+            Icon(Icons.school_outlined,
+                size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
-            Text(searchText.isEmpty ? "No internships yet" : "No internships found",
-                style: TextStyle(fontSize: 18, color: Colors.grey[600])),
+            Text(
+                searchText.isEmpty
+                    ? "No internships yet"
+                    : "No internships found",
+                style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[600])),
             const SizedBox(height: 8),
             Text(
-              searchText.isEmpty ? "Create your first internship posting!" : "Try a different search",
-              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+              searchText.isEmpty
+                  ? "Create your first internship!"
+                  : "Try a different search",
+              style: TextStyle(
+                  fontSize: 14, color: Colors.grey[500]),
             ),
           ],
         ),
       )
-          : RefreshIndicator(
-        onRefresh: _fetchInternships,
-        child: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: filteredInternships.length,
-          itemBuilder: (context, index) => _buildInternshipCard(index),
+          : Column(
+        children: [
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: _fetchInternships,
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(
+                    16, 16, 16, 8),
+                itemCount: _currentPageItems.length,
+                itemBuilder: (context, index) {
+                  final globalIndex =
+                      (_currentPage - 1) * _itemsPerPage +
+                          index;
+                  return _buildInternshipCard(
+                      globalIndex);
+                },
+              ),
+            ),
+          ),
+          _buildPaginationBar(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaginationBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          vertical: 12, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _pageBtn(
+            label: '«',
+            isActive: false,
+            enabled: _currentPage > 1,
+            onTap: () => setState(() => _currentPage--),
+          ),
+          const SizedBox(width: 6),
+          for (int i = 1; i <= _totalPages; i++) ...[
+            _pageBtn(
+              label: '$i',
+              isActive: i == _currentPage,
+              enabled: true,
+              onTap: () => setState(() => _currentPage = i),
+            ),
+            if (i != _totalPages) const SizedBox(width: 6),
+          ],
+          const SizedBox(width: 6),
+          _pageBtn(
+            label: '»',
+            isActive: false,
+            enabled: _currentPage < _totalPages,
+            onTap: () => setState(() => _currentPage++),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _pageBtn({
+    required String label,
+    required bool isActive,
+    required bool enabled,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: isActive
+              ? const Color(0xff1676C4)
+              : enabled
+              ? Colors.white
+              : Colors.grey[100],
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isActive
+                ? const Color(0xff1676C4)
+                : Colors.grey[300]!,
+            width: isActive ? 2 : 1,
+          ),
+          boxShadow: isActive
+              ? [
+            BoxShadow(
+              color: const Color(0xff1676C4).withOpacity(0.35),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            )
+          ]
+              : [],
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isActive
+                  ? Colors.white
+                  : enabled
+                  ? Colors.grey[700]
+                  : Colors.grey[400],
+              fontWeight: isActive
+                  ? FontWeight.bold
+                  : FontWeight.w500,
+              fontSize: 15,
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildInternshipCard(int index) {
-    final internship = filteredInternships[index];
+  Widget _buildInternshipCard(int globalIndex) {
+    final item = filteredInternships[globalIndex];
 
     return Card(
       elevation: 3,
       margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape:
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Logo and Title
+            // Title row
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildLogoWidget(internship),
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: const Color(0xff1676C4).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.school,
+                      color: Color(0xff1676C4), size: 30),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(internship.title,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 4),
-                      if (internship.companyName != null && internship.companyName!.isNotEmpty)
-                        Text(internship.companyName!,
-                            style: TextStyle(fontSize: 14, color: Colors.grey[700])),
+                      Text(item["title"] ?? "Untitled",
+                          style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       Row(
                         children: [
                           Icon(
-                            internship.type == 'Remote 🌐' ? Icons.home_work
-                                : internship.type == 'On-site 🏢' ? Icons.location_on : Icons.hub,
-                            size: 16, color: Colors.grey[600],
+                            item['type'] == 'Remote 🌐'
+                                ? Icons.home_work
+                                : item['type'] == 'On-site 🏢'
+                                ? Icons.location_on
+                                : Icons.hub,
+                            size: 16,
+                            color: Colors.grey[600],
                           ),
                           const SizedBox(width: 4),
-                          Text(internship.type, style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                          Text(item['type'] ?? '',
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[700])),
                         ],
                       ),
                     ],
@@ -432,107 +800,118 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
 
             const SizedBox(height: 12),
 
-            // Duration and Payment Status
+            // Duration + Paid badges
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                      color: const Color(0xff1676C4).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(6)),
-                  child: Row(children: [
-                    const Icon(Icons.schedule, size: 16, color: Color(0xff1676C4)),
-                    const SizedBox(width: 4),
-                    Text(internship.duration,
-                        style: const TextStyle(color: Color(0xff1676C4), fontWeight: FontWeight.w600, fontSize: 12)),
-                  ]),
-                ),
+                _badge(
+                    item['duration'] ?? '',
+                    Icons.schedule,
+                    const Color(0xff1676C4)),
                 const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                      color: internship.isPaid ? Colors.green.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(6)),
-                  child: Row(children: [
-                    Icon(internship.isPaid ? Icons.attach_money : Icons.money_off,
-                        size: 16, color: internship.isPaid ? Colors.green[700] : Colors.grey[700]),
-                    const SizedBox(width: 4),
-                    Text(internship.isPaid ? "Paid" : "Unpaid",
-                        style: TextStyle(
-                            color: internship.isPaid ? Colors.green[700] : Colors.grey[700],
-                            fontWeight: FontWeight.w600, fontSize: 12)),
-                  ]),
-                ),
+                _badge(
+                    item['isPaid'] == true ? 'Paid' : 'Unpaid',
+                    item['isPaid'] == true
+                        ? Icons.attach_money
+                        : Icons.money_off,
+                    item['isPaid'] == true
+                        ? Colors.green
+                        : Colors.grey),
               ],
             ),
 
             const SizedBox(height: 12),
 
-            Text(internship.description,
-                style: TextStyle(color: Colors.grey[700], fontSize: 14),
-                maxLines: 2, overflow: TextOverflow.ellipsis),
+            Text(item['description'] ?? 'No description',
+                style:
+                TextStyle(color: Colors.grey[700], fontSize: 14),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis),
 
             const SizedBox(height: 12),
 
-            // Status and Stats
+            // Status + deadline
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: internship.status == "Published"
+                    color: item["status"] == "Published"
                         ? Colors.green.withOpacity(0.15)
-                        : internship.status == "Closed"
+                        : item["status"] == "Closed"
                         ? Colors.grey.withOpacity(0.15)
                         : Colors.orange.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    internship.status,
+                    item["status"] ?? "Draft",
                     style: TextStyle(
-                      color: internship.status == "Published"
+                      color: item["status"] == "Published"
                           ? Colors.green
-                          : internship.status == "Closed" ? Colors.grey[700] : Colors.orange,
-                      fontWeight: FontWeight.bold, fontSize: 12,
+                          : item["status"] == "Closed"
+                          ? Colors.grey[700]
+                          : Colors.orange,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
                     ),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
+                Icon(Icons.flag_outlined,
+                    size: 16, color: Colors.grey[600]),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    "Deadline: ${_formatDate(item['applicationDeadline'] ?? item['deadline'])}",
+                    style: TextStyle(
+                        fontSize: 12, color: Colors.grey[700]),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 8),
+
+            Row(
+              children: [
                 Icon(Icons.people, size: 18, color: Colors.grey[600]),
                 const SizedBox(width: 4),
-                Text("${internship.applicantsCount} applicants",
-                    style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                Text(
+                    "Max: ${item['maxTrainees'] ?? item['maxtrainees'] ?? 'N/A'}",
+                    style: TextStyle(
+                        fontSize: 13, color: Colors.grey[700])),
               ],
             ),
 
             const SizedBox(height: 16),
 
-            // Action Buttons
+            // Action buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ActionButton(
-                  icon: Icons.info_outline,
-                  text: "Details",
-                  color: Colors.green,
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => InternshipDetailsScreen(internship: internship))),
-                ),
                 ActionButton(
                   icon: Icons.edit,
                   text: "Edit",
                   color: const Color(0xff1676C4),
                   onTap: () async {
-                    final updatedInternship = await Navigator.push<InternshipModel>(
+                    final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => CreateEditInternshipScreen(internship: internship),
-                      ),
+                          builder: (_) =>
+                              CreateEditInternshipScreen(
+                                  internship: item)),
                     );
-                    if (updatedInternship != null && mounted) {
-                      // ✅ MOCK: الـ CreateEditInternshipScreen حدّث الـ static list مسبقاً
-                      // بس نعمل fetch عشان الـ UI يتحدث
+                    if (result == true && mounted) {
                       await _fetchInternships();
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text(
+                                  'Internship updated successfully!'),
+                              backgroundColor: Colors.green),
+                        );
+                      }
                     }
                   },
                 ),
@@ -540,7 +919,20 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                   icon: Icons.delete,
                   text: "Delete",
                   color: Colors.red,
-                  onTap: () => _deleteInternship(index),
+                  onTap: () => _moveToHistory(globalIndex),
+                ),
+                ActionButton(
+                  icon: Icons.info_outline,
+                  text: "Details",
+                  color: Colors.green,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => InternshipDetailsFromMap(internship: item),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -549,4 +941,24 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       ),
     );
   }
+
+  Widget _badge(String label, IconData icon, Color color) {
+    return Container(
+      padding:
+      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(6)),
+      child: Row(children: [
+        Icon(icon, size: 16, color: color),
+        const SizedBox(width: 4),
+        Text(label,
+            style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontSize: 12)),
+      ]),
+    );
+  }
+
 }

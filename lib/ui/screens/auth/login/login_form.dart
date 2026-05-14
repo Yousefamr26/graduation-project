@@ -1,8 +1,18 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../data/repositories/auth_repository.dart';
+import '../../../../data/repositories/Graduate auth repository.dart';
+import '../../../../data/repositories/Student auth repository.dart';
+import '../../../../data/repositories/Training center auth repository.dart';
+import '../../../../data/repositories/University auth repository.dart';
+import '../../../../data/repositories/company_auth_repository.dart';
 import '../../users/company/pages/com-dashboard.dart';
-
+import '../../users/university/pages/unidashboard.dart';
+// TODO: استبدل بالـ dashboards الصح لما تعملهم
+// import '../../users/graduate/pages/graduate_dashboard.dart';
+// import '../../users/student/pages/student_dashboard.dart';
+// import '../../users/training_center/pages/training_center_dashboard.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -15,14 +25,26 @@ class _LoginFormState extends State<LoginForm> {
   bool _rememberMe = false;
   String? _selectedAccountType;
 
-  final _emailController = TextEditingController();
+  final _emailController    = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _isLoading = false;
+  bool _isLoading       = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   void _showSnackBar(String message, Color color) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: color, duration: const Duration(seconds: 3)),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        duration: const Duration(seconds: 3),
+      ),
     );
   }
 
@@ -38,34 +60,163 @@ class _LoginFormState extends State<LoginForm> {
 
     setState(() => _isLoading = true);
     try {
-      final authRepo = AuthRepository();
-      final response = await authRepo.login(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        userType: _selectedAccountType!.toLowerCase().replaceAll(' ', '_'),
-      );
+      final String email    = _emailController.text.trim();
+      final String password = _passwordController.text;
+      final String userType = _selectedAccountType!.toLowerCase().replaceAll(' ', '_');
 
-      if (authRepo.isSuccessResponse(response)) {
-        _showSnackBar('Login successful!', Colors.green);
-        // Navigate to appropriate dashboard
-        String userType = _selectedAccountType!.toLowerCase().replaceAll(' ', '_');
-        if (userType == 'company') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const comDashboard()),
-          );
-        } else {
-          // For other types, navigate to a placeholder or home
-          // TODO: Add other dashboards
-        }
-      } else {
-        final errorMessage = authRepo.getErrorMessage(response);
-        _showSnackBar(errorMessage, Colors.red);
+      switch (userType) {
+
+      // ══════════════════════════════════════════
+      // Company
+      // ══════════════════════════════════════════
+        case 'company':
+          final repo     = CompanyAuthRepository();
+          final response = await repo.login(email, password);
+
+          if (response.statusCode == 200) {
+            _showSnackBar('Company Login successful!', Colors.green);
+            if (mounted) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const comDashboard()),
+              );
+            }
+          } else {
+            final msg = response.data?['message']
+                ?? response.data?['error']
+                ?? response.data?['title']
+                ?? 'Login failed';
+            _showSnackBar(msg.toString(), Colors.red);
+          }
+          break;
+
+      // ══════════════════════════════════════════
+      // University
+      // ══════════════════════════════════════════
+        case 'university':
+          final repo     = UniversityAuthRepository();
+          final response = await repo.login(email, password);
+
+          if (response.statusCode == 200) {
+            try {
+              final userProfile = response.data?['data']?['userProfile'];
+              if (userProfile != null) {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString(
+                  'university_user_data',
+                  jsonEncode({
+                    'id':          userProfile['id']?.toString()     ?? '',
+                    'name':        userProfile['name']                ?? '',
+                    'email':       userProfile['email']               ?? '',
+                    'phoneNumber': userProfile['phoneNumber']         ?? '',
+                    'country':     userProfile['country']             ?? '',
+                    'city':        userProfile['city']                ?? '',
+                    'logoPath':    userProfile['organizationLogoUrl'] ?? '',
+                  }),
+                );
+              }
+            } catch (e) {
+              debugPrint('⚠️ [LOGIN UNI] Failed to save userProfile: $e');
+            }
+
+            _showSnackBar('University Login successful!', Colors.green);
+            if (mounted) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const UniversityDashboard()),
+              );
+            }
+          } else {
+            final msg = response.data?['message']
+                ?? response.data?['error']
+                ?? response.data?['title']
+                ?? 'Login failed';
+            _showSnackBar(msg.toString(), Colors.red);
+          }
+          break;
+
+      // ══════════════════════════════════════════
+      // Graduate
+      // ══════════════════════════════════════════
+        case 'graduate':
+          final repo     = GraduateAuthRepository();
+          final response = await repo.login(email, password);
+
+          if (response.statusCode == 200) {
+            _showSnackBar('Graduate Login successful!', Colors.green);
+            if (mounted) {
+              // TODO: استبدل بـ GraduateDashboard لما تعمله
+              // Navigator.pushReplacement(
+              //   context,
+              //   MaterialPageRoute(builder: (_) => const GraduateDashboard()),
+              // );
+            }
+          } else {
+            final msg = response.data?['message']
+                ?? response.data?['error']
+                ?? response.data?['title']
+                ?? 'Login failed';
+            _showSnackBar(msg.toString(), Colors.red);
+          }
+          break;
+
+      // ══════════════════════════════════════════
+      // Student
+      // ══════════════════════════════════════════
+        case 'student':
+          final repo     = StudentAuthRepository();
+          final response = await repo.login(email, password);
+
+          if (response.statusCode == 200) {
+            _showSnackBar('Student Login successful!', Colors.green);
+            if (mounted) {
+              // TODO: استبدل بـ StudentDashboard لما تعمله
+              // Navigator.pushReplacement(
+              //   context,
+              //   MaterialPageRoute(builder: (_) => const StudentDashboard()),
+              // );
+            }
+          } else {
+            final msg = response.data?['message']
+                ?? response.data?['error']
+                ?? response.data?['title']
+                ?? 'Login failed';
+            _showSnackBar(msg.toString(), Colors.red);
+          }
+          break;
+
+      // ══════════════════════════════════════════
+      // Training Center
+      // ══════════════════════════════════════════
+        case 'training_center':
+          final repo     = TrainingCenterAuthRepository();
+          final response = await repo.login(email, password);
+
+          if (response.statusCode == 200) {
+            _showSnackBar('Training Center Login successful!', Colors.green);
+            if (mounted) {
+              // TODO: استبدل بـ TrainingCenterDashboard لما تعمله
+              // Navigator.pushReplacement(
+              //   context,
+              //   MaterialPageRoute(builder: (_) => const TrainingCenterDashboard()),
+              // );
+            }
+          } else {
+            final msg = response.data?['message']
+                ?? response.data?['error']
+                ?? response.data?['title']
+                ?? 'Login failed';
+            _showSnackBar(msg.toString(), Colors.red);
+          }
+          break;
+
+        default:
+          _showSnackBar('Unknown account type', Colors.red);
       }
     } catch (e) {
-      _showSnackBar('Login failed: $e', Colors.red);
+      _showSnackBar('Error: $e', Colors.red);
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -75,7 +226,7 @@ class _LoginFormState extends State<LoginForm> {
       physics: const ClampingScrollPhysics(),
       child: Column(
         children: [
-          // Account Type
+          // ── Account Type ──────────────────────────
           DropdownButtonFormField<String>(
             value: _selectedAccountType,
             hint: const Text(
@@ -101,24 +252,23 @@ class _LoginFormState extends State<LoginForm> {
             dropdownColor: Colors.white,
             borderRadius: BorderRadius.circular(16),
             items: [
-              _buildDropdownItem('Student', Icons.school_outlined),
-              _buildDropdownItem('Graduate', Icons.workspace_premium_outlined),
-              _buildDropdownItem('Company', Icons.business_outlined),
-              _buildDropdownItem('University', Icons.account_balance_outlined),
+              _buildDropdownItem('Student',         Icons.school_outlined),
+              _buildDropdownItem('Graduate',        Icons.workspace_premium_outlined),
+              _buildDropdownItem('Company',         Icons.business_outlined),
+              _buildDropdownItem('University',      Icons.account_balance_outlined),
               _buildDropdownItem('Training Center', Icons.model_training_outlined),
             ],
-            onChanged: (value) {
-              setState(() => _selectedAccountType = value);
-            },
+            onChanged: (value) => setState(() => _selectedAccountType = value),
           ),
 
           const SizedBox(height: 16),
 
-          // Email
+          // ── Email ─────────────────────────────────
           TextField(
-            controller: _emailController,
+            controller:   _emailController,
+            keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              hintText: 'Email',
+              hintText:   'Email',
               prefixIcon: const Icon(Icons.email_outlined, color: Color(0xff1676C4)),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -128,17 +278,21 @@ class _LoginFormState extends State<LoginForm> {
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: Color(0xff1676C4)),
               ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Colors.grey),
+              ),
             ),
           ),
 
           const SizedBox(height: 16),
 
-          // Password
+          // ── Password ──────────────────────────────
           TextField(
-            controller: _passwordController,
+            controller:  _passwordController,
             obscureText: _obscurePassword,
             decoration: InputDecoration(
-              hintText: 'Password',
+              hintText:   'Password',
               prefixIcon: const Icon(Icons.lock_outline, color: Color(0xff1676C4)),
               suffixIcon: IconButton(
                 icon: Icon(
@@ -155,55 +309,39 @@ class _LoginFormState extends State<LoginForm> {
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: Color(0xff1676C4)),
               ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Colors.grey),
+              ),
             ),
           ),
 
           const SizedBox(height: 10),
 
-          // Remember Me & Forget Password
+          // ── Remember Me & Forgot Password ─────────
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Remember Me - أقصى الشمال
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: Checkbox(
-                      value: _rememberMe,
-                      onChanged: (value) {
-                        setState(() => _rememberMe = value!);
-                      },
-                      activeColor: const Color(0xff1676C4),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
+              Row(mainAxisSize: MainAxisSize.min, children: [
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Checkbox(
+                    value:    _rememberMe,
+                    onChanged: (value) => setState(() => _rememberMe = value!),
+                    activeColor: const Color(0xff1676C4),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                   ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Remember Me',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-
-              // Forgot Password - أقصى اليمين
+                ),
+                const SizedBox(width: 8),
+                const Text('Remember Me', style: TextStyle(fontSize: 13, color: Colors.black87)),
+              ]),
               GestureDetector(
                 onTap: () {},
                 child: const Text(
                   'Forgot Password?',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Color(0xff1676C4),
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 13, color: Color(0xff1676C4), fontWeight: FontWeight.w600),
                 ),
               ),
             ],
@@ -211,7 +349,7 @@ class _LoginFormState extends State<LoginForm> {
 
           const SizedBox(height: 15),
 
-          // Login Button
+          // ── Login Button ──────────────────────────
           SizedBox(
             width: double.infinity,
             height: 52,
@@ -220,158 +358,46 @@ class _LoginFormState extends State<LoginForm> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xff1676C4),
                 elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
               child: _isLoading
                   ? const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    )
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              )
                   : const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
+                'Login',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 1.2,
+                ),
+              ),
             ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Or Login With
-          Row(
-            children: [
-              Expanded(
-                child: Divider(
-                  color: Colors.grey.shade300,
-                  thickness: 1,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  'or login with',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade500,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Divider(
-                  color: Colors.grey.shade300,
-                  thickness: 1,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 15),
-
-          // Google & LinkedIn Buttons
-          Row(
-            children: [
-              // Google
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    side: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.network(
-                        'https://www.google.com/favicon.ico',
-                        width: 20,
-                        height: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Google',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              // LinkedIn
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    side: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.network(
-                        'https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png',
-                        width: 20,
-                        height: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'LinkedIn',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xff0077B5),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),
     );
   }
 }
+
 DropdownMenuItem<String> _buildDropdownItem(String title, IconData icon) {
   return DropdownMenuItem<String>(
     value: title,
-    child: Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: const Color(0xff1676C4).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: const Color(0xff1676C4), size: 18),
+    child: Row(children: [
+      Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: const Color(0xff1676C4).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
         ),
-        const SizedBox(width: 12),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
-        ),
-      ],
-    ),
+        child: Icon(icon, color: const Color(0xff1676C4), size: 18),
+      ),
+      const SizedBox(width: 12),
+      Text(
+        title,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87),
+      ),
+    ]),
   );
 }

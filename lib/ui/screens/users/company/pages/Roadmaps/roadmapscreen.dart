@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'package:SmartCareerHub/ui/screens/users/company/pages/Roadmaps/roadmapHistory.dart';
+import 'package:smart_career_hub/ui/screens/users/company/pages/Roadmaps/roadmapHistory.dart';
 import 'package:flutter/material.dart';
 import '../../../../../widgets/common/CustomDropdown.dart';
 import '../../../../../widgets/common/NetworkImageWidget.dart';
 import '../../../../../widgets/common/action_button.dart';
 import '../../../../../../data/repositories/roadmap_repository.dart';
-import 'RoadmapAnalytics.dart';
-import 'Create_editRoadmap.dart';
+import 'create_edit_roadmap.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,7 +17,7 @@ class MyRoadmapsScreen extends StatefulWidget {
 }
 
 class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
-  final RoadmapRepository _roadmapRepo = RoadmapRepository();
+  final roadmapRepo = RoadmapRepository();
 
   final List<Map<String, dynamic>> roadmaps = [];
   final List<Map<String, dynamic>> roadmapHistory = [];
@@ -32,7 +31,6 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
   bool isLoading = true;
   int _currentPage = 1;
 
-  // ── Pagination helpers ───────────────────────────────────
   int get _totalPages =>
       (filteredRoadmaps.length / _itemsPerPage).ceil().clamp(1, 999);
 
@@ -79,9 +77,8 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
     if (!mounted) return;
     setState(() => isLoading = true);
     try {
-      // ─── جلب الـ roadmaps من الباك اند ───────────────────
-      final fetchedRoadmaps = await _roadmapRepo.getAllRoadmaps();
-
+      final fetchedRoadmaps = await roadmapRepo.getAllRoadmaps();
+      debugPrint("🔍 [SCREEN] Fetched ${fetchedRoadmaps.length} roadmaps from API");
       if (!mounted) return;
 
       final Set<String> historyIds = roadmapHistory
@@ -100,6 +97,7 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
             debugPrint("Error adding roadmap: $e");
           }
         }
+        debugPrint("✅ [SCREEN] Total roadmaps to show: ${roadmaps.length}");
         applyFilters();
         isLoading = false;
       });
@@ -140,6 +138,7 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
             _listContains(roadmap["quizzes"], s);
       }).toList();
       _currentPage = 1;
+      debugPrint("🔎 filteredRoadmaps: ${filteredRoadmaps.length}, totalPages: $_totalPages");
     });
   }
 
@@ -244,7 +243,8 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
                     onPressed: () => Navigator.pop(context, false),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xff1676C4),
-                      side: const BorderSide(color: Color(0xff1676C4), width: 2),
+                      side: const BorderSide(
+                          color: Color(0xff1676C4), width: 2),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
@@ -313,8 +313,8 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
             backgroundColor: const Color(0xff1676C4),
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
-            shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
           ),
         );
       }
@@ -336,7 +336,8 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
             const Icon(Icons.restore, color: Colors.white),
             const SizedBox(width: 8),
             Expanded(
-                child: Text('${restoredRoadmap['title']} restored successfully!',
+                child: Text(
+                    '${restoredRoadmap['title']} restored successfully!',
                     overflow: TextOverflow.ellipsis)),
           ]),
           backgroundColor: Colors.green,
@@ -363,16 +364,18 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
     }
   }
 
-  // ════════════════════════════════════════════════════════════
-  //  BUILD
-  // ════════════════════════════════════════════════════════════
-
   @override
   Widget build(BuildContext context) {
+    // ✅ نحسب ارتفاع الـ bottom nav bar مرة واحدة هنا
+    final bottomNavBarHeight = kBottomNavigationBarHeight;
+
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 60),
+        // ✅ الـ FAB يرتفع فوق الـ pagination bar + bottom nav bar
+        padding: EdgeInsets.only(
+          bottom: bottomNavBarHeight + 60,
+        ),
         child: FloatingActionButton(
           onPressed: () async {
             final result = await Navigator.push(
@@ -381,9 +384,7 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
                   builder: (context) =>
                   const Create_editRoadmap(roadmapData: null)),
             );
-            if (result == true && mounted) {
-              await _fetchRoadmaps();
-            }
+            if (mounted) await _fetchRoadmaps();
           },
           backgroundColor: const Color(0xff1676C4),
           child: const Icon(Icons.add, color: Colors.white),
@@ -473,8 +474,8 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => HistoryScreen(
-                          roadmapHistory: roadmapHistory,
-                          roadmapRepository: _roadmapRepo),
+                        roadmapHistory: roadmapHistory,
+                      ),
                     ),
                   );
                   if (result != null && mounted) _handleHistoryResult(result);
@@ -541,7 +542,6 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
     );
   }
 
-  // ── List + Pagination ────────────────────────────────────
   Widget _buildRoadmapList() {
     return Expanded(
       child: isLoading
@@ -551,19 +551,22 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.map_outlined, size: 80, color: Colors.grey[400]),
+            Icon(Icons.map_outlined,
+                size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
                 searchText.isEmpty
                     ? "No roadmaps yet"
                     : "No roadmaps found",
-                style: TextStyle(fontSize: 18, color: Colors.grey[600])),
+                style: TextStyle(
+                    fontSize: 18, color: Colors.grey[600])),
             const SizedBox(height: 8),
             Text(
                 searchText.isEmpty
                     ? "Create your first roadmap!"
                     : "Try a different search",
-                style: TextStyle(fontSize: 14, color: Colors.grey[500])),
+                style: TextStyle(
+                    fontSize: 14, color: Colors.grey[500])),
           ],
         ),
       )
@@ -573,7 +576,8 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
             child: RefreshIndicator(
               onRefresh: _fetchRoadmaps,
               child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                padding:
+                const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 itemCount: _currentPageItems.length,
                 itemBuilder: (context, index) {
                   final globalIndex =
@@ -589,12 +593,19 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
     );
   }
 
-  // ════════════════════════════════════════════════════════════
-  //  PAGINATION BAR
-  // ════════════════════════════════════════════════════════════
   Widget _buildPaginationBar() {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    // ✅ الحل: نضيف ارتفاع الـ bottom navigation bar (56px افتراضي في Flutter)
+    // عشان الأرقام تطلع فوقه مش تتغطى بيه
+    const bottomNavHeight = kBottomNavigationBarHeight; // = 56.0
+
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        12,
+        16,
+        19 + bottomPadding + bottomNavHeight, // ✅ هنا التعديل
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -687,9 +698,6 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
     );
   }
 
-  // ════════════════════════════════════════════════════════════
-  //  ROADMAP CARD
-  // ════════════════════════════════════════════════════════════
   Widget _buildRoadmapCard(int globalIndex) {
     final item = filteredRoadmaps[globalIndex];
 
@@ -701,12 +709,39 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-            child: NetworkImageWidget(
+            child: item['coverImage'] != null &&
+                item['coverImage'].toString().isNotEmpty
+                ? NetworkImageWidget(
               imageUrl: item["coverImage"],
               height: 150,
               width: double.infinity,
-              borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(8)),
+              borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(8)),
+            )
+                : Container(
+              height: 150,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color(0xff1676C4).withOpacity(0.1),
+                borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(8)),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.map_outlined,
+                      size: 50,
+                      color:
+                      const Color(0xff1676C4).withOpacity(0.5)),
+                  const SizedBox(height: 8),
+                  Text(
+                    "No Cover Image",
+                    style: TextStyle(
+                        color: const Color(0xff1676C4).withOpacity(0.7),
+                        fontSize: 13),
+                  ),
+                ],
+              ),
             ),
           ),
           Padding(
@@ -731,8 +766,8 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
                     Expanded(
                       child: Text(
                         "${_formatDate(item['startDate'])} → ${_formatDate(item['endDate'])}",
-                        style:
-                        TextStyle(color: Colors.grey[700], fontSize: 12),
+                        style: TextStyle(
+                            color: Colors.grey[700], fontSize: 12),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -854,17 +889,6 @@ class _MyRoadmapsScreenState extends State<MyRoadmapsScreen> {
                       text: "Delete",
                       color: Colors.red,
                       onTap: () => _moveToHistory(globalIndex),
-                    ),
-                    ActionButton(
-                      icon: Icons.analytics_outlined,
-                      text: "Analytics",
-                      color: Colors.green,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) =>
-                                RoadmapAnalytics(roadmap: item)),
-                      ),
                     ),
                   ],
                 ),

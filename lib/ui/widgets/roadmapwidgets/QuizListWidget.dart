@@ -58,7 +58,7 @@ class QuizListWidgetState extends State<QuizListWidget> {
         'id':                  DateTime.now().millisecondsSinceEpoch,
         'titleController':     TextEditingController(),
         'questionType':        _QuestionType.mcq,
-        'questionCount':       10,
+        'questionCount':       5, // ✅ default changed from 10 to 5
         'questions':           <Map<String, dynamic>>[],
         'selectedMaterialIds': <String>{},
       });
@@ -540,7 +540,7 @@ class QuizListWidgetState extends State<QuizListWidget> {
 
         const SizedBox(height: 16),
 
-        // Questions count slider — min 1, max 20
+        // Questions count slider — min 1, max 5 ✅
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           const Text('Questions count',
               style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
@@ -557,8 +557,8 @@ class QuizListWidgetState extends State<QuizListWidget> {
         Slider(
           value: count.toDouble(),
           min: 1,
-          max: 20,
-          divisions: 19,
+          max: 5,       // ✅ changed from 20 to 5
+          divisions: 4, // ✅ changed from 19 to 4
           activeColor: Colors.white,
           inactiveColor: Colors.white.withOpacity(0.3),
           thumbColor: Colors.white,

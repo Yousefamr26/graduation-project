@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -9,7 +8,18 @@ import 'package:dio/io.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class AuthRepository {
-  static const String _baseUrl = 'https://smartcareerhub.runasp.net/api';
+  static const String _baseUrl = 'http://smartcareerhub.runasp.net/api/';
+  String _toAccountType(String userType) {
+    switch (userType.toLowerCase()) {
+      case 'student':          return 'Student';
+      case 'graduate':         return 'Graduate';
+      case 'company':          return 'Company';
+      case 'university':       return 'University';
+      case 'training_center':  return 'TrainingCenter';
+      case 'instructor':       return 'Instructor';
+      default:                 return userType;
+    }
+  }
 
   final Dio _dio = Dio(
     BaseOptions(
@@ -19,9 +29,7 @@ class AuthRepository {
       receiveDataWhenStatusError: true,
       followRedirects: true,
       maxRedirects: 5,
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers: {'Accept': 'application/json'},
     ),
   )..httpClientAdapter = IOHttpClientAdapter(
     createHttpClient: () {
@@ -31,70 +39,116 @@ class AuthRepository {
     },
   );
 
-  // ─── Login ──────────────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // Helper: auth prefix per user type
+  // e.g. 'company' → 'CompanyAuth'
+  // ════════════════════════════════════════════════════════════════
+  String _prefix(String userType) {
+    switch (userType.toLowerCase()) {
+      case 'student':
+        return 'StudentAuth';
+      case 'graduate':
+        return 'GraduateAuth';
+      case 'company':
+        return 'CompanyAuth';
+      case 'university':
+        return 'UniversityAuth';
+      case 'instructor':
+        return 'InstructorAuth';
+      case 'training_center':
+        return 'TrainingCenterAuth';
+      default:
+        return 'StudentAuth';
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // LOGIN  →  POST /api/{prefix}/login
+  // ════════════════════════════════════════════════════════════════
   Future<Response> login({
     required String email,
     required String password,
     required String userType,
   }) async {
-    try {
-      String authType = _getAuthType(userType);
-      String accountType = _getAccountType(userType);
+    final endpoint = '${_prefix(userType)}/login';
+    debugPrint('📤 LOGIN → $endpoint');
 
-      debugPrint('📤 Logging in to: /$authType/login');
+    try {
       final response = await _dio.post(
-        '$authType/login',
+        endpoint,
         data: {
           'email': email,
           'password': password,
-          'accountType': accountType,
+          'accountType': _toAccountType(userType),
+          'rememberMe': true,
         },
         options: Options(
-          validateStatus: (status) => true,
+          validateStatus: (_) => true,
           contentType: 'application/json',
         ),
       );
 
-      debugPrint('📥 Login Response: ${response.statusCode}');
+      debugPrint('📥 LOGIN STATUS: ${response.statusCode}');
+      debugPrint('📥 LOGIN RAW RESPONSE: ${response.data}');
+
       if (response.statusCode == 200 && response.data != null) {
-        final token = response.data['token'];
+        final data = response.data;
+
+        String? token;
+        Map<String, dynamic>? user;
+
+        if (data is Map) {
+          token = data['token'] ??
+              data['data']?['token'] ??
+              data['accessToken'];
+
+          user = data['user'] ?? data['data']?['user'];
+        }
+
+        debugPrint('🔑 EXTRACTED TOKEN: $token');
+
         if (token != null) {
           await _saveToken(token);
+          debugPrint('✅ TOKEN SAVED SUCCESSFULLY');
+        } else {
+          debugPrint('❌ TOKEN IS NULL - CHECK BACKEND RESPONSE');
         }
-        final user = response.data['user'];
+
         if (user != null) {
           await _saveUserData(user);
+          debugPrint('✅ USER SAVED SUCCESSFULLY');
         }
       }
+
       return response;
     } catch (e) {
-      debugPrint('❌ Login Error: $e');
+      debugPrint('❌ LOGIN ERROR: $e');
       rethrow;
     }
   }
 
-  // ─── Verify Email ────────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // VERIFY EMAIL  →  POST /api/{prefix}/verify-email
+  // ════════════════════════════════════════════════════════════════
   Future<Response> verifyEmail({
     required String email,
     required String otp,
     required String userType,
   }) async {
+    final endpoint = '${_prefix(userType)}/verify-email';
+    debugPrint('📤 VERIFY EMAIL → $endpoint');
+
     try {
-      String authType = _getAuthType(userType);
-      debugPrint('📤 Verifying email to: /$authType/verify-email');
       final response = await _dio.post(
-        '$authType/verify-email',
-        data: {
-          'email': email,
-          'otp': otp,
-        },
+        endpoint,
+        data: {'email': email, 'otp': otp},
         options: Options(
-          validateStatus: (status) => true,
+          validateStatus: (_) => true,
           contentType: 'application/json',
         ),
       );
 
-      debugPrint('📥 Verify Email Response: ${response.statusCode}');
+      debugPrint('📥 VERIFY EMAIL ${response.statusCode}');
       return response;
     } catch (e) {
       debugPrint('❌ Verify Email Error: $e');
@@ -102,24 +156,27 @@ class AuthRepository {
     }
   }
 
-  // ─── Resend OTP ───────────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // RESEND OTP  →  POST /api/{prefix}/resend-otp
+  // ════════════════════════════════════════════════════════════════
   Future<Response> resendOtp({
     required String email,
     required String userType,
   }) async {
+    final endpoint = '${_prefix(userType)}/resend-otp';
+    debugPrint('📤 RESEND OTP → $endpoint');
+
     try {
-      String authType = _getAuthType(userType);
-      debugPrint('📤 Resending OTP to: /$authType/resend-otp');
       final response = await _dio.post(
-        '$authType/resend-otp',
+        endpoint,
         data: {'email': email},
         options: Options(
-          validateStatus: (status) => true,
+          validateStatus: (_) => true,
           contentType: 'application/json',
         ),
       );
 
-      debugPrint('📥 Resend OTP Response: ${response.statusCode}');
+      debugPrint('📥 RESEND OTP ${response.statusCode}');
       return response;
     } catch (e) {
       debugPrint('❌ Resend OTP Error: $e');
@@ -127,7 +184,60 @@ class AuthRepository {
     }
   }
 
-  // ─── Graduate Registration ───────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // COMPANY REGISTER  →  POST /api/CompanyAuth/register
+  // ════════════════════════════════════════════════════════════════
+  Future<Response> registerCompany({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+    required String organizationName,
+    required String country,
+    required String city,
+    File? organizationLogo,
+  }) async {
+    const endpoint = 'CompanyAuth/register';
+    debugPrint('📤 COMPANY REGISTER → $endpoint');
+
+    try {
+      final map = <String, dynamic>{
+        'Email': email,
+        'Password': password,
+        'FirstName': firstName,
+        'LastName': lastName,
+        'OrganizationName': organizationName,
+        'Country': country,
+        'City': city,
+      };
+
+      if (organizationLogo != null) {
+        final bytes = await _compressImage(organizationLogo);
+        map['OrganizationLogo'] = MultipartFile.fromBytes(
+          bytes,
+          filename: organizationLogo.path.split('/').last,
+          contentType: DioMediaType('image', 'jpeg'),
+        );
+      }
+
+      final response = await _dio.post(
+        endpoint,
+        data: FormData.fromMap(map),
+        options: Options(validateStatus: (_) => true),
+      );
+
+      debugPrint('📥 COMPANY REGISTER ${response.statusCode}');
+      debugPrint('📥 Data: ${response.data}');
+      return response;
+    } catch (e) {
+      debugPrint('❌ Company Register Error: $e');
+      rethrow;
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // GRADUATE REGISTER  →  POST /api/GraduateAuth/register
+  // ════════════════════════════════════════════════════════════════
   Future<Response> registerGraduate({
     required String email,
     required String password,
@@ -145,6 +255,9 @@ class AuthRepository {
     String? linkedIn,
     File? profileImage,
   }) async {
+    const endpoint = 'GraduateAuth/register';
+    debugPrint('📤 GRADUATE REGISTER → $endpoint');
+
     try {
       final map = <String, dynamic>{
         'Email': email,
@@ -170,25 +283,23 @@ class AuthRepository {
         );
       }
 
-      FormData formData = FormData.fromMap(map);
-
-      debugPrint('📤 Registering Graduate to: /GraduateAuth/register');
       final response = await _dio.post(
-        'GraduateAuth/register',
-        data: formData,
-        options: Options(validateStatus: (status) => true),
+        endpoint,
+        data: FormData.fromMap(map),
+        options: Options(validateStatus: (_) => true),
       );
 
-      debugPrint('📥 Graduate Registration Response: ${response.statusCode}');
-      debugPrint('📥 Response Data: ${response.data}');
+      debugPrint('📥 GRADUATE REGISTER ${response.statusCode}');
       return response;
     } catch (e) {
-      debugPrint('❌ Graduate Registration Error: $e');
+      debugPrint('❌ Graduate Register Error: $e');
       rethrow;
     }
   }
 
-  // ─── Student Registration ─────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // STUDENT REGISTER  →  POST /api/StudentAuth/register
+  // ════════════════════════════════════════════════════════════════
   Future<Response> registerStudent({
     required String email,
     required String password,
@@ -205,6 +316,9 @@ class AuthRepository {
     String? linkedIn,
     File? profileImage,
   }) async {
+    const endpoint = 'StudentAuth/register';
+    debugPrint('📤 STUDENT REGISTER → $endpoint');
+
     try {
       final map = <String, dynamic>{
         'Email': email,
@@ -229,25 +343,23 @@ class AuthRepository {
         );
       }
 
-      FormData formData = FormData.fromMap(map);
-
-      debugPrint('📤 Registering Student to: /StudentAuth/register');
       final response = await _dio.post(
-        'StudentAuth/register',
-        data: formData,
-        options: Options(validateStatus: (status) => true),
+        endpoint,
+        data: FormData.fromMap(map),
+        options: Options(validateStatus: (_) => true),
       );
 
-      debugPrint('📥 Student Registration Response: ${response.statusCode}');
-      debugPrint('📥 Response Data: ${response.data}');
+      debugPrint('📥 STUDENT REGISTER ${response.statusCode}');
       return response;
     } catch (e) {
-      debugPrint('❌ Student Registration Error: $e');
+      debugPrint('❌ Student Register Error: $e');
       rethrow;
     }
   }
 
-  // ─── Training Center Registration ─────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // TRAINING CENTER REGISTER  →  POST /api/TrainingCenterAuth/register
+  // ════════════════════════════════════════════════════════════════
   Future<Response> registerTrainingCenter({
     required String name,
     required String email,
@@ -258,6 +370,9 @@ class AuthRepository {
     required String city,
     File? organizationLogo,
   }) async {
+    const endpoint = 'TrainingCenterAuth/register';
+    debugPrint('📤 TRAINING CENTER REGISTER → $endpoint');
+
     try {
       final map = <String, dynamic>{
         'Name': name,
@@ -270,31 +385,31 @@ class AuthRepository {
       };
 
       if (organizationLogo != null) {
-        map['OrganizationLogo'] = await MultipartFile.fromFile(
-          organizationLogo.path,
+        final bytes = await _compressImage(organizationLogo);
+        map['OrganizationLogo'] = MultipartFile.fromBytes(
+          bytes,
           filename: organizationLogo.path.split('/').last,
+          contentType: DioMediaType('image', 'jpeg'),
         );
       }
 
-      FormData formData = FormData.fromMap(map);
-
-      debugPrint('📤 Registering Training Center to: /trainingcenterauth/register');
       final response = await _dio.post(
-        'trainingcenterauth/register',
-        data: formData,
-        options: Options(validateStatus: (status) => true),
+        endpoint,
+        data: FormData.fromMap(map),
+        options: Options(validateStatus: (_) => true),
       );
 
-      debugPrint('📥 Training Center Registration Response: ${response.statusCode}');
-      debugPrint('📥 Response Data: ${response.data}');
+      debugPrint('📥 TRAINING CENTER REGISTER ${response.statusCode}');
       return response;
     } catch (e) {
-      debugPrint('❌ Training Center Registration Error: $e');
+      debugPrint('❌ Training Center Register Error: $e');
       rethrow;
     }
   }
 
-  // ─── University Registration ──────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // UNIVERSITY REGISTER  →  POST /api/UniversityAuth/register
+  // ════════════════════════════════════════════════════════════════
   Future<Response> registerUniversity({
     required String name,
     required String email,
@@ -305,6 +420,9 @@ class AuthRepository {
     required String city,
     File? organizationLogo,
   }) async {
+    const endpoint = 'UniversityAuth/register';
+    debugPrint('📤 UNIVERSITY REGISTER → $endpoint');
+
     try {
       final map = <String, dynamic>{
         'Name': name,
@@ -317,150 +435,31 @@ class AuthRepository {
       };
 
       if (organizationLogo != null) {
-        map['OrganizationLogo'] = await MultipartFile.fromFile(
-          organizationLogo.path,
-          filename: organizationLogo.path.split('/').last,
-        );
-      }
-
-      FormData formData = FormData.fromMap(map);
-
-      debugPrint('📤 Registering University to: /UniversityAuth/register');
-      final response = await _dio.post(
-        'UniversityAuth/register',
-        data: formData,
-        options: Options(validateStatus: (status) => true),
-      );
-
-      debugPrint('📥 University Registration Response: ${response.statusCode}');
-      debugPrint('📥 Response Data: ${response.data}');
-      return response;
-    } catch (e) {
-      debugPrint('❌ University Registration Error: $e');
-      rethrow;
-    }
-  }
-
-  // ─── Company Registration ─────────────────────────────────────────────────────
-  Future<Response> registerCompany({
-    required String email,
-    required String password,
-    required String firstName,
-    required String lastName,
-    required String organizationName,
-    required String country,
-    required String city,
-    File? organizationLogo,
-  }) async {
-    try {
-      final map = <String, dynamic>{
-        'Email': email,
-        'Password': password,
-        'FirstName': firstName,
-        'LastName': lastName,
-        'OrganizationName': organizationName,
-        'Country': country,
-        'City': city,
-      };
-
-      debugPrint("══════════════════════════════");
-      debugPrint("🚀 COMPANY REGISTER REQUEST");
-      debugPrint("══════════════════════════════");
-      map.forEach((key, value) {
-        debugPrint("🔹 $key : $value");
-      });
-
-      // ✅ الصورة اختيارية — لو مفيش صورة نبعت بدونها
-      if (organizationLogo != null) {
-        debugPrint("🖼️ ORIGINAL IMAGE:");
-        debugPrint("path: ${organizationLogo.path}");
-        debugPrint("size: ${organizationLogo.lengthSync()} bytes");
-
-        final Uint8List compressedBytes = await _compressImage(organizationLogo);
-        debugPrint("✅ COMPRESSED size: ${compressedBytes.length} bytes");
-
-        // ✅ إضافة contentType صريح لتجنب رفض السيرفر
+        final bytes = await _compressImage(organizationLogo);
         map['OrganizationLogo'] = MultipartFile.fromBytes(
-          compressedBytes,
+          bytes,
           filename: organizationLogo.path.split('/').last,
           contentType: DioMediaType('image', 'jpeg'),
         );
       }
 
-      FormData formData = FormData.fromMap(map);
-
-      debugPrint("════════ FORM DATA ════════");
-      formData.fields.forEach((f) {
-        debugPrint("🔹 ${f.key} : ${f.value}");
-      });
-      debugPrint("📎 FILES:");
-      for (var file in formData.files) {
-        debugPrint("🔹 ${file.key} -> ${file.value.filename}");
-      }
-
-      debugPrint("📤 SENDING REQUEST NOW...");
-
-      // ✅ إزالة followRedirects: false — كانت سبب قطع الاتصال
-      Response response = await _dio.post(
-        'CompanyAuth/register',
-        data: formData,
-        options: Options(
-          validateStatus: (status) => true,
-        ),
+      final response = await _dio.post(
+        endpoint,
+        data: FormData.fromMap(map),
+        options: Options(validateStatus: (_) => true),
       );
 
-      // ✅ Handle 307 redirect manually to preserve POST body
-      if (response.statusCode == 307 ||
-          response.statusCode == 301 ||
-          response.statusCode == 302) {
-        final redirectUrl = response.headers.value('location');
-        debugPrint("↪️ Redirecting to: $redirectUrl");
-        if (redirectUrl != null) {
-          final newMap = <String, dynamic>{
-            'Email': email,
-            'Password': password,
-            'FirstName': firstName,
-            'LastName': lastName,
-            'OrganizationName': organizationName,
-            'Country': country,
-            'City': city,
-          };
-          if (organizationLogo != null) {
-            final Uint8List bytes = await _compressImage(organizationLogo);
-            newMap['OrganizationLogo'] = MultipartFile.fromBytes(
-              bytes,
-              filename: organizationLogo.path.split('/').last,
-              contentType: DioMediaType('image', 'jpeg'),
-            );
-          }
-          response = await _dio.post(
-            redirectUrl,
-            data: FormData.fromMap(newMap),
-            options: Options(validateStatus: (status) => true),
-          );
-          debugPrint("📥 After redirect Response: ${response.statusCode}");
-        }
-      }
-
-      debugPrint('📥 Company Registration Response: ${response.statusCode}');
-      debugPrint('📥 Response Data: ${response.data}');
+      debugPrint('📥 UNIVERSITY REGISTER ${response.statusCode}');
       return response;
     } catch (e) {
-      debugPrint("══════════════════════════════");
-      debugPrint("❌ ERROR OCCURRED");
-      debugPrint("══════════════════════════════");
-      debugPrint(e.toString());
-      if (e is DioException) {
-        debugPrint("📡 TYPE: ${e.type}");
-        debugPrint("📡 MESSAGE: ${e.message}");
-        debugPrint("📡 STATUS: ${e.response?.statusCode}");
-        debugPrint("📡 RESPONSE: ${e.response?.data}");
-      }
+      debugPrint('❌ University Register Error: $e');
       rethrow;
     }
   }
 
-  // ─── Image Compression ────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // IMAGE COMPRESSION
+  // ════════════════════════════════════════════════════════════════
   Future<Uint8List> _compressImage(File file) async {
     final result = await FlutterImageCompress.compressWithFile(
       file.absolute.path,
@@ -469,56 +468,14 @@ class AuthRepository {
       minHeight: 500,
       format: CompressFormat.jpeg,
     );
-
-    if (result == null) {
-      throw Exception("Image compression failed");
-    }
-
-    print("🔥 NEW SIZE: ${result.length} bytes");
+    if (result == null) throw Exception('Image compression failed');
+    debugPrint('🗜️ Compressed: ${result.length} bytes');
     return result;
   }
 
-  // ─── Helper: Get auth route prefix ───────────────────────────────────────────
-  String _getAuthType(String userType) {
-    switch (userType) {
-      case 'student':
-        return 'StudentAuth';
-      case 'graduate':
-        return 'GraduateAuth';
-      case 'company':
-        return 'CompanyAuth';
-      case 'university':
-        return 'UniversityAuth';
-      case 'instructor':
-        return 'InstructorAuth';
-      case 'training_center':
-        return 'TrainingCenterAuth';
-      default:
-        return 'StudentAuth';
-    }
-  }
-
-  // ─── Helper: Get accountType string for login body ────────────────────────────
-  String _getAccountType(String userType) {
-    switch (userType) {
-      case 'student':
-        return 'Student';
-      case 'graduate':
-        return 'Graduate';
-      case 'company':
-        return 'Company';
-      case 'university':
-        return 'University';
-      case 'instructor':
-        return 'Instructor';
-      case 'training_center':
-        return 'TrainingCenter';
-      default:
-        return 'Student';
-    }
-  }
-
-  // ─── Token Management ─────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // TOKEN & USER DATA
+  // ════════════════════════════════════════════════════════════════
   Future<void> _saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_token', token);
@@ -535,7 +492,6 @@ class AuthRepository {
     await prefs.remove('user_data');
   }
 
-  // ─── User Data Management ─────────────────────────────────────────────────────
   Future<void> _saveUserData(Map<String, dynamic> userData) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_data', jsonEncode(userData));
@@ -543,14 +499,13 @@ class AuthRepository {
 
   Future<Map<String, dynamic>?> getUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    final userDataString = prefs.getString('user_data');
-    if (userDataString != null) {
-      return jsonDecode(userDataString);
-    }
-    return null;
+    final raw = prefs.getString('user_data');
+    return raw != null ? jsonDecode(raw) : null;
   }
 
-  // ─── Response Helpers ─────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
+  // RESPONSE HELPERS
+  // ════════════════════════════════════════════════════════════════
   bool isSuccessResponse(Response response) {
     return response.statusCode != null &&
         response.statusCode! >= 200 &&

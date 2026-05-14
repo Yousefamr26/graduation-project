@@ -1,105 +1,114 @@
+// ignore_for_file: avoid_print
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../../../../data/models/company/job-model.dart';
+import 'package:dio/dio.dart';
+
+import '../../../../../../data/repositories/Job repository.dart';
 import '../../../../../widgets/common/CustomDropdown.dart';
 import '../../../../../widgets/common/_buildDateField.dart';
 import '../../../../../widgets/common/_buildSection.dart';
 import '../../../../../widgets/common/_buildTextArea.dart';
 import '../../../../../widgets/common/_buildTextField.dart';
 import '../../../../../widgets/common/_buildUploadContainer.dart';
-import 'JobmockData.dart';
 
 class CreateEditJobScreen extends StatefulWidget {
-  final JobModel? job;
+  final Map<String, dynamic>? jobData;
 
-  const CreateEditJobScreen({this.job, super.key});
+  const CreateEditJobScreen({this.jobData, super.key});
 
   @override
   State<CreateEditJobScreen> createState() => _CreateEditJobScreenState();
 }
 
 class _CreateEditJobScreenState extends State<CreateEditJobScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final jobRepo = JobRepository();
 
-  // Controllers
-  late TextEditingController _titleController;
-  late TextEditingController _descController;
-  late TextEditingController _companyNameController;
-  late TextEditingController _locationController;
-  late TextEditingController _salaryMinController;
-  late TextEditingController _salaryMaxController;
-  late TextEditingController _deadlineController;
+  final TextEditingController _titleController       = TextEditingController();
+  final TextEditingController _descController        = TextEditingController();
+  final TextEditingController _locationController    = TextEditingController();
+  final TextEditingController _salaryMinController   = TextEditingController();
+  final TextEditingController _salaryMaxController   = TextEditingController();
+  final TextEditingController _deadlineController    = TextEditingController();
+  final TextEditingController _requirementController = TextEditingController();
+  final TextEditingController _skillController       = TextEditingController();
 
-  // Dropdown values
   String? _locationType;
   String? _experienceLevel;
-  String? _employmentType;
+  String? _jobType;
 
-  final List<String> _locationTypes = ["Remote", "Onsite", "Hybrid"];
+  final List<String> _locationTypes    = ["Remote", "On-site", "Hybrid"];
   final List<String> _experienceLevels = [
-    "Intern",
-    "Junior (0-2 years)",
-    "Mid-level (2-5 years)",
-    "Senior (5+ years)",
-    "Lead/Manager"
+    "Early Level",
+    "Mid Level",
+    "Senior Level",
+    "Senior Manager",
   ];
-  final List<String> _employmentTypes = [
-    "Full-time", "Part-time", "Contract", "Internship", "Freelance"
+  final List<String> _jobTypes = [
+    "Full-time",
+    "Part-time",
+    "Contract",
+    "Internship",
+    "Freelance",
   ];
 
-  // Logo
-  String? _logoPath;
-
-  // Requirements and Skills
   List<String> _requirements = [];
-  List<String> _skills = [];
-  final TextEditingController _requirementController = TextEditingController();
-  final TextEditingController _skillController = TextEditingController();
+  List<String> _skills       = [];
 
-  // Validation
-  Map<String, String?> _errors = {};
-  bool _isSubmitting = false;
+  String? _logoPath;
+  Map<String, String> _errors = {};
+  bool _isLoading = false;
 
-  bool get isEditMode => widget.job != null;
+  bool get isEdit => widget.jobData != null;
 
   @override
   void initState() {
     super.initState();
-    _initializeControllers();
+    _initializeData();
   }
 
-  void _initializeControllers() {
-    if (isEditMode) {
-      final job = widget.job!;
-      _titleController = TextEditingController(text: job.title);
-      _descController = TextEditingController(text: job.description);
-      _companyNameController = TextEditingController(text: job.companyName);
-      _locationController = TextEditingController(text: job.location);
-      _salaryMinController = TextEditingController(text: job.salaryMin);
-      _salaryMaxController = TextEditingController(text: job.salaryMax);
-      _deadlineController = TextEditingController(text: job.deadline);
-      _locationType = job.locationType;
-      _experienceLevel = job.experienceLevel;
-      _employmentType = job.employmentType;
-      _logoPath = job.logoPath;
-      _requirements = List<String>.from(job.requirements);
-      _skills = List<String>.from(job.skills);
-    } else {
-      _titleController = TextEditingController();
-      _descController = TextEditingController();
-      _companyNameController = TextEditingController();
-      _locationController = TextEditingController();
-      _salaryMinController = TextEditingController();
-      _salaryMaxController = TextEditingController();
-      _deadlineController = TextEditingController();
+  void _initializeData() {
+    if (widget.jobData != null) {
+      final job = widget.jobData!;
+
+      _titleController.text    = job['title'] ?? '';
+      _descController.text     = job['description'] ?? '';
+      _locationController.text = job['location'] ?? '';
+      _logoPath                = job['companyLogo'];
+      _locationType            = job['locationType'] ?? job['jobType'];
+      _experienceLevel         = job['experienceLevel'];
+      _jobType                 = job['employmentType'];
+
+      final salaryRange = job['salaryRange']?.toString() ?? '';
+      if (salaryRange.contains('-')) {
+        final parts = salaryRange.split('-');
+        _salaryMinController.text = parts[0].trim();
+        _salaryMaxController.text = parts[1].trim();
+      } else {
+        _salaryMinController.text = job['salaryMin']?.toString() ?? '';
+        _salaryMaxController.text = job['salaryMax']?.toString() ?? '';
+      }
+
+      _deadlineController.text = job['deadline']?.toString().split('T')[0] ?? '';
+
+      _requirements = _parseListField(job['requirements']);
+      _skills       = _parseListField(job['requiredSkills'] ?? job['skills']);
     }
+  }
+
+  List<String> _parseListField(dynamic value) {
+    if (value == null) return [];
+    if (value is List) return List<String>.from(value.map((e) => e.toString()));
+    if (value is String && value.isNotEmpty) {
+      return value.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+    }
+    return [];
   }
 
   @override
   void dispose() {
     _titleController.dispose();
     _descController.dispose();
-    _companyNameController.dispose();
     _locationController.dispose();
     _salaryMinController.dispose();
     _salaryMaxController.dispose();
@@ -109,108 +118,135 @@ class _CreateEditJobScreenState extends State<CreateEditJobScreen> {
     super.dispose();
   }
 
-  bool _validateForm({required bool isDraft}) {
-    setState(() => _errors = {});
-    bool isValid = true;
+  bool _validateForm() {
+    _errors.clear();
 
-    if (isDraft) return true;
+    if (_titleController.text.trim().isEmpty)
+      _errors['title'] = 'Job title is required';
+    if (_descController.text.trim().isEmpty)
+      _errors['description'] = 'Description is required';
+    if (_locationType == null)
+      _errors['locationType'] = 'Location type is required';
+    if ((_locationType == "On-site" || _locationType == "Hybrid") &&
+        _locationController.text.trim().isEmpty)
+      _errors['location'] = 'Location is required for onsite/hybrid jobs';
+    if (_salaryMinController.text.trim().isEmpty)
+      _errors['salaryMin'] = 'Minimum salary is required';
+    if (_salaryMaxController.text.trim().isEmpty)
+      _errors['salaryMax'] = 'Maximum salary is required';
+    if (_experienceLevel == null)
+      _errors['experienceLevel'] = 'Experience level is required';
+    if (_jobType == null)
+      _errors['jobType'] = 'Job type is required';
+    if (_deadlineController.text.trim().isEmpty)
+      _errors['deadline'] = 'Application deadline is required';
 
-    if (_titleController.text.trim().isEmpty) { _errors['title'] = 'Job title is required'; isValid = false; }
-    if (_descController.text.trim().isEmpty) { _errors['description'] = 'Description is required'; isValid = false; }
-    if (_locationType == null) { _errors['locationType'] = 'Location type is required'; isValid = false; }
-    if ((_locationType == "Onsite" || _locationType == "Hybrid") && _locationController.text.trim().isEmpty) {
-      _errors['location'] = 'Location is required for onsite/hybrid jobs'; isValid = false;
-    }
-    if (_salaryMinController.text.trim().isEmpty) { _errors['salaryMin'] = 'Minimum salary is required'; isValid = false; }
-    if (_salaryMaxController.text.trim().isEmpty) { _errors['salaryMax'] = 'Maximum salary is required'; isValid = false; }
-    if (_experienceLevel == null) { _errors['experienceLevel'] = 'Experience level is required'; isValid = false; }
-    if (_employmentType == null) { _errors['employmentType'] = 'Employment type is required'; isValid = false; }
-    if (_deadlineController.text.trim().isEmpty) { _errors['deadline'] = 'Application deadline is required'; isValid = false; }
-
-    if (!isValid) {
-      setState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all required fields'), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
-      );
-    }
-    return isValid;
+    setState(() {});
+    return _errors.isEmpty;
   }
 
-  Future<void> _handleSubmit({required bool isDraft, bool isEdit = false}) async {
-    if (_isSubmitting) return;
-    if (!_validateForm(isDraft: isDraft)) return;
+  Future<void> _saveJob({bool isDraft = false}) async {
+    if (!_validateForm()) return;
 
-    setState(() => _isSubmitting = true);
+    setState(() => _isLoading = true);
 
     try {
-      // ✅ MOCK: simulate delay
-      await Future.delayed(const Duration(milliseconds: 500));
+      final salaryRange =
+          '${_salaryMinController.text.trim()} - ${_salaryMaxController.text.trim()}';
 
-      final jobModel = _createJobModel(
-        status: isEdit ? widget.job!.status : (isDraft ? "Draft" : "Published"),
-        id: isEdit ? widget.job!.id : JobMockData.generateMockId(),
-      );
+      final requiredSkillsStr = _skills.join(', ');
 
-      // ✅ MOCK: Create/Update في الـ static list
+      File? logoFile;
+      if (_logoPath != null && !_logoPath!.startsWith('http')) {
+        logoFile = File(_logoPath!);
+      }
+
+      final String jobTypeToSend = _locationType!;
+      final String locationToSend = _locationType == 'Remote'  // ✅ fix
+          ? 'Remote'
+          : _locationController.text.trim();
+
+      Response? response;
+
       if (isEdit) {
-        JobMockData.updateJob(jobModel.id, jobModel);
+        response = await jobRepo.updateJob(
+          jobId:           widget.jobData!['id'].toString(),
+          title:           _titleController.text.trim(),
+          description:     _descController.text.trim(),
+          requiredSkills:  requiredSkillsStr,
+          experienceLevel: _experienceLevel!,
+          jobType:         jobTypeToSend,
+          location:        locationToSend,
+          salaryRange:     salaryRange,
+          companyLogo:     logoFile,
+        );
       } else {
-        JobMockData.addJob(jobModel);
-      }
-
-      // ❌ BACKEND:
-      // if (isEdit) {
-      //   await _jobRepo.updateJob(jobModel);
-      // } else {
-      //   await _jobRepo.createJob(jobModel);
-      // }
-
-      if (mounted) {
-        String message = isEdit
-            ? 'Changes saved successfully!'
-            : isDraft ? 'Draft saved successfully!' : 'Job published successfully!';
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating),
+        response = await jobRepo.createJob(
+          title:           _titleController.text.trim(),
+          description:     _descController.text.trim(),
+          requiredSkills:  requiredSkillsStr,
+          experienceLevel: _experienceLevel!,
+          jobType:         jobTypeToSend,
+          location:        locationToSend,
+          salaryRange:     salaryRange,
+          companyLogo:     logoFile,
         );
-
-        Navigator.pop(context, jobModel); // ← بيرجع JobModel لـ JobsScreen
       }
+
+      debugPrint("📦 Response status: ${response?.statusCode}");
+      debugPrint("📦 Response data:   ${response?.data}");
+
+      if (response != null &&
+          (response.statusCode == 200 || response.statusCode == 201)) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(isEdit
+                ? 'Job updated successfully!'
+                : 'Job published successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context, true);
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed: ${response?.statusCode ?? 'No response'}\n${response?.data ?? ''}',
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    } on DioException catch (e) {
+      debugPrint("❌ DioException: ${e.response?.statusCode}");
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Network error: ${e.response?.statusCode}\n${e.response?.data ?? e.message}',
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
-        );
-      }
+      debugPrint("❌ General Error: $e");
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Unexpected error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
-      if (mounted) setState(() => _isSubmitting = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  JobModel _createJobModel({required String status, required String id}) {
-    return JobModel(
-      id: id,
-      title: _titleController.text.trim(),
-      description: _descController.text.trim(),
-      logoPath: _logoPath,
-      companyName: _companyNameController.text.trim(),
-      locationType: _locationType ?? 'Remote',
-      location: _locationController.text.trim(),
-      salaryMin: _salaryMinController.text.trim(),
-      salaryMax: _salaryMaxController.text.trim(),
-      experienceLevel: _experienceLevel ?? 'Junior (0-2 years)',
-      requirements: _requirements,
-      skills: _skills,
-      employmentType: _employmentType ?? 'Full-time',
-      postedDate: isEditMode ? widget.job!.postedDate : DateFormat('yyyy-MM-dd').format(DateTime.now()),
-      deadline: _deadlineController.text,
-      applicantsCount: isEditMode ? widget.job!.applicantsCount : 0,
-      status: status,
-      isFeatured: isEditMode ? widget.job!.isFeatured : false,
-    );
-  }
-
-  Future<void> _pickDate(TextEditingController controller, String field) async {
+  Future<void> _pickDate(TextEditingController controller) async {
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -218,270 +254,395 @@ class _CreateEditJobScreenState extends State<CreateEditJobScreen> {
       lastDate: DateTime(2100),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(primary: Color(0xff1676C4), onPrimary: Colors.white, onSurface: Colors.black),
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xff1676C4),
+            onPrimary: Colors.white,
+            onSurface: Colors.black,
+          ),
         ),
         child: child!,
       ),
     );
     if (picked != null) {
-      setState(() {
-        controller.text = DateFormat('yyyy-MM-dd').format(picked);
-        _errors[field] = null;
-      });
+      setState(() =>
+      controller.text = DateFormat('yyyy-MM-dd').format(picked));
     }
   }
 
   void _addRequirement() {
     if (_requirementController.text.trim().isNotEmpty) {
-      setState(() { _requirements.add(_requirementController.text.trim()); _requirementController.clear(); });
+      setState(() {
+        _requirements.add(_requirementController.text.trim());
+        _requirementController.clear();
+      });
     }
   }
-
-  void _removeRequirement(int index) => setState(() => _requirements.removeAt(index));
 
   void _addSkill() {
     if (_skillController.text.trim().isNotEmpty) {
-      setState(() { _skills.add(_skillController.text.trim()); _skillController.clear(); });
+      setState(() {
+        _skills.add(_skillController.text.trim());
+        _skillController.clear();
+      });
     }
   }
-
-  void _removeSkill(int index) => setState(() => _skills.removeAt(index));
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditMode ? "Edit Job" : "Create New Job", style: const TextStyle(color: Colors.white)),
+        title: Text(
+          isEdit ? "Edit Job" : "Create New Job",
+          style: const TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color(0xff1676C4),
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
       ),
       backgroundColor: Colors.grey[100],
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              // ── Job Information ──────────────────────────────────
-              SectionWidget(
-                title: "Job Information",
-                children: [
-                  TextFieldWidget(controller: _titleController, label: "Job Title", hint: "e.g., Senior React Developer"),
-                  if (_errors['title'] != null) ...[const SizedBox(height: 4), Text(_errors['title']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
-                  const SizedBox(height: 12),
-                  TextFieldWidget(controller: _companyNameController, label: "Company Name (Optional)", hint: "e.g., TechCorp Solutions"),
-                  const SizedBox(height: 12),
-                  TextAreaWidget(controller: _descController, label: "Job Description", hint: "Write a clear description of the role..."),
-                  if (_errors['description'] != null) ...[const SizedBox(height: 4), Text(_errors['description']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
-                  const SizedBox(height: 12),
-                  UploadContainerWidget(
-                    title: "Upload Company Logo",
-                    selectedImagePath: _logoPath,
-                    onImageChanged: (path) => setState(() => _logoPath = path),
-                  ),
-                ],
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            if (_errors.isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _errors.values
+                      .map((e) => Text("• $e",
+                      style: const TextStyle(color: Colors.red)))
+                      .toList(),
+                ),
               ),
 
-              const SizedBox(height: 16),
+            // ── Job Information ──────────────────────────────
+            SectionWidget(
+              title: "Job Information",
+              children: [
+                TextFieldWidget(
+                  controller: _titleController,
+                  label: "Job Title",
+                  hint: "e.g., Senior React Developer",
+                ),
+                if (_errors.containsKey('title'))
+                  _errorText(_errors['title']!),
+                const SizedBox(height: 12),
+                TextAreaWidget(
+                  controller: _descController,
+                  label: "Job Description",
+                  hint: "Write a clear description of the role...",
+                ),
+                if (_errors.containsKey('description'))
+                  _errorText(_errors['description']!),
+                const SizedBox(height: 12),
+                UploadContainerWidget(
+                  title: "Company Logo",
+                  selectedImagePath: _logoPath,
+                  onImageChanged: (path) =>
+                      setState(() => _logoPath = path),
+                ),
+              ],
+            ),
 
-              // ── Location & Employment ────────────────────────────
-              SectionWidget(
-                title: "Location & Employment",
-                children: [
-                  CustomDropdown(label: "Location Type", items: _locationTypes, value: _locationType, hint: "Select Location Type",
-                    onChanged: (v) => setState(() { _locationType = v; _errors['locationType'] = null; }),
+            const SizedBox(height: 16),
+
+            // ── Location & Employment ────────────────────────
+            SectionWidget(
+              title: "Location & Employment",
+              children: [
+                CustomDropdown(
+                  label: "Location Type",
+                  items: _locationTypes,
+                  value: _locationType,
+                  hint: "Select Location Type",
+                  onChanged: (v) => setState(() {
+                    _locationType = v;
+                    _errors.remove('locationType');
+                  }),
+                ),
+                if (_errors.containsKey('locationType'))
+                  _errorText(_errors['locationType']!),
+                const SizedBox(height: 12),
+                if (_locationType == "On-site" ||
+                    _locationType == "Hybrid") ...[
+                  TextFieldWidget(
+                    controller: _locationController,
+                    label: "Location",
+                    hint: "e.g., Cairo, Egypt",
                   ),
-                  if (_errors['locationType'] != null) ...[const SizedBox(height: 4), Text(_errors['locationType']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
+                  if (_errors.containsKey('location'))
+                    _errorText(_errors['location']!),
                   const SizedBox(height: 12),
-                  if (_locationType == "Onsite" || _locationType == "Hybrid") ...[
-                    TextFieldWidget(controller: _locationController, label: "Location", hint: "e.g., Cairo, Egypt"),
-                    if (_errors['location'] != null) ...[const SizedBox(height: 4), Text(_errors['location']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
-                    const SizedBox(height: 12),
-                  ],
-                  CustomDropdown(label: "Employment Type", items: _employmentTypes, value: _employmentType, hint: "Select Employment Type",
-                    onChanged: (v) => setState(() { _employmentType = v; _errors['employmentType'] = null; }),
-                  ),
-                  if (_errors['employmentType'] != null) ...[const SizedBox(height: 4), Text(_errors['employmentType']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
                 ],
-              ),
+                CustomDropdown(
+                  label: "Job Type",
+                  items: _jobTypes,
+                  value: _jobType,
+                  hint: "Select Job Type",
+                  onChanged: (v) => setState(() {
+                    _jobType = v;
+                    _errors.remove('jobType');
+                  }),
+                ),
+                if (_errors.containsKey('jobType'))
+                  _errorText(_errors['jobType']!),
+              ],
+            ),
 
-              const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-              // ── Salary & Experience ──────────────────────────────
-              SectionWidget(
-                title: "Salary & Experience",
-                children: [
-                  Row(
-                    children: [
-                      Expanded(child: TextFieldWidget(controller: _salaryMinController, label: "Min Salary", hint: "\$80,000", keyboardType: TextInputType.text)),
-                      const SizedBox(width: 10),
-                      Expanded(child: TextFieldWidget(controller: _salaryMaxController, label: "Max Salary", hint: "\$120,000", keyboardType: TextInputType.text)),
-                    ],
-                  ),
-                  if (_errors['salaryMin'] != null || _errors['salaryMax'] != null) ...[
-                    const SizedBox(height: 4),
-                    Text(_errors['salaryMin'] ?? _errors['salaryMax'] ?? '', style: const TextStyle(color: Colors.red, fontSize: 12)),
-                  ],
-                  const SizedBox(height: 12),
-                  CustomDropdown(label: "Experience Level", items: _experienceLevels, value: _experienceLevel, hint: "Select Experience Level",
-                    onChanged: (v) => setState(() { _experienceLevel = v; _errors['experienceLevel'] = null; }),
-                  ),
-                  if (_errors['experienceLevel'] != null) ...[const SizedBox(height: 4), Text(_errors['experienceLevel']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // ── Requirements ─────────────────────────────────────
-              SectionWidget(
-                title: "Requirements",
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _requirementController,
-                          decoration: InputDecoration(
-                            hintText: "Add a requirement",
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xff1676C4), width: 2)),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(onPressed: _addRequirement, icon: const Icon(Icons.add_circle, color: Color(0xff1676C4)), iconSize: 32),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  if (_requirements.isNotEmpty)
-                    Wrap(
-                      spacing: 8, runSpacing: 8,
-                      children: _requirements.asMap().entries.map((entry) => Chip(
-                        label: Text(entry.value),
-                        deleteIcon: const Icon(Icons.close, size: 18),
-                        onDeleted: () => _removeRequirement(entry.key),
-                        backgroundColor: const Color(0xff1676C4).withOpacity(0.1),
-                        deleteIconColor: const Color(0xff1676C4),
-                      )).toList(),
-                    ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // ── Skills ───────────────────────────────────────────
-              SectionWidget(
-                title: "Required Skills",
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _skillController,
-                          decoration: InputDecoration(
-                            hintText: "Add a skill",
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xff1676C4), width: 2)),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(onPressed: _addSkill, icon: const Icon(Icons.add_circle, color: Color(0xff1676C4)), iconSize: 32),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  if (_skills.isNotEmpty)
-                    Wrap(
-                      spacing: 8, runSpacing: 8,
-                      children: _skills.asMap().entries.map((entry) => Chip(
-                        label: Text(entry.value),
-                        deleteIcon: const Icon(Icons.close, size: 18),
-                        onDeleted: () => _removeSkill(entry.key),
-                        backgroundColor: Colors.green.withOpacity(0.1),
-                        deleteIconColor: Colors.green,
-                      )).toList(),
-                    ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // ── Deadline ─────────────────────────────────────────
-              SectionWidget(
-                title: "Application Deadline",
-                children: [
-                  DateFieldWidget(
-                    controller: _deadlineController,
-                    label: "Deadline",
-                    hint: "Select Date",
-                    errorText: _errors['deadline'],
-                    onTap: () => _pickDate(_deadlineController, 'deadline'),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              // ── Action Buttons ───────────────────────────────────
-              if (isEditMode)
-                ElevatedButton.icon(
-                  onPressed: _isSubmitting ? null : () => _handleSubmit(isDraft: false, isEdit: true),
-                  icon: _isSubmitting
-                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
-                      : const Icon(Icons.save),
-                  label: const Text("Save Changes"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff1676C4),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                )
-              else
+            // ── Salary & Experience ──────────────────────────
+            SectionWidget(
+              title: "Salary & Experience",
+              children: [
                 Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _isSubmitting ? null : () => _handleSubmit(isDraft: true),
-                        icon: _isSubmitting
-                            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Color(0xff1676C4))))
-                            : const Icon(Icons.save_outlined),
-                        label: const Text("Save Draft"),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xff1676C4),
-                          backgroundColor: Colors.white,
-                          side: const BorderSide(color: Color(0xff1676C4), width: 2),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
+                      child: TextFieldWidget(
+                        controller: _salaryMinController,
+                        label: "Min Salary",
+                        hint: "e.g., 80000",
+                        keyboardType: TextInputType.text,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 10),
                     Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: _isSubmitting ? null : () => _handleSubmit(isDraft: false),
-                        icon: _isSubmitting
-                            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
-                            : const Icon(Icons.publish),
-                        label: const Text("Publish"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff1676C4),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
+                      child: TextFieldWidget(
+                        controller: _salaryMaxController,
+                        label: "Max Salary",
+                        hint: "e.g., 120000",
+                        keyboardType: TextInputType.text,
                       ),
                     ),
                   ],
                 ),
+                if (_errors.containsKey('salaryMin') ||
+                    _errors.containsKey('salaryMax'))
+                  _errorText(
+                      _errors['salaryMin'] ?? _errors['salaryMax'] ?? ''),
+                const SizedBox(height: 12),
+                CustomDropdown(
+                  label: "Experience Level",
+                  items: _experienceLevels,
+                  value: _experienceLevel,
+                  hint: "Select Experience Level",
+                  onChanged: (v) => setState(() {
+                    _experienceLevel = v;
+                    _errors.remove('experienceLevel');
+                  }),
+                ),
+                if (_errors.containsKey('experienceLevel'))
+                  _errorText(_errors['experienceLevel']!),
+              ],
+            ),
 
-              const SizedBox(height: 30),
-            ],
-          ),
+            const SizedBox(height: 16),
+
+            // ── Requirements ─────────────────────────────────
+            SectionWidget(
+              title: "Requirements",
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _requirementController,
+                        decoration: InputDecoration(
+                          hintText: "Add a requirement",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                                color: Color(0xff1676C4), width: 2),
+                          ),
+                        ),
+                        onSubmitted: (_) => _addRequirement(),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      onPressed: _addRequirement,
+                      icon: const Icon(Icons.add_circle,
+                          color: Color(0xff1676C4)),
+                      iconSize: 32,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                if (_requirements.isNotEmpty)
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _requirements
+                        .asMap()
+                        .entries
+                        .map((entry) => Chip(
+                      label: Text(entry.value),
+                      deleteIcon:
+                      const Icon(Icons.close, size: 18),
+                      onDeleted: () => setState(() =>
+                          _requirements.removeAt(entry.key)),
+                      backgroundColor: const Color(0xff1676C4)
+                          .withOpacity(0.1),
+                      deleteIconColor: const Color(0xff1676C4),
+                    ))
+                        .toList(),
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Skills ───────────────────────────────────────
+            SectionWidget(
+              title: "Required Skills",
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _skillController,
+                        decoration: InputDecoration(
+                          hintText: "Add a skill",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                                color: Color(0xff1676C4), width: 2),
+                          ),
+                        ),
+                        onSubmitted: (_) => _addSkill(),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      onPressed: _addSkill,
+                      icon: const Icon(Icons.add_circle,
+                          color: Color(0xff1676C4)),
+                      iconSize: 32,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                if (_skills.isNotEmpty)
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _skills
+                        .asMap()
+                        .entries
+                        .map((entry) => Chip(
+                      label: Text(entry.value),
+                      deleteIcon:
+                      const Icon(Icons.close, size: 18),
+                      onDeleted: () => setState(
+                              () => _skills.removeAt(entry.key)),
+                      backgroundColor:
+                      Colors.green.withOpacity(0.1),
+                      deleteIconColor: Colors.green,
+                    ))
+                        .toList(),
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Deadline ─────────────────────────────────────
+            SectionWidget(
+              title: "Application Deadline",
+              children: [
+                DateFieldWidget(
+                  controller: _deadlineController,
+                  label: "Deadline",
+                  hint: "Select Date",
+                  onTap: () => _pickDate(_deadlineController),
+                ),
+                if (_errors.containsKey('deadline'))
+                  _errorText(_errors['deadline']!),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // ── Action Buttons ───────────────────────────────
+            if (isEdit)
+              ElevatedButton.icon(
+                onPressed: _isLoading ? null : () => _saveJob(),
+                icon: const Icon(Icons.save),
+                label: const Text("Save Changes"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff1676C4),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              )
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _isLoading
+                          ? null
+                          : () => _saveJob(isDraft: true),
+                      icon: const Icon(Icons.save_outlined),
+                      label: const Text("Save Draft"),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xff1676C4),
+                        side: const BorderSide(
+                            color: Color(0xff1676C4), width: 2),
+                        padding:
+                        const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed:
+                      _isLoading ? null : () => _saveJob(),
+                      icon: const Icon(Icons.publish),
+                      label: const Text("Publish"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff1676C4),
+                        foregroundColor: Colors.white,
+                        padding:
+                        const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+            const SizedBox(height: 30),
+          ],
         ),
       ),
     );
   }
+
+  Widget _errorText(String message) => Padding(
+    padding: const EdgeInsets.only(top: 4, left: 4),
+    child: Text(message,
+        style: const TextStyle(color: Colors.red, fontSize: 12)),
+  );
 }

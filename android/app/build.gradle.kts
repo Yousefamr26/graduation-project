@@ -20,7 +20,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.flutter_track"
-        minSdk = flutter.minSdkVersion        // ✅ مش flutter.minSdkVersion
+        minSdk = flutter.minSdkVersion       // ✅ مش flutter.minSdkVersion
         targetSdk = 36    // ✅ مش flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -36,3 +36,4 @@ android {
 flutter {
     source = "../.."
 }
+apply(plugin = "com.google.gms.google-services")

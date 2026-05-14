@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../screens/users/company/pages/Roadmaps/quizess/QuizEditorScreen.dart';
-
 
 const _kPrimary      = Color(0xff1893ff);
 const _kPrimaryLight = Color(0xffE8F4FF);
@@ -20,16 +18,16 @@ class ManualQuizWidget extends StatefulWidget {
 
 class ManualQuizWidgetState extends State<ManualQuizWidget> {
   final List<Map<String, dynamic>> _quizzes = [];
-  final GlobalKey<ManualQuizWidgetState> manualQuizKey = GlobalKey();
+
+  List<Map<String, dynamic>> get quizzes => _quizzes;
+
   List<Map<String, dynamic>> getQuizzesForBackend() =>
       _quizzes.map(_serializeQuiz).toList();
-
-  // ── Quiz CRUD ───────────────────────────────────────────
 
   void _addQuiz() {
     setState(() {
       _quizzes.add({
-        'id':              DateTime.now().millisecondsSinceEpoch,
+        'id':              null,
         'titleController': TextEditingController(),
         'questions':       <Map<String, dynamic>>[],
       });
@@ -42,8 +40,6 @@ class ManualQuizWidgetState extends State<ManualQuizWidget> {
       _quizzes.removeAt(index);
     });
   }
-
-  // ── Manual editor ───────────────────────────────────────
 
   void _openQuizEditor(int quizIndex) {
     Navigator.push(
@@ -58,25 +54,34 @@ class ManualQuizWidgetState extends State<ManualQuizWidget> {
     );
   }
 
-  // ── Helpers ─────────────────────────────────────────────
-
   int _totalPoints(int quizIndex) {
-    final questions = _quizzes[quizIndex]['questions'] as List;
+    final quiz = _quizzes[quizIndex];
+
+    // ✅ لو AI استخدم savedPoints أو pointsController
+    if (quiz['isAi'] == true) {
+      return int.tryParse(
+          (quiz['pointsController'] as TextEditingController?)?.text ?? ''
+      ) ?? (quiz['savedPoints'] ?? 0);
+    }
+
+    // ✅ غير كده احسب عادي
+    final questions = quiz['questions'] as List;
     return questions.fold<int>(0, (s, q) => s + ((q['points'] as int?) ?? 0));
   }
+
 
   Map<String, dynamic> _serializeQuiz(Map<String, dynamic> quiz) {
     final questions = quiz['questions'] as List;
     return {
+      if (quiz['id'] != null) 'id': quiz['id'],
       'title':     (quiz['titleController'] as TextEditingController).text,
-      'type':      'MCQ',
-      'points':    questions.fold<int>(0, (s, q) => s + ((q['points'] as int?) ?? 0)),
       'questions': questions.map((q) => {
+        if (q['id'] != null) 'id': q['id'],
         'text':          q['text'] ?? '',
-        'type':          q['type'] ?? 'MCQ',
-        'optionsJson':   jsonEncode(q['options'] ?? []),
         'correctAnswer': q['correctAnswer'] ?? '',
         'points':        q['points'] ?? 5,
+        // ✅ options كـ List مش jsonEncode
+        'options':       List<String>.from(q['options'] ?? []),
       }).toList(),
     };
   }
@@ -91,7 +96,13 @@ class ManualQuizWidgetState extends State<ManualQuizWidget> {
     ));
   }
 
-  // ── BUILD ───────────────────────────────────────────────
+  @override
+  void dispose() {
+    for (var q in _quizzes) {
+      (q['titleController'] as TextEditingController).dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

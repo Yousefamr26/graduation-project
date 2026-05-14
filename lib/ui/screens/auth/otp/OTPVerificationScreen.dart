@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 
 import '../../../../data/repositories/auth_repository.dart';
+import '../login/login_screen.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final String email;
@@ -117,8 +118,8 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
           // because the first route might be RegisterScreen, not LoginScreen.
           // Using pushNamedAndRemoveUntil assumes you have a named route '/login'.
           // If you use a different routing approach, replace accordingly.
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            '/login',
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
                 (route) => false,
           );
         }
@@ -346,8 +347,8 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   // ─── OTP single field ──────────────────────────────────────────────────────
   Widget _buildOTPField(int index) {
     return Container(
-      width: 45,
-      height: 55,
+      width: 35,
+      height: 45,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),

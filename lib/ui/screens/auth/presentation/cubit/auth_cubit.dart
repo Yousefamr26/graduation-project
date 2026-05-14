@@ -71,7 +71,8 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> resendOtp({
     required String email,
     required String userType,
-  }) async {
+  })
+  async {
     emit(AuthLoading());
     try {
       final result = await authService.resendOtp(
@@ -83,4 +84,5 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthError(e.toString()));
     }
   }
+
 }

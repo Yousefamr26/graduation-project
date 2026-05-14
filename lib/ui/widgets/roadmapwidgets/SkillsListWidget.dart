@@ -16,8 +16,8 @@ class SkillsListWidgetState extends State<SkillsListWidget> {
       skills.add({
         "nameController": TextEditingController(),
         "level": "Beginner",
-        "pointsController": TextEditingController(text: "0"),
-        "points": 0,
+        "pointsController": TextEditingController(text: "5"), // ✅ default = 5
+        "points": 5,
       });
     });
   }
@@ -39,7 +39,7 @@ class SkillsListWidgetState extends State<SkillsListWidget> {
       case "Advanced":
         return 15;
       default:
-        return 0;
+        return 5;
     }
   }
 
@@ -100,7 +100,6 @@ class SkillsListWidgetState extends State<SkillsListWidget> {
 
                 Row(
                   children: [
-                    // Skill Level
                     Expanded(
                       child: CustomDropdown(
                         label: "Skill Level",
@@ -109,18 +108,19 @@ class SkillsListWidgetState extends State<SkillsListWidget> {
                         onChanged: (val) {
                           setState(() {
                             skill["level"] = val!;
-                            skill["points"] = _calculatePoints(val);
-                            // ✅ تحديث الـ Controller
-                            skill["pointsController"].text = skill["points"].toString();
+                            final calculated = _calculatePoints(val);
+                            skill["points"] = calculated;
+                            // ✅ sync both map and controller
+                            (skill["pointsController"] as TextEditingController)
+                                .text = calculated.toString();
                           });
                         },
                       ),
                     ),
                     SizedBox(width: 10),
 
-                    // Points
                     Container(
-                      width: 60,
+                      width: 70,
                       child: TextField(
                         keyboardType: TextInputType.number,
                         controller: skill["pointsController"],
@@ -131,6 +131,7 @@ class SkillsListWidgetState extends State<SkillsListWidget> {
                           ),
                         ),
                         onChanged: (val) {
+                          // ✅ update map when user edits manually
                           skill["points"] = int.tryParse(val) ?? 0;
                         },
                       ),
@@ -144,7 +145,6 @@ class SkillsListWidgetState extends State<SkillsListWidget> {
 
         SizedBox(height: 10),
 
-        // Add Skill Button
         SizedBox(
           width: double.infinity,
           height: 40,

@@ -1,0 +1,253 @@
+// ignore_for_file: avoid_print
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class EventUniRepository {
+  late Dio _dio;
+  static const String _baseUrl    = "http://smartcareerhub.runasp.net/api/Events";
+  static const String _serverBase = "http://smartcareerhub.runasp.net";
+
+  EventUniRepository() {
+    _dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(minutes: 5),
+        receiveTimeout: const Duration(minutes: 10),
+        sendTimeout:    const Duration(minutes: 10),
+        headers: {'Accept': 'application/json'},
+      ),
+    );
+
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString('university_token')
+            ?? prefs.getString('company_token');
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+          debugPrint("✅ [AUTH] Token attached: ${token.substring(0, 20)}...");
+        } else {
+          debugPrint("🛑 [AUTH] Warning: No token found!");
+        }
+        debugPrint("📤 [REQUEST] ${options.method} ${options.uri}");
+        return handler.next(options);
+      },
+      onResponse: (response, handler) {
+        debugPrint("📥 [RESPONSE] Status: ${response.statusCode}");
+        return handler.next(response);
+      },
+      onError: (DioException e, handler) {
+        debugPrint("🛑 [ERROR] Status: ${e.response?.statusCode}");
+        debugPrint("🛑 [ERROR MSG]: ${e.message}");
+        return handler.next(e);
+      },
+    ));
+  }
+
+  Map<String, dynamic> _processBanner(dynamic rawValue) {
+    if (rawValue == null) return {'type': null, 'value': null};
+    final s = rawValue.toString().trim();
+    if (s.isEmpty || s.toLowerCase() == 'null') return {'type': null, 'value': null};
+    if (s.startsWith('http://') || s.startsWith('https://')) return {'type': 'url', 'value': s};
+    if (s.startsWith('/uploads/') || s.startsWith('uploads/')) {
+      final fixed = s.startsWith('/') ? "$_serverBase$s" : "$_serverBase/$s";
+      return {'type': 'url', 'value': fixed};
+    }
+    if (s.startsWith('/9j/') || s.startsWith('iVBOR') || s.startsWith('data:image')) {
+      final clean = s.startsWith('data:image') ? s.substring(s.indexOf(',') + 1) : s;
+      return {'type': 'base64', 'value': clean};
+    }
+    if (s.startsWith('/')) return {'type': 'url', 'value': "$_serverBase$s"};
+    return {'type': null, 'value': null};
+  }
+
+  String _getMimeType(String filePath) {
+    final ext = filePath.split('.').last.toLowerCase();
+    if (ext == 'png')  return 'image/png';
+    if (ext == 'webp') return 'image/webp';
+    return 'image/jpeg';
+  }
+
+  String _toSafeDateString(DateTime date) =>
+      DateTime(date.year, date.month, date.day, 12, 0, 0).toIso8601String();
+
+  // ─── GET ALL ──────────────────────────────────────────────────
+  Future<List<Map<String, dynamic>>> getAllEvents() async {
+    try {
+      final response = await _dio.get(
+        _baseUrl,
+        options: Options(validateStatus: (status) => status! < 500),
+      );
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> result = [];
+        if (response.data is List) {
+          result = List<Map<String, dynamic>>.from(response.data);
+        } else if (response.data is Map && response.data['data'] != null) {
+          result = List<Map<String, dynamic>>.from(response.data['data']);
+        }
+        return result.map((e) {
+          final rawValue =
+              e['bannerUrl'] ?? e['banner'] ?? e['bannerPath'] ??
+                  e['coverImage'] ?? e['coverImageUrl'] ?? e['coverImagePath'] ??
+                  e['image'] ?? e['imageUrl'];
+          final info = _processBanner(rawValue);
+          return {
+            ...e,
+            'bannerType':  info['type'],
+            'bannerValue': info['value'],
+            'banner': info['type'] == 'url' ? info['value'] : null,
+          };
+        }).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint("❌ getAllEvents Error: $e");
+      return [];
+    }
+  }
+
+  // ─── CREATE ───────────────────────────────────────────────────
+  Future<Response?> createEvent({
+    required String title,
+    required String description,
+    required String eventType,
+    required String mode,
+    required DateTime startDate,
+    required DateTime endDate,
+    required String startTime,
+    required String endTime,
+    required int maxCapacity,
+    required bool isPublished,
+    required bool allowWaitingList,
+    required bool sendAutoEmail,
+    required int pointsForAttendance,
+    required int pointsForFullParticipation,
+    double minPoints                   = 0,
+    bool completedRoadmap              = false,
+    bool completed50PercentCourses     = false,
+    bool highCommunicationSkills       = false,
+    bool highTechnicalSkills           = false,
+    bool top30PercentProgress          = false,
+    bool inviteOnlyEligibleStudents    = false,
+    String? location,
+    File? banner,
+  }) async {
+    try {
+      final formData = FormData();
+      formData.fields.addAll([
+        MapEntry("Title",                           title),
+        MapEntry("Description",                     description),
+        MapEntry("EventType",                       eventType),
+        MapEntry("Mode",                            mode),
+        MapEntry("StartDate",                       _toSafeDateString(startDate)),
+        MapEntry("EndDate",                         _toSafeDateString(endDate)),
+        MapEntry("StartTime",                       startTime),
+        MapEntry("EndTime",                         endTime),
+        MapEntry("MaxCapacity",                     maxCapacity.toString()),
+        MapEntry("IsPublished",                     isPublished.toString()),
+        MapEntry("AllowWaitingList",                allowWaitingList.toString()),
+        MapEntry("SendAutoEmailToEligibleStudents", sendAutoEmail.toString()),
+        MapEntry("PointsForAttendance",             pointsForAttendance.toString()),
+        MapEntry("PointsForFullParticipation",      pointsForFullParticipation.toString()),
+        MapEntry("MinimumRequiredPoints",           minPoints.round().toString()),
+        MapEntry("CompletedRoadmap",                completedRoadmap.toString()),
+        MapEntry("Completed50PercentCourses",       completed50PercentCourses.toString()),
+        MapEntry("HighCommunicationSkills",         highCommunicationSkills.toString()),
+        MapEntry("HighTechnicalSkills",             highTechnicalSkills.toString()),
+        MapEntry("Top30PercentProgress",            top30PercentProgress.toString()),
+        MapEntry("InviteOnlyEligibleStudents",      inviteOnlyEligibleStudents.toString()),
+        if (location != null && location.isNotEmpty) MapEntry("Location", location),
+      ]);
+      if (banner != null && banner.existsSync()) {
+        formData.files.add(MapEntry("Banner",
+            await MultipartFile.fromFile(banner.path,
+                filename: banner.path.split('/').last,
+                contentType: DioMediaType.parse(_getMimeType(banner.path)))));
+      }
+      return await _dio.post(_baseUrl,
+          data: formData, options: Options(validateStatus: (s) => s! < 500));
+    } catch (e) {
+      debugPrint("❌ createEvent Error: $e");
+      rethrow;
+    }
+  }
+
+  // ─── UPDATE ───────────────────────────────────────────────────
+  Future<Response?> updateEvent({
+    required String eventId,
+    required String title,
+    required String description,
+    required String eventType,
+    required String mode,
+    required DateTime startDate,
+    required DateTime endDate,
+    required String startTime,
+    required String endTime,
+    required int maxCapacity,
+    required bool isPublished,
+    required bool allowWaitingList,
+    required bool sendAutoEmail,
+    required int pointsForAttendance,
+    required int pointsForFullParticipation,
+    double minPoints                   = 0,
+    bool completedRoadmap              = false,
+    bool completed50PercentCourses     = false,
+    bool highCommunicationSkills       = false,
+    bool highTechnicalSkills           = false,
+    bool top30PercentProgress          = false,
+    bool inviteOnlyEligibleStudents    = false,
+    String? location,
+    File? banner,
+  }) async {
+    try {
+      final formData = FormData();
+      formData.fields.addAll([
+        MapEntry("Title",                           title),
+        MapEntry("Description",                     description),
+        MapEntry("EventType",                       eventType),
+        MapEntry("Mode",                            mode),
+        MapEntry("StartDate",                       _toSafeDateString(startDate)),
+        MapEntry("EndDate",                         _toSafeDateString(endDate)),
+        MapEntry("StartTime",                       startTime),
+        MapEntry("EndTime",                         endTime),
+        MapEntry("MaxCapacity",                     maxCapacity.toString()),
+        MapEntry("IsPublished",                     isPublished.toString()),
+        MapEntry("AllowWaitingList",                allowWaitingList.toString()),
+        MapEntry("SendAutoEmailToEligibleStudents", sendAutoEmail.toString()),
+        MapEntry("PointsForAttendance",             pointsForAttendance.toString()),
+        MapEntry("PointsForFullParticipation",      pointsForFullParticipation.toString()),
+        MapEntry("MinimumRequiredPoints",           minPoints.round().toString()),
+        MapEntry("CompletedRoadmap",                completedRoadmap.toString()),
+        MapEntry("Completed50PercentCourses",       completed50PercentCourses.toString()),
+        MapEntry("HighCommunicationSkills",         highCommunicationSkills.toString()),
+        MapEntry("HighTechnicalSkills",             highTechnicalSkills.toString()),
+        MapEntry("Top30PercentProgress",            top30PercentProgress.toString()),
+        MapEntry("InviteOnlyEligibleStudents",      inviteOnlyEligibleStudents.toString()),
+        if (location != null && location.isNotEmpty) MapEntry("Location", location),
+      ]);
+      if (banner != null && banner.existsSync()) {
+        formData.files.add(MapEntry("Banner",
+            await MultipartFile.fromFile(banner.path,
+                filename: banner.path.split('/').last,
+                contentType: DioMediaType.parse(_getMimeType(banner.path)))));
+      }
+      return await _dio.put("$_baseUrl/$eventId",
+          data: formData, options: Options(validateStatus: (s) => s! < 500));
+    } catch (e) {
+      debugPrint("❌ updateEvent Error: $e");
+      rethrow;
+    }
+  }
+
+  // ─── DELETE ───────────────────────────────────────────────────
+  Future<Response?> deleteEvent(dynamic eventId) async {
+    try {
+      return await _dio.delete("$_baseUrl/${eventId.toString()}",
+          options: Options(validateStatus: (s) => s! < 500));
+    } catch (e) {
+      debugPrint("❌ deleteEvent Error: $e");
+      rethrow;
+    }
+  }
+}

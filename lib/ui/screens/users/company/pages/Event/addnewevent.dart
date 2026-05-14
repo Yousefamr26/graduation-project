@@ -1,531 +1,552 @@
-// import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
-// import '../../../../../../data/models/company/event-model.dart';
-// import '../../../../../widgets/common/CustomDropdown.dart';
-// import '../../../../../widgets/common/_buildDateField.dart';
-// import '../../../../../widgets/common/_buildSection.dart';
-// import '../../../../../widgets/common/_buildTextArea.dart';
-// import '../../../../../widgets/common/_buildTextField.dart';
-// import '../../../../../widgets/common/_buildUploadContainer.dart';
-// import 'EventmockData.dart';
-//
-// class CreateEditEventScreen extends StatefulWidget {
-//   final EventModel? event;
-//
-//   const CreateEditEventScreen({this.event, super.key});
-//
-//   @override
-//   State<CreateEditEventScreen> createState() => _CreateEditEventScreenState();
-// }
-//
-// class _CreateEditEventScreenState extends State<CreateEditEventScreen> {
-//   final _formKey = GlobalKey<FormState>();
-//
-//   // Controllers
-//   late TextEditingController _titleController;
-//   late TextEditingController _descController;
-//   late TextEditingController _locationController;
-//   late TextEditingController _startDateController;
-//   late TextEditingController _endDateController;
-//   late TextEditingController _startTimeController;
-//   late TextEditingController _endTimeController;
-//   late TextEditingController _capacityController;
-//   late TextEditingController _pointsAttendanceController;
-//   late TextEditingController _pointsParticipationController;
-//
-//   // Dropdown values
-//   String? _eventType;
-//   String? _eventMode;
-//
-//   final List<String> _eventTypes = [
-//     "Company Tour", "Hiring Event", "Workshop",
-//     "Networking Event", "Tech Talk", "Bootcamp Preview"
-//   ];
-//   final List<String> _eventModes = ["Online", "Onsite", "Hybrid"];
-//
-//   // Image
-//   String? _coverImagePath;
-//
-//   // Eligibility
-//   double _minPoints = 0;
-//   List<String> _eligibilityFilters = [];
-//   bool _inviteOnly = false;
-//   int _eligibleStudents = 245;
-//
-//   // Registration
-//   bool _allowWaitingList = false;
-//   bool _sendAutoEmail = false;
-//
-//   // Validation
-//   Map<String, String?> _errors = {};
-//   bool _isSubmitting = false;
-//
-//   bool get isEditMode => widget.event != null;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _initializeControllers();
-//   }
-//
-//   void _initializeControllers() {
-//     if (isEditMode) {
-//       final event = widget.event!;
-//       _titleController = TextEditingController(text: event.title);
-//       _descController = TextEditingController(text: event.description);
-//       _locationController = TextEditingController(text: event.location);
-//       _startDateController = TextEditingController(text: event.startDate);
-//       _endDateController = TextEditingController(text: event.endDate);
-//       _startTimeController = TextEditingController(text: event.startTime);
-//       _endTimeController = TextEditingController(text: event.endTime);
-//       _capacityController = TextEditingController(text: event.capacity.toString());
-//       _pointsAttendanceController = TextEditingController(text: event.pointsAttendance.toString());
-//       _pointsParticipationController = TextEditingController(text: event.pointsParticipation.toString());
-//       _eventType = event.type;
-//       _eventMode = event.mode;
-//       _coverImagePath = event.coverImagePath;
-//       _minPoints = event.minPoints;
-//       _eligibilityFilters = List<String>.from(event.eligibilityFilters);
-//       _inviteOnly = event.inviteOnly;
-//       _eligibleStudents = event.eligibleStudents;
-//       _allowWaitingList = event.allowWaitingList;
-//       _sendAutoEmail = event.sendAutoEmail;
-//     } else {
-//       _titleController = TextEditingController();
-//       _descController = TextEditingController();
-//       _locationController = TextEditingController();
-//       _startDateController = TextEditingController();
-//       _endDateController = TextEditingController();
-//       _startTimeController = TextEditingController();
-//       _endTimeController = TextEditingController();
-//       _capacityController = TextEditingController();
-//       _pointsAttendanceController = TextEditingController();
-//       _pointsParticipationController = TextEditingController();
-//     }
-//   }
-//
-//   @override
-//   void dispose() {
-//     _titleController.dispose();
-//     _descController.dispose();
-//     _locationController.dispose();
-//     _startDateController.dispose();
-//     _endDateController.dispose();
-//     _startTimeController.dispose();
-//     _endTimeController.dispose();
-//     _capacityController.dispose();
-//     _pointsAttendanceController.dispose();
-//     _pointsParticipationController.dispose();
-//     super.dispose();
-//   }
-//
-//   bool _validateForm({required bool isDraft}) {
-//     setState(() => _errors = {});
-//     bool isValid = true;
-//
-//     if (isDraft) return true;
-//
-//     if (_titleController.text.trim().isEmpty) { _errors['title'] = 'Event title is required'; isValid = false; }
-//     if (_descController.text.trim().isEmpty) { _errors['description'] = 'Description is required'; isValid = false; }
-//     if (_eventType == null) { _errors['eventType'] = 'Event type is required'; isValid = false; }
-//     if (_eventMode == null) { _errors['eventMode'] = 'Event mode is required'; isValid = false; }
-//     if ((_eventMode == "Onsite" || _eventMode == "Hybrid") && _locationController.text.trim().isEmpty) {
-//       _errors['location'] = 'Location is required for onsite/hybrid events'; isValid = false;
-//     }
-//     if (_startDateController.text.trim().isEmpty) { _errors['startDate'] = 'Start date is required'; isValid = false; }
-//     if (_endDateController.text.trim().isEmpty) { _errors['endDate'] = 'End date is required'; isValid = false; }
-//     if (_startTimeController.text.trim().isEmpty) { _errors['startTime'] = 'Start time is required'; isValid = false; }
-//     if (_endTimeController.text.trim().isEmpty) { _errors['endTime'] = 'End time is required'; isValid = false; }
-//
-//     final capacity = int.tryParse(_capacityController.text);
-//     if (capacity == null || capacity <= 0) { _errors['capacity'] = 'Valid capacity is required'; isValid = false; }
-//
-//     if (_startDateController.text.isNotEmpty && _endDateController.text.isNotEmpty) {
-//       try {
-//         final start = DateFormat('yyyy-MM-dd').parse(_startDateController.text);
-//         final end = DateFormat('yyyy-MM-dd').parse(_endDateController.text);
-//         if (end.isBefore(start)) { _errors['endDate'] = 'End date must be after start date'; isValid = false; }
-//       } catch (_) { _errors['startDate'] = 'Invalid date format'; isValid = false; }
-//     }
-//
-//     if (!isValid) {
-//       setState(() {});
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text('Please fill in all required fields'), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
-//       );
-//     }
-//     return isValid;
-//   }
-//
-//   Future<void> _handleSubmit({required bool isDraft, bool isEdit = false}) async {
-//     if (_isSubmitting) return;
-//     if (!_validateForm(isDraft: isDraft)) return;
-//
-//     setState(() => _isSubmitting = true);
-//
-//     try {
-//       // ✅ MOCK: simulate delay
-//       await Future.delayed(const Duration(milliseconds: 500));
-//
-//       final eventModel = _createEventModel(
-//         status: isEdit ? widget.event!.status : (isDraft ? "Draft" : "Published"),
-//         id: isEdit ? (widget.event!.id ?? EventMockData.generateMockId()) : EventMockData.generateMockId(),
-//       );
-//
-//       // ✅ MOCK: Create/Update في الـ static list
-//       if (isEdit) {
-//         EventMockData.updateEvent(eventModel.id, eventModel);
-//       } else {
-//         EventMockData.addEvent(eventModel);
-//       }
-//
-//       // ❌ BACKEND:
-//       // if (isEdit) {
-//       //   await _eventRepo.updateEvent(eventModel);
-//       // } else {
-//       //   await _eventRepo.createEvent(eventModel);
-//       // }
-//
-//       if (mounted) {
-//         String message = isEdit
-//             ? 'Changes saved successfully!'
-//             : isDraft ? 'Draft saved successfully!' : 'Event published successfully!';
-//
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(content: Text(message), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating),
-//         );
-//
-//         Navigator.pop(context, eventModel); // ← بيرجع EventModel لـ EventsScreen
-//       }
-//     } catch (e) {
-//       if (mounted) {
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
-//         );
-//       }
-//     } finally {
-//       if (mounted) setState(() => _isSubmitting = false);
-//     }
-//   }
-//
-//   EventModel _createEventModel({required String status, required String id}) {
-//     return EventModel(
-//       id: id,
-//       title: _titleController.text.trim(),
-//       description: _descController.text.trim(),
-//       coverImagePath: _coverImagePath,
-//       type: _eventType,
-//       mode: _eventMode,
-//       location: _locationController.text.trim(),
-//       startDate: _startDateController.text,
-//       endDate: _endDateController.text,
-//       startTime: _startTimeController.text,
-//       endTime: _endTimeController.text,
-//       minPoints: _minPoints,
-//       eligibilityFilters: _eligibilityFilters,
-//       inviteOnly: _inviteOnly,
-//       eligibleStudents: _eligibleStudents,
-//       capacity: int.tryParse(_capacityController.text) ?? 0,
-//       allowWaitingList: _allowWaitingList,
-//       sendAutoEmail: _sendAutoEmail,
-//       pointsAttendance: int.tryParse(_pointsAttendanceController.text) ?? 0,
-//       pointsParticipation: int.tryParse(_pointsParticipationController.text) ?? 0,
-//       status: status,
-//       date: isEditMode ? widget.event!.date : DateFormat('yyyy-MM-dd').format(DateTime.now()),
-//     );
-//   }
-//
-//   Widget _buildFilterChip(String label) {
-//     final isSelected = _eligibilityFilters.contains(label);
-//     return FilterChip(
-//       label: Text(label),
-//       selected: isSelected,
-//       onSelected: (val) {
-//         setState(() {
-//           if (val) { _eligibilityFilters.add(label); } else { _eligibilityFilters.remove(label); }
-//         });
-//       },
-//       selectedColor: const Color(0xff1676C4).withOpacity(0.2),
-//       checkmarkColor: const Color(0xff1676C4),
-//     );
-//   }
-//
-//   Future<void> _pickDate(TextEditingController controller, String field) async {
-//     DateTime? picked = await showDatePicker(
-//       context: context,
-//       initialDate: DateTime.now(),
-//       firstDate: DateTime(2020),
-//       lastDate: DateTime(2100),
-//       builder: (context, child) => Theme(
-//         data: Theme.of(context).copyWith(
-//           colorScheme: const ColorScheme.light(primary: Color(0xff1676C4), onPrimary: Colors.white, onSurface: Colors.black),
-//         ),
-//         child: child!,
-//       ),
-//     );
-//     if (picked != null) {
-//       setState(() { controller.text = DateFormat('yyyy-MM-dd').format(picked); _errors[field] = null; });
-//     }
-//   }
-//
-//   Future<void> _pickTime(TextEditingController controller, String field) async {
-//     TimeOfDay? picked = await showTimePicker(
-//       context: context,
-//       initialTime: TimeOfDay.now(),
-//       builder: (context, child) => Theme(
-//         data: Theme.of(context).copyWith(
-//           colorScheme: const ColorScheme.light(primary: Color(0xff1676C4), onPrimary: Colors.white, onSurface: Colors.black),
-//         ),
-//         child: child!,
-//       ),
-//     );
-//     if (picked != null) {
-//       setState(() { controller.text = picked.format(context); _errors[field] = null; });
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(isEditMode ? "Edit Event" : "Create New Event", style: const TextStyle(color: Colors.white)),
-//         backgroundColor: const Color(0xff1676C4),
-//         iconTheme: const IconThemeData(color: Colors.white),
-//         elevation: 0,
-//       ),
-//       backgroundColor: Colors.grey[100],
-//       body: Form(
-//         key: _formKey,
-//         child: SingleChildScrollView(
-//           padding: const EdgeInsets.all(16),
-//           child: Column(
-//             children: [
-//               // ── Event Information ────────────────────────────────
-//               SectionWidget(
-//                 title: "Event Information",
-//                 children: [
-//                   TextFieldWidget(controller: _titleController, label: "Event Title", hint: "e.g., Vodafone Tech Tour"),
-//                   if (_errors['title'] != null) ...[const SizedBox(height: 4), Text(_errors['title']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
-//                   const SizedBox(height: 12),
-//                   TextAreaWidget(controller: _descController, label: "Description", hint: "Write a clear description of the event..."),
-//                   if (_errors['description'] != null) ...[const SizedBox(height: 4), Text(_errors['description']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
-//                   const SizedBox(height: 12),
-//                   UploadContainerWidget(
-//                     title: "Upload Event Image",
-//                     selectedImagePath: _coverImagePath,
-//                     onImageChanged: (path) => setState(() => _coverImagePath = path),
-//                   ),
-//                 ],
-//               ),
-//
-//               const SizedBox(height: 16),
-//
-//               // ── Event Type & Mode ────────────────────────────────
-//               SectionWidget(
-//                 title: "Event Type & Mode",
-//                 children: [
-//                   CustomDropdown(label: "Event Type", items: _eventTypes, value: _eventType, hint: "Select Event Type",
-//                     onChanged: (v) => setState(() { _eventType = v; _errors['eventType'] = null; }),
-//                   ),
-//                   if (_errors['eventType'] != null) ...[const SizedBox(height: 4), Text(_errors['eventType']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
-//                   const SizedBox(height: 12),
-//                   CustomDropdown(label: "Mode", items: _eventModes, value: _eventMode, hint: "Select Mode",
-//                     onChanged: (v) => setState(() { _eventMode = v; _errors['eventMode'] = null; }),
-//                   ),
-//                   if (_errors['eventMode'] != null) ...[const SizedBox(height: 4), Text(_errors['eventMode']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
-//                   const SizedBox(height: 12),
-//                   if (_eventMode == "Onsite" || _eventMode == "Hybrid") ...[
-//                     TextFieldWidget(controller: _locationController, label: "Location", hint: "Campus Hall / Building…"),
-//                     if (_errors['location'] != null) ...[const SizedBox(height: 4), Text(_errors['location']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
-//                   ],
-//                 ],
-//               ),
-//
-//               const SizedBox(height: 16),
-//
-//               // ── Date & Time ──────────────────────────────────────
-//               SectionWidget(
-//                 title: "Date & Time",
-//                 children: [
-//                   Row(
-//                     children: [
-//                       Expanded(child: DateFieldWidget(controller: _startDateController, label: "Start Date", hint: "Select Date", errorText: _errors['startDate'], onTap: () => _pickDate(_startDateController, 'startDate'))),
-//                       const SizedBox(width: 10),
-//                       Expanded(child: DateFieldWidget(controller: _endDateController, label: "End Date", hint: "Select Date", errorText: _errors['endDate'], onTap: () => _pickDate(_endDateController, 'endDate'))),
-//                     ],
-//                   ),
-//                   const SizedBox(height: 12),
-//                   Row(
-//                     children: [
-//                       Expanded(child: TextFieldWidget(controller: _startTimeController, label: "Start Time", hint: "Select time", suffixIcon: const Icon(Icons.access_time, color: Color(0xff1676C4)), onTap: () => _pickTime(_startTimeController, 'startTime'))),
-//                       const SizedBox(width: 10),
-//                       Expanded(child: TextFieldWidget(controller: _endTimeController, label: "End Time", hint: "Select time", suffixIcon: const Icon(Icons.access_time, color: Color(0xff1676C4)), onTap: () => _pickTime(_endTimeController, 'endTime'))),
-//                     ],
-//                   ),
-//                   if (_errors['startTime'] != null || _errors['endTime'] != null) ...[
-//                     const SizedBox(height: 4),
-//                     Text(_errors['startTime'] ?? _errors['endTime'] ?? '', style: const TextStyle(color: Colors.red, fontSize: 12)),
-//                   ],
-//                 ],
-//               ),
-//
-//               const SizedBox(height: 16),
-//
-//               // ── Eligibility Settings ─────────────────────────────
-//               SectionWidget(
-//                 title: "Eligibility Settings",
-//                 children: [
-//                   Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       Row(
-//                         children: [
-//                           const Expanded(child: Text("Minimum Required Points:", style: TextStyle(fontWeight: FontWeight.w600))),
-//                           Container(
-//                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-//                             decoration: BoxDecoration(color: const Color(0xff1676C4), borderRadius: BorderRadius.circular(8)),
-//                             child: Text("${_minPoints.round()} pts", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-//                           ),
-//                         ],
-//                       ),
-//                       Slider(
-//                         min: 0, max: 10000, divisions: 100, value: _minPoints,
-//                         label: "${_minPoints.round()} pts",
-//                         activeColor: const Color(0xff1676C4),
-//                         inactiveColor: Colors.grey.shade300,
-//                         onChanged: (v) => setState(() => _minPoints = v),
-//                       ),
-//                       const SizedBox(height: 12),
-//                       const Text("Additional Filters:", style: TextStyle(fontWeight: FontWeight.w600)),
-//                       const SizedBox(height: 8),
-//                       Wrap(
-//                         spacing: 6, runSpacing: 6,
-//                         children: [
-//                           _buildFilterChip("Completed Roadmap"),
-//                           _buildFilterChip("≥50% Courses"),
-//                           _buildFilterChip("High Communication Skills"),
-//                           _buildFilterChip("High Technical Skills"),
-//                           _buildFilterChip("Top 20% Progress"),
-//                         ],
-//                       ),
-//                       const Divider(height: 24),
-//                       SwitchListTile(
-//                         title: const Text("Invite Only Students Above Criteria"),
-//                         value: _inviteOnly,
-//                         onChanged: (v) => setState(() => _inviteOnly = v),
-//                         activeColor: const Color(0xff1676C4),
-//                         activeTrackColor: const Color(0xffa3c9ff),
-//                         inactiveThumbColor: Colors.grey,
-//                         inactiveTrackColor: Colors.grey[300],
-//                       ),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//
-//               const SizedBox(height: 16),
-//
-//               // ── Capacity & Registration ──────────────────────────
-//               SectionWidget(
-//                 title: "Capacity & Registration",
-//                 children: [
-//                   TextFieldWidget(controller: _capacityController, label: "Max Attendees", hint: "e.g., 100", keyboardType: TextInputType.number),
-//                   if (_errors['capacity'] != null) ...[const SizedBox(height: 4), Text(_errors['capacity']!, style: const TextStyle(color: Colors.red, fontSize: 12))],
-//                   const SizedBox(height: 8),
-//                   SwitchListTile(
-//                     title: const Text("Allow Waiting List"),
-//                     value: _allowWaitingList,
-//                     onChanged: (v) => setState(() => _allowWaitingList = v),
-//                     activeColor: const Color(0xff1676C4),
-//                     activeTrackColor: const Color(0xffa3c9ff),
-//                     inactiveThumbColor: Colors.grey,
-//                     inactiveTrackColor: Colors.grey[300],
-//                   ),
-//                   const Divider(),
-//                   SwitchListTile(
-//                     title: const Text("Send Auto Email to Eligible Students"),
-//                     value: _sendAutoEmail,
-//                     onChanged: (v) => setState(() => _sendAutoEmail = v),
-//                     activeColor: const Color(0xff1676C4),
-//                     activeTrackColor: const Color(0xffa3c9ff),
-//                     inactiveThumbColor: Colors.grey,
-//                     inactiveTrackColor: Colors.grey[300],
-//                   ),
-//                 ],
-//               ),
-//
-//               const SizedBox(height: 16),
-//
-//               // ── Event Rewards ────────────────────────────────────
-//               SectionWidget(
-//                 title: "Event Rewards",
-//                 children: [
-//                   TextFieldWidget(controller: _pointsAttendanceController, label: "Points for Attendance", hint: "e.g., 50 pts", keyboardType: TextInputType.number),
-//                   const SizedBox(height: 12),
-//                   TextFieldWidget(controller: _pointsParticipationController, label: "Points for Full Participation", hint: "e.g., 100 pts", keyboardType: TextInputType.number),
-//                 ],
-//               ),
-//
-//               const SizedBox(height: 24),
-//
-//               // ── Action Buttons ───────────────────────────────────
-//               if (isEditMode)
-//                 ElevatedButton.icon(
-//                   onPressed: _isSubmitting ? null : () => _handleSubmit(isDraft: false, isEdit: true),
-//                   icon: _isSubmitting
-//                       ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
-//                       : const Icon(Icons.save),
-//                   label: const Text("Save Changes"),
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: const Color(0xff1676C4),
-//                     foregroundColor: Colors.white,
-//                     padding: const EdgeInsets.symmetric(vertical: 14),
-//                     minimumSize: const Size(double.infinity, 50),
-//                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//                   ),
-//                 )
-//               else
-//                 Row(
-//                   children: [
-//                     Expanded(
-//                       child: OutlinedButton.icon(
-//                         onPressed: _isSubmitting ? null : () => _handleSubmit(isDraft: true),
-//                         icon: _isSubmitting
-//                             ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Color(0xff1676C4))))
-//                             : const Icon(Icons.save_outlined),
-//                         label: const Text("Save Draft"),
-//                         style: OutlinedButton.styleFrom(
-//                           foregroundColor: const Color(0xff1893ff),
-//                           backgroundColor: Colors.white,
-//                           side: const BorderSide(color: Color(0xff1676C4), width: 2),
-//                           padding: const EdgeInsets.symmetric(vertical: 14),
-//                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//                         ),
-//                       ),
-//                     ),
-//                     const SizedBox(width: 16),
-//                     Expanded(
-//                       child: ElevatedButton.icon(
-//                         onPressed: _isSubmitting ? null : () => _handleSubmit(isDraft: false),
-//                         icon: _isSubmitting
-//                             ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
-//                             : const Icon(Icons.publish),
-//                         label: const Text("Publish"),
-//                         style: ElevatedButton.styleFrom(
-//                           backgroundColor: const Color(0xff1676C4),
-//                           foregroundColor: Colors.white,
-//                           padding: const EdgeInsets.symmetric(vertical: 14),
-//                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               const SizedBox(height: 30),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+// ignore_for_file: avoid_print
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:dio/dio.dart';
+
+import '../../../../../../data/repositories/Event repository.dart';
+import '../../../../../widgets/common/CustomDropdown.dart';
+import '../../../../../widgets/common/_buildDateField.dart';
+import '../../../../../widgets/common/_buildSection.dart';
+import '../../../../../widgets/common/_buildTextArea.dart';
+import '../../../../../widgets/common/_buildTextField.dart';
+import '../../../../../widgets/common/_buildUploadContainer.dart';
+
+class CreateEditEventScreen extends StatefulWidget {
+  final Map<String, dynamic>? eventData; // null = create
+
+  const CreateEditEventScreen({this.eventData, super.key});
+
+  @override
+  State<CreateEditEventScreen> createState() => _CreateEditEventScreenState();
+}
+
+class _CreateEditEventScreenState extends State<CreateEditEventScreen> {
+  final eventRepo = EventRepository();
+
+  // ── Controllers ──────────────────────────────────────────
+  final TextEditingController _titleController          = TextEditingController();
+  final TextEditingController _descController           = TextEditingController();
+  final TextEditingController _locationController       = TextEditingController();
+  final TextEditingController _startDateController      = TextEditingController();
+  final TextEditingController _endDateController        = TextEditingController();
+  final TextEditingController _startTimeController      = TextEditingController();
+  final TextEditingController _endTimeController        = TextEditingController();
+  final TextEditingController _capacityController       = TextEditingController();
+  final TextEditingController _pointsAttendanceController     = TextEditingController();
+  final TextEditingController _pointsParticipationController  = TextEditingController();
+
+  // ── Dropdowns ─────────────────────────────────────────────
+  String? _eventType;
+  String? _eventMode;
+
+  final List<String> _eventTypes = [
+    "Company Tour", "Hiring Event", "Workshop",
+    "Networking Event", "Tech Talk", "Bootcamp Preview",
+  ];
+  final List<String> _eventModes = ["Online", "Onsite", "Hybrid"];
+
+  // ── Eligibility ───────────────────────────────────────────
+  double _minPoints                 = 0;
+  bool   _completedRoadmap          = false;
+  bool   _completed50Percent        = false;
+  bool   _highCommunication         = false;
+  bool   _highTechnical             = false;
+  bool   _top30Percent              = false;
+  bool   _inviteOnly                = false;
+
+  // ── Registration ──────────────────────────────────────────
+  bool _allowWaitingList = false;
+  bool _sendAutoEmail    = false;
+
+  // ── State ─────────────────────────────────────────────────
+  String? _coverImagePath;
+  Map<String, String> _errors = {};
+  bool _isLoading = false;
+
+  bool get isEdit => widget.eventData != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  void _initializeData() {
+    if (widget.eventData != null) {
+      final d = widget.eventData!;
+      _titleController.text     = d['title'] ?? '';
+      _descController.text      = d['description'] ?? '';
+      _locationController.text  = d['location'] ?? '';
+      _startDateController.text = d['startDate']?.toString().split('T')[0] ?? '';
+      _endDateController.text   = d['endDate']?.toString().split('T')[0] ?? '';
+      _startTimeController.text = d['startTime'] ?? '';
+      _endTimeController.text   = d['endTime'] ?? '';
+      _capacityController.text  = d['maxCapacity']?.toString() ?? d['capacity']?.toString() ?? '';
+      _pointsAttendanceController.text    = d['pointsForAttendance']?.toString() ?? d['pointsAttendance']?.toString() ?? '0';
+      _pointsParticipationController.text = d['pointsForFullParticipation']?.toString() ?? d['pointsParticipation']?.toString() ?? '0';
+      _eventType        = d['eventType'] ?? d['type'];
+      _eventMode        = d['mode'];
+      _coverImagePath   = d['banner'] ?? d['coverImagePath'];
+      _minPoints        = (d['minimumRequiredPoints'] ?? d['minPoints'] ?? 0).toDouble();
+      _completedRoadmap = d['completedRoadmap'] ?? false;
+      _completed50Percent = d['completed50PercentCourses'] ?? false;
+      _highCommunication  = d['highCommunicationSkills'] ?? false;
+      _highTechnical      = d['highTechnicalSkills'] ?? false;
+      _top30Percent       = d['top30PercentProgress'] ?? false;
+      _inviteOnly         = d['inviteOnlyEligibleStudents'] ?? d['inviteOnly'] ?? false;
+      _allowWaitingList   = d['allowWaitingList'] ?? false;
+      _sendAutoEmail      = d['sendAutoEmailToEligibleStudents'] ?? d['sendAutoEmail'] ?? false;
+    }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descController.dispose();
+    _locationController.dispose();
+    _startDateController.dispose();
+    _endDateController.dispose();
+    _startTimeController.dispose();
+    _endTimeController.dispose();
+    _capacityController.dispose();
+    _pointsAttendanceController.dispose();
+    _pointsParticipationController.dispose();
+    super.dispose();
+  }
+
+  // ── Validation ───────────────────────────────────────────
+  bool _validateForm() {
+    _errors.clear();
+    if (_titleController.text.trim().isEmpty)     _errors['title'] = 'Event title is required';
+    if (_descController.text.trim().isEmpty)      _errors['description'] = 'Description is required';
+    if (_eventType == null)                       _errors['eventType'] = 'Event type is required';
+    if (_eventMode == null)                       _errors['eventMode'] = 'Event mode is required';
+    if ((_eventMode == "Onsite" || _eventMode == "Hybrid") && _locationController.text.trim().isEmpty)
+      _errors['location'] = 'Location is required for onsite/hybrid events';
+    if (_startDateController.text.trim().isEmpty) _errors['startDate'] = 'Start date is required';
+    if (_endDateController.text.trim().isEmpty)   _errors['endDate'] = 'End date is required';
+    if (_startTimeController.text.trim().isEmpty) _errors['startTime'] = 'Start time is required';
+    if (_endTimeController.text.trim().isEmpty)   _errors['endTime'] = 'End time is required';
+    final cap = int.tryParse(_capacityController.text);
+    if (cap == null || cap <= 0)                  _errors['capacity'] = 'Valid capacity is required';
+
+    if (_startDateController.text.isNotEmpty && _endDateController.text.isNotEmpty) {
+      try {
+        final start = DateFormat('yyyy-MM-dd').parse(_startDateController.text);
+        final end   = DateFormat('yyyy-MM-dd').parse(_endDateController.text);
+        if (end.isBefore(start)) _errors['endDate'] = 'End date must be after start date';
+      } catch (_) { _errors['startDate'] = 'Invalid date format'; }
+    }
+
+    setState(() {});
+    return _errors.isEmpty;
+  }
+
+  // ── Save ─────────────────────────────────────────────────
+  Future<void> _saveEvent({required bool isPublished}) async {
+    if (!_validateForm()) return;
+    setState(() => _isLoading = true);
+
+    try {
+      final startDate = DateFormat('yyyy-MM-dd').parse(_startDateController.text);
+      final endDate   = DateFormat('yyyy-MM-dd').parse(_endDateController.text);
+
+      // ✅ StartTime/EndTime: الـ API بياخد TimeSpan format "HH:mm:ss"
+      String _formatTimeForApi(String timeStr) {
+        try {
+          final tod = TimeOfDay(
+            hour: int.parse(timeStr.split(':')[0]),
+            minute: int.parse(timeStr.split(':')[1].split(' ')[0]),
+          );
+          return '${tod.hour.toString().padLeft(2, '0')}:${tod.minute.toString().padLeft(2, '0')}:00';
+        } catch (_) { return '00:00:00'; }
+      }
+
+      File? bannerFile;
+      if (_coverImagePath != null && !_coverImagePath!.startsWith('http')) {
+        bannerFile = File(_coverImagePath!);
+      }
+
+      Response? response;
+
+      if (isEdit) {
+        response = await eventRepo.updateEvent(
+          eventId:                    widget.eventData!['id'].toString(),
+          title:                      _titleController.text.trim(),
+          description:                _descController.text.trim(),
+          eventType:                  _eventType!,
+          mode:                       _eventMode!,
+          startDate:                  startDate,
+          endDate:                    endDate,
+          startTime:                  _formatTimeForApi(_startTimeController.text),
+          endTime:                    _formatTimeForApi(_endTimeController.text),
+          maxCapacity:                int.tryParse(_capacityController.text) ?? 0,
+          isPublished:                isPublished,
+          allowWaitingList:           _allowWaitingList,
+          sendAutoEmail:              _sendAutoEmail,
+          pointsForAttendance:        int.tryParse(_pointsAttendanceController.text) ?? 0,
+          pointsForFullParticipation: int.tryParse(_pointsParticipationController.text) ?? 0,
+          minPoints:                  _minPoints,
+          completedRoadmap:           _completedRoadmap,
+          completed50PercentCourses:  _completed50Percent,
+          highCommunicationSkills:    _highCommunication,
+          highTechnicalSkills:        _highTechnical,
+          top30PercentProgress:       _top30Percent,
+          inviteOnlyEligibleStudents: _inviteOnly,
+          location:                   _locationController.text.trim().isNotEmpty ? _locationController.text.trim() : null,
+          banner:                     bannerFile,
+        );
+      } else {
+        response = await eventRepo.createEvent(
+          title:                      _titleController.text.trim(),
+          description:                _descController.text.trim(),
+          eventType:                  _eventType!,
+          mode:                       _eventMode!,
+          startDate:                  startDate,
+          endDate:                    endDate,
+          startTime:                  _formatTimeForApi(_startTimeController.text),
+          endTime:                    _formatTimeForApi(_endTimeController.text),
+          maxCapacity:                int.tryParse(_capacityController.text) ?? 0,
+          isPublished:                isPublished,
+          allowWaitingList:           _allowWaitingList,
+          sendAutoEmail:              _sendAutoEmail,
+          pointsForAttendance:        int.tryParse(_pointsAttendanceController.text) ?? 0,
+          pointsForFullParticipation: int.tryParse(_pointsParticipationController.text) ?? 0,
+          minPoints:                  _minPoints,
+          completedRoadmap:           _completedRoadmap,
+          completed50PercentCourses:  _completed50Percent,
+          highCommunicationSkills:    _highCommunication,
+          highTechnicalSkills:        _highTechnical,
+          top30PercentProgress:       _top30Percent,
+          inviteOnlyEligibleStudents: _inviteOnly,
+          location:                   _locationController.text.trim().isNotEmpty ? _locationController.text.trim() : null,
+          banner:                     bannerFile,
+        );
+      }
+
+      debugPrint("📦 Response status: ${response?.statusCode}");
+
+      if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(isEdit ? 'Event updated successfully!' : 'Event published successfully!'),
+          backgroundColor: Colors.green,
+        ));
+        Navigator.pop(context, true);
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed: ${response?.statusCode}\n${response?.data ?? ''}'),
+          backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 5),
+        ));
+      }
+    } on DioException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Network error: ${e.response?.statusCode}\n${e.response?.data ?? e.message}'),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 5),
+      ));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Unexpected error: $e'),
+        backgroundColor: Colors.red,
+      ));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _pickDate(TextEditingController ctrl, String field) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: const ColorScheme.light(primary: Color(0xff1676C4), onPrimary: Colors.white),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) setState(() { ctrl.text = DateFormat('yyyy-MM-dd').format(picked); _errors.remove(field); });
+  }
+
+  Future<void> _pickTime(TextEditingController ctrl, String field) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: const ColorScheme.light(primary: Color(0xff1676C4), onPrimary: Colors.white),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) setState(() { ctrl.text = picked.format(context); _errors.remove(field); });
+  }
+
+  // ── Build ─────────────────────────────────────────────────
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(isEdit ? "Edit Event" : "Create New Event",
+            style: const TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xff1676C4),
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
+      ),
+      backgroundColor: Colors.grey[100],
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // ── Errors ─────────────────────────────────────────
+            if (_errors.isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red.shade200)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _errors.values
+                      .map((e) => Text("• $e", style: const TextStyle(color: Colors.red)))
+                      .toList(),
+                ),
+              ),
+
+            // ── Event Information ──────────────────────────────
+            SectionWidget(
+              title: "Event Information",
+              children: [
+                TextFieldWidget(controller: _titleController, label: "Event Title", hint: "e.g., Vodafone Tech Tour"),
+                if (_errors.containsKey('title')) _err(_errors['title']!),
+                const SizedBox(height: 12),
+                TextAreaWidget(controller: _descController, label: "Description", hint: "Write a clear description of the event..."),
+                if (_errors.containsKey('description')) _err(_errors['description']!),
+                const SizedBox(height: 12),
+                UploadContainerWidget(
+                  title: "Event Cover Image",
+                  selectedImagePath: _coverImagePath,
+                  onImageChanged: (path) => setState(() => _coverImagePath = path),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Type & Mode ────────────────────────────────────
+            SectionWidget(
+              title: "Event Type & Mode",
+              children: [
+                CustomDropdown(label: "Event Type", items: _eventTypes, value: _eventType, hint: "Select Event Type",
+                    onChanged: (v) => setState(() { _eventType = v; _errors.remove('eventType'); })),
+                if (_errors.containsKey('eventType')) _err(_errors['eventType']!),
+                const SizedBox(height: 12),
+                CustomDropdown(label: "Mode", items: _eventModes, value: _eventMode, hint: "Select Mode",
+                    onChanged: (v) => setState(() { _eventMode = v; _errors.remove('eventMode'); })),
+                if (_errors.containsKey('eventMode')) _err(_errors['eventMode']!),
+                const SizedBox(height: 12),
+                if (_eventMode == "Onsite" || _eventMode == "Hybrid") ...[
+                  TextFieldWidget(controller: _locationController, label: "Location", hint: "Campus Hall / Building…"),
+                  if (_errors.containsKey('location')) _err(_errors['location']!),
+                ],
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Date & Time ────────────────────────────────────
+            SectionWidget(
+              title: "Date & Time",
+              children: [
+                Row(children: [
+                  Expanded(child: DateFieldWidget(controller: _startDateController, label: "Start Date", hint: "Select Date",
+                      errorText: _errors['startDate'], onTap: () => _pickDate(_startDateController, 'startDate'))),
+                  const SizedBox(width: 10),
+                  Expanded(child: DateFieldWidget(controller: _endDateController, label: "End Date", hint: "Select Date",
+                      errorText: _errors['endDate'], onTap: () => _pickDate(_endDateController, 'endDate'))),
+                ]),
+                const SizedBox(height: 12),
+                Row(children: [
+                  Expanded(child: TextFieldWidget(controller: _startTimeController, label: "Start Time", hint: "Select time",
+                      suffixIcon: const Icon(Icons.access_time, color: Color(0xff1676C4)),
+                      onTap: () => _pickTime(_startTimeController, 'startTime'))),
+                  const SizedBox(width: 10),
+                  Expanded(child: TextFieldWidget(controller: _endTimeController, label: "End Time", hint: "Select time",
+                      suffixIcon: const Icon(Icons.access_time, color: Color(0xff1676C4)),
+                      onTap: () => _pickTime(_endTimeController, 'endTime'))),
+                ]),
+                if (_errors.containsKey('startTime') || _errors.containsKey('endTime'))
+                  _err(_errors['startTime'] ?? _errors['endTime'] ?? ''),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Eligibility Settings ───────────────────────────
+            SectionWidget(
+              title: "Eligibility Settings",
+              children: [
+                Row(children: [
+                  const Expanded(child: Text("Minimum Required Points:", style: TextStyle(fontWeight: FontWeight.w600))),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(color: const Color(0xff1676C4), borderRadius: BorderRadius.circular(8)),
+                    child: Text("${_minPoints.round()} pts",
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                ]),
+                Slider(
+                  min: 0, max: 10000, divisions: 100, value: _minPoints,
+                  label: "${_minPoints.round()} pts",
+                  activeColor: const Color(0xff1676C4),
+                  inactiveColor: Colors.grey.shade300,
+                  onChanged: (v) => setState(() => _minPoints = v),
+                ),
+                const SizedBox(height: 8),
+                const Text("Additional Filters:", style: TextStyle(fontWeight: FontWeight.w600)),
+                const SizedBox(height: 8),
+                // ✅ كل filter chip مرتبط بـ boolean field منفصل للـ API
+                Wrap(spacing: 6, runSpacing: 6, children: [
+                  _filterChip("Completed Roadmap",         _completedRoadmap,    (v) => setState(() => _completedRoadmap = v)),
+                  _filterChip("≥50% Courses",             _completed50Percent,  (v) => setState(() => _completed50Percent = v)),
+                  _filterChip("High Communication Skills", _highCommunication,   (v) => setState(() => _highCommunication = v)),
+                  _filterChip("High Technical Skills",     _highTechnical,       (v) => setState(() => _highTechnical = v)),
+                  _filterChip("Top 30% Progress",         _top30Percent,        (v) => setState(() => _top30Percent = v)),
+                ]),
+                const Divider(height: 24),
+                SwitchListTile(
+                  title: const Text("Invite Only Eligible Students"),
+                  value: _inviteOnly,
+                  onChanged: (v) => setState(() => _inviteOnly = v),
+                  activeColor: const Color(0xff1676C4),
+                  activeTrackColor: const Color(0xffa3c9ff),
+                  inactiveThumbColor: Colors.grey,
+                  inactiveTrackColor: Colors.grey[300],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Capacity & Registration ────────────────────────
+            SectionWidget(
+              title: "Capacity & Registration",
+              children: [
+                TextFieldWidget(controller: _capacityController, label: "Max Attendees", hint: "e.g., 100", keyboardType: TextInputType.number),
+                if (_errors.containsKey('capacity')) _err(_errors['capacity']!),
+                const SizedBox(height: 8),
+                SwitchListTile(
+                  title: const Text("Allow Waiting List"),
+                  value: _allowWaitingList,
+                  onChanged: (v) => setState(() => _allowWaitingList = v),
+                  activeColor: const Color(0xff1676C4),
+                  activeTrackColor: const Color(0xffa3c9ff),
+                  inactiveThumbColor: Colors.grey,
+                  inactiveTrackColor: Colors.grey[300],
+                ),
+                const Divider(),
+                SwitchListTile(
+                  title: const Text("Send Auto Email to Eligible Students"),
+                  value: _sendAutoEmail,
+                  onChanged: (v) => setState(() => _sendAutoEmail = v),
+                  activeColor: const Color(0xff1676C4),
+                  activeTrackColor: const Color(0xffa3c9ff),
+                  inactiveThumbColor: Colors.grey,
+                  inactiveTrackColor: Colors.grey[300],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Event Rewards ──────────────────────────────────
+            SectionWidget(
+              title: "Event Rewards",
+              children: [
+                TextFieldWidget(controller: _pointsAttendanceController,    label: "Points for Attendance",        hint: "e.g., 50",  keyboardType: TextInputType.number),
+                const SizedBox(height: 12),
+                TextFieldWidget(controller: _pointsParticipationController, label: "Points for Full Participation", hint: "e.g., 100", keyboardType: TextInputType.number),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // ── Action Buttons ─────────────────────────────────
+            if (isEdit)
+              ElevatedButton.icon(
+                onPressed: _isLoading ? null : () => _saveEvent(isPublished: true),
+                icon: const Icon(Icons.save),
+                label: const Text("Save Changes"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff1676C4),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              )
+            else
+              Row(children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _isLoading ? null : () => _saveEvent(isPublished: false),
+                    icon: const Icon(Icons.save_outlined),
+                    label: const Text("Save Draft"),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xff1676C4),
+                      side: const BorderSide(color: Color(0xff1676C4), width: 2),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _isLoading ? null : () => _saveEvent(isPublished: true),
+                    icon: const Icon(Icons.publish),
+                    label: const Text("Publish"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff1676C4),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+              ]),
+
+            const SizedBox(height: 30),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _err(String msg) => Padding(
+      padding: const EdgeInsets.only(top: 4, left: 4),
+      child: Text(msg, style: const TextStyle(color: Colors.red, fontSize: 12)));
+
+  Widget _filterChip(String label, bool selected, Function(bool) onChanged) {
+    return FilterChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: onChanged,
+      selectedColor: const Color(0xff1676C4).withOpacity(0.2),
+      checkmarkColor: const Color(0xff1676C4),
+    );
+  }
+}

@@ -1,447 +1,475 @@
+// ignore_for_file: avoid_print
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class RoadmapApiService {
+class RoadmapRepository {
+  late Dio _dio;
+  static const String _baseUrl    = "http://smartcareerhub.runasp.net/api/Roadmaps";
+  static const String _serverBase = "http://smartcareerhub.runasp.net";
 
-  static const String baseUrl = "https://your-api-url.com/api";
-  static final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: baseUrl,
-      connectTimeout: Duration(seconds: 30),
-      receiveTimeout: Duration(seconds: 30),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
+  RoadmapRepository() {
+    _dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(minutes: 5),
+        receiveTimeout: const Duration(minutes: 10),
+        sendTimeout:    const Duration(minutes: 10),
+        headers: {'Accept': 'application/json'},
+      ),
+    );
+
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString('company_token');
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+          debugPrint("✅ [AUTH] Token attached: ${token.substring(0, 20)}...");
+        } else {
+          debugPrint("🛑 [AUTH] Warning: No token found!");
+        }
+        debugPrint("📤 [REQUEST] ${options.method} ${options.uri}");
+        return handler.next(options);
       },
-    ),
-  );
-
-
-  static void setAuthToken(String token) {
-    _dio.options.headers['Authorization'] = 'Bearer $token';
+      onResponse: (response, handler) {
+        debugPrint("📥 [RESPONSE] Status: ${response.statusCode}");
+        return handler.next(response);
+      },
+      onError: (DioException e, handler) {
+        debugPrint("🛑 [ERROR] Status: ${e.response?.statusCode}");
+        debugPrint("🛑 [ERROR DATA]: ${e.response?.data}");
+        debugPrint("🛑 [ERROR MSG]: ${e.message}");
+        return handler.next(e);
+      },
+    ));
   }
-  static Future<Map<String, dynamic>> createRoadmap({
-    required String title,
-    required String description,
-    required String targetRole,
-    required String startDate,
-    required String endDate,
-    File? coverImage,
-    required List<Map<String, dynamic>> skills,
-    required List<Map<String, dynamic>> videos,
-    required List<Map<String, dynamic>> materials,
-    required List<Map<String, dynamic>> projects,
-    required List<Map<String, dynamic>> quizzes,
-    required String status,
-  }) async {
+
+  String? _fixImageUrl(dynamic imageUrl) {
+    if (imageUrl == null) return null;
+    final url = imageUrl.toString().trim();
+    if (url.isEmpty || url.toLowerCase() == 'null') return null;
+    final cleanUrl = url.replaceAll('\\', '/');
+    if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) return cleanUrl;
+    final fixedUrl = cleanUrl.startsWith('/') ? "$_serverBase$cleanUrl" : "$_serverBase/$cleanUrl";
+    debugPrint("🖼️ [IMAGE URL] Fixed: $url → $fixedUrl");
+    return fixedUrl;
+  }
+
+  String _getMimeType(String filePath) {
+    final extension = filePath.split('.').last.toLowerCase();
+    if (['mp4', 'avi', 'mov', 'mkv'].contains(extension)) return 'video/mp4';
+    if (extension == 'pdf') return 'application/pdf';
+    return 'image/jpeg';
+  }
+
+  String _toSafeDateString(DateTime date) {
+    final safeDate = DateTime(date.year, date.month, date.day, 12, 0, 0);
+    return safeDate.toIso8601String();
+  }
+
+  // ─── Get Roadmap By ID ────────────────────────────────────────
+  Future<Map<String, dynamic>?> getRoadmapById(dynamic roadmapId) async {
     try {
-      FormData formData = FormData();
-      formData.fields.addAll([
-        MapEntry('title', title),
-        MapEntry('description', description),
-        MapEntry('targetRole', targetRole),
-        MapEntry('startDate', startDate),
-        MapEntry('endDate', endDate),
-        MapEntry('status', status),
-      ]);
-      if (coverImage != null && coverImage.existsSync()) {
-        formData.files.add(MapEntry(
-          'coverImage',
-          await MultipartFile.fromFile(
-            coverImage.path,
-            filename: coverImage.path.split('/').last,
-          ),
-        ));
-      }
-      List<Map<String, dynamic>> skillsData = skills.map((skill) => {
-        'name': skill['nameController']?.text ?? '',
-        'level': skill['level'] ?? 'Beginner',
-        'points': skill['points'] ?? 0,
-      }).toList();
-
-      for (int i = 0; i < skillsData.length; i++) {
-        formData.fields.addAll([
-          MapEntry('skills[$i][name]', skillsData[i]['name']),
-          MapEntry('skills[$i][level]', skillsData[i]['level']),
-          MapEntry('skills[$i][points]', skillsData[i]['points'].toString()),
-        ]);
-      }
-      for (int i = 0; i < videos.length; i++) {
-        var video = videos[i];
-
-        formData.fields.addAll([
-          MapEntry('videos[$i][title]', video['title'] ?? ''),
-          MapEntry('videos[$i][duration]', video['duration'] ?? '1 min'),
-          MapEntry('videos[$i][points]', (video['points'] ?? 0).toString()),
-        ]);
-
-        if (video['file'] != null && video['file'] is File && video['file'].existsSync()) {
-          formData.files.add(MapEntry(
-            'videos[$i][file]',
-            await MultipartFile.fromFile(
-              video['file'].path,
-              filename: video['file'].path.split('/').last,
-            ),
-          ));
-        }
-      }
-
-      for (int i = 0; i < materials.length; i++) {
-        var material = materials[i];
-
-
-        formData.fields.addAll([
-          MapEntry('materials[$i][name]', material['name'] ?? ''),
-          MapEntry('materials[$i][points]', (material['points'] ?? 0).toString()),
-        ]);
-
-        if (material['file'] != null && material['file'] is File && material['file'].existsSync()) {
-          formData.files.add(MapEntry(
-            'materials[$i][file]',
-            await MultipartFile.fromFile(
-              material['file'].path,
-              filename: material['file'].path.split('/').last,
-            ),
-          ));
-        }
-      }
-      List<Map<String, dynamic>> projectsData = projects.map((project) => {
-        'title': project['title'] ?? '',
-        'description': project['description'] ?? '',
-        'difficulty': project['difficulty'] ?? 'Easy',
-        'points': project['points'] ?? 0,
-      }).toList();
-
-      for (int i = 0; i < projectsData.length; i++) {
-        formData.fields.addAll([
-          MapEntry('projects[$i][title]', projectsData[i]['title']),
-          MapEntry('projects[$i][description]', projectsData[i]['description']),
-          MapEntry('projects[$i][difficulty]', projectsData[i]['difficulty']),
-          MapEntry('projects[$i][points]', projectsData[i]['points'].toString()),
-        ]);
-      }
-
-
-      for (int i = 0; i < quizzes.length; i++) {
-        var quiz = quizzes[i];
-
-        formData.fields.addAll([
-          MapEntry('quizzes[$i][title]', quiz['titleController']?.text ?? ''),
-          MapEntry('quizzes[$i][type]', quiz['type'] ?? 'Multiple Choice'),
-          MapEntry('quizzes[$i][points]', quiz['pointsController']?.text ?? '0'),
-        ]);
-
-
-        if (quiz['questionsFile'] != null && quiz['questionsFile'] is File && quiz['questionsFile'].existsSync()) {
-          formData.files.add(MapEntry(
-            'quizzes[$i][questionsFile]',
-            await MultipartFile.fromFile(
-              quiz['questionsFile'].path,
-              filename: quiz['questionsFile'].path.split('/').last,
-            ),
-          ));
-        }
-      }
-
-      final response = await _dio.post(
-        '/roadmaps/create',
-        data: formData,
-        options: Options(
-          contentType: 'multipart/form-data',
-        ),
-        onSendProgress: (sent, total) {
-          print('Upload Progress: ${(sent / total * 100).toStringAsFixed(0)}%');
-        },
+      final response = await _dio.get(
+        "$_baseUrl/$roadmapId",
+        options: Options(validateStatus: (status) => status! < 500),
       );
 
+      debugPrint("📥 [GET BY ID] Status: ${response.statusCode}");
+      debugPrint("📥 [GET BY ID] Data: ${response.data}");
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return {
-          'success': true,
-          'data': response.data,
-          'message': 'Roadmap created successfully',
-        };
-      } else {
-        return {
-          'success': false,
-          'message': 'Failed to create roadmap',
-          'statusCode': response.statusCode,
-        };
+      if (response.statusCode == 200 && response.data is Map) {
+        final roadmap = Map<String, dynamic>.from(response.data);
+
+        roadmap['coverImage'] = _fixImageUrl(
+            roadmap['coverImageUrl'] ?? roadmap['coverImage']);
+
+        roadmap['status'] = (roadmap['isPublished'] == true)
+            ? 'Published'
+            : 'Draft';
+
+        return roadmap;
       }
-    } on DioException catch (e) {
-      return {
-        'success': false,
-        'message': _handleDioError(e),
-        'statusCode': e.response?.statusCode,
-      };
+      return null;
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Error: $e',
-      };
+      debugPrint("❌ Get Roadmap By ID Error: $e");
+      return null;
     }
   }
 
+  // ─── Create Roadmap ───────────────────────────────────────────
+  Future<Response?> createRoadmap({
+    required String title,
+    required String description,
+    required String targetRole,
+    required DateTime startDate,
+    required DateTime endDate,
+    required bool isPublished,
+    File? coverImage,
+    List<Map<String, dynamic>> skills            = const [],
+    List<Map<String, dynamic>> learningMaterials = const [],
+    List<Map<String, dynamic>> projects          = const [],
+    List<Map<String, dynamic>> quizzes           = const [],
+    double? price,
+  }) async {
+    try {
+      FormData formData = FormData();
 
-  static Future<Map<String, dynamic>> updateRoadmap({
+      formData.fields.addAll([
+        MapEntry("Title",       title),
+        MapEntry("Description", description),
+        MapEntry("TargetRole",  targetRole),
+        MapEntry("StartDate",   _toSafeDateString(startDate)),
+        MapEntry("EndDate",     _toSafeDateString(endDate)),
+        MapEntry("IsPublished", isPublished.toString()),
+        if (price != null) MapEntry("Price", price.toString()),
+      ]);
+
+      if (coverImage != null && coverImage.existsSync()) {
+        formData.files.add(MapEntry(
+          "CoverImage",
+          await MultipartFile.fromFile(coverImage.path, filename: "cover.jpg"),
+        ));
+      }
+
+      for (int i = 0; i < learningMaterials.length; i++) {
+        var material = learningMaterials[i];
+        formData.fields.addAll([
+          MapEntry("LearningMaterialRequests[$i].Title",       material["title"] ?? ""),
+          MapEntry("LearningMaterialRequests[$i].Type",        material["type"]  ?? ""),
+          MapEntry("LearningMaterialRequests[$i].Points",      (material["points"] ?? 0).toString()),
+          MapEntry("LearningMaterialRequests[$i].Duration",    material["duration"] ?? "Medium"),
+          MapEntry("LearningMaterialRequests[$i].TitlePdf",    material["title"]    ?? ""),
+          MapEntry("LearningMaterialRequests[$i].Durationpdf", material["duration"] ?? "Medium"),
+        ]);
+        if (material["file"] != null && material["file"] is File) {
+          File file = material["file"];
+          formData.files.add(MapEntry(
+            "LearningMaterialRequests[$i].FilePath",
+            await MultipartFile.fromFile(
+              file.path,
+              filename: file.path.split('/').last,
+              contentType: DioMediaType.parse(_getMimeType(file.path)),
+            ),
+          ));
+        }
+      }
+
+      for (int i = 0; i < projects.length; i++) {
+        String pTitle = projects[i]["title"] ?? "";
+        if (pTitle.length < 3) pTitle = "Project: $pTitle";
+        formData.fields.addAll([
+          MapEntry("ProjectRequests[$i].Title",       pTitle),
+          MapEntry("ProjectRequests[$i].Description", projects[i]["description"] ?? ""),
+          MapEntry("ProjectRequests[$i].Difficulty",  projects[i]["difficulty"]  ?? "Easy"),
+          MapEntry("ProjectRequests[$i].Points",      (projects[i]["points"] ?? 5).toString()),
+        ]);
+      }
+
+      _addSkillsToFormData(formData, skills);
+      _addQuizFields(formData, quizzes);
+
+      final response = await _dio.post(
+        _baseUrl,
+        data: formData,
+        options: Options(validateStatus: (status) => status! < 500),
+      );
+
+      debugPrint("✅ [CREATE RESPONSE] Status: ${response.statusCode}");
+      debugPrint("✅ [CREATE DATA]: ${response.data}");
+      return response;
+    } catch (e) {
+      debugPrint("❌ [CRITICAL ERROR in createRoadmap]: $e");
+      rethrow;
+    }
+  }
+
+  void _addSkillsToFormData(FormData formData, List<Map<String, dynamic>> skills) {
+    for (int i = 0; i < skills.length; i++) {
+      formData.fields.addAll([
+        MapEntry("SkillRequests[$i].SkillName",   skills[i]["name"]  ?? ""),
+        MapEntry("SkillRequests[$i].Level",        skills[i]["level"] ?? "Beginner"),
+        MapEntry("SkillRequests[$i].LevelPoints",  (skills[i]["points"] ?? 0).toString()),
+      ]);
+    }
+  }
+
+  void _addQuizFields(FormData formData, List<Map<String, dynamic>> quizzes,
+      {bool withIds = false}) {
+    for (int i = 0; i < quizzes.length; i++) {
+      final quiz      = quizzes[i];
+      final title     = quiz["title"] ?? "";
+      final points    = (quiz["points"] as num? ?? 0).toInt();
+      List questions  = quiz["questions"] ?? [];
+
+      formData.fields.add(MapEntry("QuizRequests[$i].Title", title));
+
+      if (points > 0) {
+        formData.fields.add(
+            MapEntry("QuizRequests[$i].Points", points.toString()));
+      }
+
+      final int perQuestion = questions.isNotEmpty && points > 0
+          ? (points / questions.length).round()
+          : 5;
+
+      for (int j = 0; j < questions.length; j++) {
+        final q = questions[j];
+
+        final qPoints = (q["points"] as num?)?.toInt();
+        final finalPoints = (qPoints != null && qPoints > 0)
+            ? qPoints
+            : perQuestion;
+
+        formData.fields.addAll([
+          MapEntry("QuizRequests[$i].QuestionRequests[$j].Text",
+              q["text"] ?? ""),
+          MapEntry("QuizRequests[$i].QuestionRequests[$j].CorrectAnswer",
+              q["correctAnswer"] ?? ""),
+          MapEntry("QuizRequests[$i].QuestionRequests[$j].Points",
+              finalPoints.toString()),
+        ]);
+
+        List options = q["options"] ?? _parseOptions(q["optionsJson"]);
+        for (int k = 0; k < options.length; k++) {
+          formData.fields.add(MapEntry(
+              "QuizRequests[$i].QuestionRequests[$j].Options[$k]",
+              options[k].toString()));
+        }
+      }
+    }
+  }
+
+  List _parseOptions(dynamic optionsJson) {
+    if (optionsJson == null) return [];
+    if (optionsJson is List) return optionsJson;
+    if (optionsJson is String) {
+      try {
+        final cleaned = optionsJson
+            .replaceAll('[', '')
+            .replaceAll(']', '')
+            .split(',')
+            .map((s) => s.trim().replaceAll('"', ''))
+            .where((s) => s.isNotEmpty)
+            .toList();
+        return cleaned;
+      } catch (_) {
+        return [];
+      }
+    }
+    return [];
+  }
+
+  // ─── Update Roadmap ───────────────────────────────────────────
+  Future<Response?> updateRoadmap({
     required String roadmapId,
     required String title,
     required String description,
     required String targetRole,
-    required String startDate,
-    required String endDate,
+    required DateTime startDate,
+    required DateTime endDate,
+    required bool isPublished,
     File? coverImage,
-    String? existingCoverImageUrl,
-    required List<Map<String, dynamic>> skills,
-    required List<Map<String, dynamic>> videos,
-    required List<Map<String, dynamic>> materials,
-    required List<Map<String, dynamic>> projects,
-    required List<Map<String, dynamic>> quizzes,
-    required String status,
+    List<Map<String, dynamic>> skills            = const [],
+    List<Map<String, dynamic>> learningMaterials = const [],
+    List<Map<String, dynamic>> projects          = const [],
+    List<Map<String, dynamic>> quizzes           = const [],
+    double? price,
   }) async {
     try {
       FormData formData = FormData();
 
-
       formData.fields.addAll([
-        MapEntry('title', title),
-        MapEntry('description', description),
-        MapEntry('targetRole', targetRole),
-        MapEntry('startDate', startDate),
-        MapEntry('endDate', endDate),
-        MapEntry('status', status),
+        MapEntry("Title",       title),
+        MapEntry("Description", description),
+        MapEntry("TargetRole",  targetRole),
+        MapEntry("StartDate",   _toSafeDateString(startDate)),
+        MapEntry("EndDate",     _toSafeDateString(endDate)),
+        MapEntry("IsPublished", isPublished.toString()),
+        if (price != null) MapEntry("Price", price.toString()),
       ]);
-
 
       if (coverImage != null && coverImage.existsSync()) {
         formData.files.add(MapEntry(
-          'coverImage',
+          "CoverImage",
           await MultipartFile.fromFile(
             coverImage.path,
             filename: coverImage.path.split('/').last,
+            contentType: DioMediaType.parse(_getMimeType(coverImage.path)),
           ),
         ));
-      } else if (existingCoverImageUrl != null) {
-        formData.fields.add(MapEntry('existingCoverImage', existingCoverImageUrl));
       }
 
-
-      List<Map<String, dynamic>> skillsData = skills.map((skill) => {
-        'name': skill['nameController']?.text ?? '',
-        'level': skill['level'] ?? 'Beginner',
-        'points': skill['points'] ?? 0,
-      }).toList();
-
-      for (int i = 0; i < skillsData.length; i++) {
+      for (int i = 0; i < skills.length; i++) {
+        if (skills[i]["id"] != null)
+          formData.fields.add(MapEntry("SkillRequests[$i].Id", skills[i]["id"].toString()));
         formData.fields.addAll([
-          MapEntry('skills[$i][name]', skillsData[i]['name']),
-          MapEntry('skills[$i][level]', skillsData[i]['level']),
-          MapEntry('skills[$i][points]', skillsData[i]['points'].toString()),
+          MapEntry("SkillRequests[$i].SkillName",  skills[i]["name"]  ?? ""),
+          MapEntry("SkillRequests[$i].Level",       skills[i]["level"] ?? "Beginner"),
+          MapEntry("SkillRequests[$i].LevelPoints", (skills[i]["points"] ?? 0).toString()),
         ]);
       }
 
-
-      for (int i = 0; i < videos.length; i++) {
-        var video = videos[i];
-
+      for (int i = 0; i < learningMaterials.length; i++) {
+        if (learningMaterials[i]["id"] != null)
+          formData.fields.add(MapEntry("LearningMaterialRequests[$i].Id",
+              learningMaterials[i]["id"].toString()));
         formData.fields.addAll([
-          MapEntry('videos[$i][title]', video['title'] ?? ''),
-          MapEntry('videos[$i][duration]', video['duration'] ?? '1 min'),
-          MapEntry('videos[$i][points]', (video['points'] ?? 0).toString()),
+          MapEntry("LearningMaterialRequests[$i].Title",    learningMaterials[i]["title"]    ?? ""),
+          MapEntry("LearningMaterialRequests[$i].Type",     learningMaterials[i]["type"]     ?? ""),
+          MapEntry("LearningMaterialRequests[$i].Points",   (learningMaterials[i]["points"]  ?? 0).toString()),
+          MapEntry("LearningMaterialRequests[$i].Duration", learningMaterials[i]["duration"] ?? "Medium"),
         ]);
-
-
-        if (video['file'] != null && video['file'] is File && video['file'].existsSync()) {
+        if (learningMaterials[i]["file"] != null && learningMaterials[i]["file"] is File) {
+          File file = learningMaterials[i]["file"];
           formData.files.add(MapEntry(
-            'videos[$i][file]',
+            "LearningMaterialRequests[$i].FilePath",
             await MultipartFile.fromFile(
-              video['file'].path,
-              filename: video['file'].path.split('/').last,
+              file.path,
+              filename: file.path.split('/').last,
+              contentType: DioMediaType.parse(_getMimeType(file.path)),
             ),
           ));
-        } else if (video['file'] is String) {
-
-          formData.fields.add(MapEntry('videos[$i][existingFile]', video['file']));
         }
       }
 
-
-      for (int i = 0; i < materials.length; i++) {
-        var material = materials[i];
-
+      for (int i = 0; i < projects.length; i++) {
+        if (projects[i]["id"] != null)
+          formData.fields.add(MapEntry("ProjectRequests[$i].Id", projects[i]["id"].toString()));
         formData.fields.addAll([
-          MapEntry('materials[$i][name]', material['name'] ?? ''),
-          MapEntry('materials[$i][points]', (material['points'] ?? 0).toString()),
-        ]);
-
-        if (material['file'] != null && material['file'] is File && material['file'].existsSync()) {
-          formData.files.add(MapEntry(
-            'materials[$i][file]',
-            await MultipartFile.fromFile(
-              material['file'].path,
-              filename: material['file'].path.split('/').last,
-            ),
-          ));
-        } else if (material['file'] is String) {
-          formData.fields.add(MapEntry('materials[$i][existingFile]', material['file']));
-        }
-      }
-
-
-      List<Map<String, dynamic>> projectsData = projects.map((project) => {
-        'title': project['title'] ?? '',
-        'description': project['description'] ?? '',
-        'difficulty': project['difficulty'] ?? 'Easy',
-        'points': project['points'] ?? 0,
-      }).toList();
-
-      for (int i = 0; i < projectsData.length; i++) {
-        formData.fields.addAll([
-          MapEntry('projects[$i][title]', projectsData[i]['title']),
-          MapEntry('projects[$i][description]', projectsData[i]['description']),
-          MapEntry('projects[$i][difficulty]', projectsData[i]['difficulty']),
-          MapEntry('projects[$i][points]', projectsData[i]['points'].toString()),
+          MapEntry("ProjectRequests[$i].Title",       projects[i]["title"]       ?? ""),
+          MapEntry("ProjectRequests[$i].Description", projects[i]["description"] ?? ""),
+          MapEntry("ProjectRequests[$i].Difficulty",  projects[i]["difficulty"]  ?? "Easy"),
+          MapEntry("ProjectRequests[$i].Points",      (projects[i]["points"] ?? 5).toString()),
         ]);
       }
 
-      for (int i = 0; i < quizzes.length; i++) {
-        var quiz = quizzes[i];
+      _addQuizFields(formData, quizzes, withIds: true);
 
-        formData.fields.addAll([
-          MapEntry('quizzes[$i][title]', quiz['titleController']?.text ?? ''),
-          MapEntry('quizzes[$i][type]', quiz['type'] ?? 'Multiple Choice'),
-          MapEntry('quizzes[$i][points]', quiz['pointsController']?.text ?? '0'),
-        ]);
-
-        if (quiz['questionsFile'] != null && quiz['questionsFile'] is File && quiz['questionsFile'].existsSync()) {
-          formData.files.add(MapEntry(
-            'quizzes[$i][questionsFile]',
-            await MultipartFile.fromFile(
-              quiz['questionsFile'].path,
-              filename: quiz['questionsFile'].path.split('/').last,
-            ),
-          ));
-        } else if (quiz['questionsFile'] is String) {
-          formData.fields.add(MapEntry('quizzes[$i][existingQuestionsFile]', quiz['questionsFile']));
-        }
-      }
-
-
-      final response = await _dio.put(
-        '/roadmaps/$roadmapId/update',
+      return await _dio.put(
+        "$_baseUrl/$roadmapId",
         data: formData,
-        options: Options(
-          contentType: 'multipart/form-data',
-        ),
-        onSendProgress: (sent, total) {
-          print('Upload Progress: ${(sent / total * 100).toStringAsFixed(0)}%');
-        },
+        options: Options(validateStatus: (status) => status! < 500),
+      );
+    } catch (e) {
+      debugPrint("❌ Update Roadmap Error: $e");
+      rethrow;
+    }
+  }
+
+  // ─── Get All Roadmaps ─────────────────────────────────────────
+  Future<List<Map<String, dynamic>>> getAllRoadmaps() async {
+    try {
+      final response = await _dio.get(
+        _baseUrl,
+        options: Options(validateStatus: (status) => status! < 500),
       );
 
+      debugPrint("📥 [GET ALL] Status: ${response.statusCode}");
+
       if (response.statusCode == 200) {
-        return {
-          'success': true,
-          'data': response.data,
-          'message': 'Roadmap updated successfully',
-        };
-      } else {
-        return {
-          'success': false,
-          'message': 'Failed to update roadmap',
-          'statusCode': response.statusCode,
-        };
+        List<Map<String, dynamic>> result = [];
+
+        if (response.data is List) {
+          result = List<Map<String, dynamic>>.from(response.data);
+        } else if (response.data is Map && response.data['data'] != null) {
+          result = List<Map<String, dynamic>>.from(response.data['data']);
+        }
+
+        return result.map((roadmap) {
+          final fixedUrl = _fixImageUrl(
+              roadmap['coverImageUrl'] ?? roadmap['coverImage']);
+
+          String status;
+          if (roadmap['status'] != null) {
+            status = roadmap['status'].toString();
+          } else {
+            status = (roadmap['isPublished'] == true) ? 'Published' : 'Draft';
+          }
+
+          debugPrint("🖼️ [IMAGE] '${roadmap['title']}' → $fixedUrl | status: $status");
+
+          return {
+            ...roadmap,
+            'coverImage': fixedUrl,
+            'status':     status,
+          };
+        }).toList();
       }
-    } on DioException catch (e) {
-      return {
-        'success': false,
-        'message': _handleDioError(e),
-        'statusCode': e.response?.statusCode,
-      };
+
+      return [];
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Error: $e',
-      };
+      debugPrint("❌ Fetch Roadmaps Error: $e");
+      return [];
     }
   }
 
-
-  static Future<Map<String, dynamic>> getRoadmapById(String roadmapId) async {
+  // ─── Delete Roadmap ───────────────────────────────────────────
+  Future<Response?> deleteRoadmap(dynamic roadmapId) async {
     try {
-      final response = await _dio.get('/roadmaps/$roadmapId');
-
-      if (response.statusCode == 200) {
-        return {
-          'success': true,
-          'data': response.data,
-        };
-      } else {
-        return {
-          'success': false,
-          'message': 'Failed to fetch roadmap',
-          'statusCode': response.statusCode,
-        };
-      }
-    } on DioException catch (e) {
-      return {
-        'success': false,
-        'message': _handleDioError(e),
-        'statusCode': e.response?.statusCode,
-      };
+      return await _dio.delete(
+        "$_baseUrl/${roadmapId.toString()}",
+        options: Options(validateStatus: (status) => status! < 500),
+      );
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Error: $e',
-      };
+      debugPrint("❌ Delete Roadmap Error: $e");
+      rethrow;
     }
   }
 
-  static Future<Map<String, dynamic>> deleteRoadmap(String roadmapId) async {
+  Future<Response?> permanentlyDeleteRoadmap(dynamic roadmapId) async {
+    return await deleteRoadmap(roadmapId);
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // AI QUIZ ENDPOINTS
+  // ─────────────────────────────────────────────────────────────
+
+  Future<Response?> generateAiQuiz({
+    required int roadmapId,
+    required String quizType,
+    required int numQuestions,
+  }) async {
     try {
-      final response = await _dio.delete('/roadmaps/$roadmapId');
+      final clampedNum = numQuestions.clamp(1, 20);
 
-      if (response.statusCode == 200) {
-        return {
-          'success': true,
-          'message': 'Roadmap deleted successfully',
-        };
-      } else {
-        return {
-          'success': false,
-          'message': 'Failed to delete roadmap',
-          'statusCode': response.statusCode,
-        };
-      }
-    } on DioException catch (e) {
-      return {
-        'success': false,
-        'message': _handleDioError(e),
-        'statusCode': e.response?.statusCode,
-      };
+      debugPrint("🤖 [AI QUIZ] Generating quiz for roadmap $roadmapId");
+      debugPrint("🤖 [AI QUIZ] Type: $quizType | Questions: $clampedNum");
+
+      final response = await _dio.post(
+        "$_baseUrl/$roadmapId/generate-quiz",
+        queryParameters: {
+          'quizType':     quizType,
+          'numQuestions': clampedNum,
+        },
+        options: Options(validateStatus: (status) => status! < 500),
+      );
+
+      debugPrint("🤖 [AI QUIZ GENERATE] Status: ${response.statusCode}");
+      debugPrint("🤖 [AI QUIZ GENERATE] Data: ${response.data}");
+      return response;
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Error: $e',
-      };
+      debugPrint("❌ [AI QUIZ GENERATE ERROR]: $e");
+      rethrow;
     }
   }
 
-  static String _handleDioError(DioException e) {
-    switch (e.type) {
-      case DioExceptionType.connectionTimeout:
-        return 'Connection timeout. Please check your internet.';
-      case DioExceptionType.sendTimeout:
-        return 'Send timeout. Please try again.';
-      case DioExceptionType.receiveTimeout:
-        return 'Receive timeout. Server took too long to respond.';
-      case DioExceptionType.badResponse:
-        return 'Server error: ${e.response?.data?['message'] ?? e.response?.statusMessage}';
-      case DioExceptionType.cancel:
-        return 'Request cancelled.';
-      case DioExceptionType.connectionError:
-        return 'No internet connection. Please check your network.';
-      default:
-        return 'Unexpected error occurred: ${e.message}';
+  Future<Response?> getGeneratedQuiz(int roadmapId) async {
+    try {
+      debugPrint("🤖 [GET QUIZ] Fetching generated quiz for roadmap $roadmapId");
+
+      final response = await _dio.get(
+        "$_baseUrl/$roadmapId/generated-quiz",
+        options: Options(validateStatus: (status) => status! < 500),
+      );
+
+      debugPrint("🤖 [GET QUIZ] Status: ${response.statusCode}");
+      debugPrint("🤖 [GET QUIZ] Data: ${response.data}");
+      return response;
+    } catch (e) {
+      debugPrint("❌ [GET QUIZ ERROR]: $e");
+      rethrow;
     }
   }
 }
