@@ -7,6 +7,9 @@ import '../../../../data/repositories/Student auth repository.dart';
 import '../../../../data/repositories/Training center auth repository.dart';
 import '../../../../data/repositories/University auth repository.dart';
 import '../../../../data/repositories/company_auth_repository.dart';
+import '../../users/Graduate/GraduateHome.dart';
+import '../../users/Student/StudentHomeScreen.dart';
+import '../../users/Trainning Center/TrainningCenterHome.dart';
 import '../../users/company/pages/com-dashboard.dart';
 import '../../users/university/pages/unidashboard.dart';
 // TODO: استبدل بالـ dashboards الصح لما تعملهم
@@ -146,10 +149,10 @@ class _LoginFormState extends State<LoginForm> {
             _showSnackBar('Graduate Login successful!', Colors.green);
             if (mounted) {
               // TODO: استبدل بـ GraduateDashboard لما تعمله
-              // Navigator.pushReplacement(
-              //   context,
-              //   MaterialPageRoute(builder: (_) => const GraduateDashboard()),
-              // );
+               Navigator.pushReplacement(
+                 context,
+                 MaterialPageRoute(builder: (_) => const GraduateHomeScreen()),
+               );
             }
           } else {
             final msg = response.data?['message']
@@ -171,10 +174,10 @@ class _LoginFormState extends State<LoginForm> {
             _showSnackBar('Student Login successful!', Colors.green);
             if (mounted) {
               // TODO: استبدل بـ StudentDashboard لما تعمله
-              // Navigator.pushReplacement(
-              //   context,
-              //   MaterialPageRoute(builder: (_) => const StudentDashboard()),
-              // );
+               Navigator.pushReplacement(
+                 context,
+                 MaterialPageRoute(builder: (_) => const StudentHomeScreen()),
+               );
             }
           } else {
             final msg = response.data?['message']
@@ -196,10 +199,10 @@ class _LoginFormState extends State<LoginForm> {
             _showSnackBar('Training Center Login successful!', Colors.green);
             if (mounted) {
               // TODO: استبدل بـ TrainingCenterDashboard لما تعمله
-              // Navigator.pushReplacement(
-              //   context,
-              //   MaterialPageRoute(builder: (_) => const TrainingCenterDashboard()),
-              // );
+               Navigator.pushReplacement(
+                 context,
+                 MaterialPageRoute(builder: (_) => const TrainingHomeScreen()),
+               );
             }
           } else {
             final msg = response.data?['message']
