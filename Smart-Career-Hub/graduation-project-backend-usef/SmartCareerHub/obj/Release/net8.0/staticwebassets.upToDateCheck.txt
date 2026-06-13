@@ -1,0 +1,10 @@
+wwwroot\Auth\companies\f0f42a5e-41e8-459a-9727-63cb8f139445.jpg
+wwwroot\uploads\roadmaps\covers\bbcce865-45a5-49db-9474-5e0461614955.jpg
+wwwroot\uploads\roadmaps\covers\bea0db21-c285-4b26-9aec-db0a2e4b2b26.jpg
+wwwroot\uploads\roadmaps\covers\c96703fb-e205-43e0-8898-33928b232c0e.jpg
+wwwroot\uploads\roadmaps\materials\0b7e82f2-b17f-48cd-8c75-60904709332c.pdf
+wwwroot\uploads\roadmaps\materials\17717617-41be-4244-94be-95d9540f3118.pdf
+wwwroot\uploads\roadmaps\materials\251e0ad5-6173-4a62-b7d7-3ecd1fa65079.mp4
+wwwroot\uploads\roadmaps\materials\26ff042a-42f8-4401-a35f-cf7c51643fc3.pdf
+wwwroot\uploads\roadmaps\materials\5324679b-a945-4dda-95c7-e2797f2cf150.mp4
+wwwroot\uploads\roadmaps\materials\ace5f13c-07cb-4831-a933-ea7a40f43522.mp4

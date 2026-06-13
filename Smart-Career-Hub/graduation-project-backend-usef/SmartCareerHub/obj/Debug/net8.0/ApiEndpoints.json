@@ -1,0 +1,5105 @@
+[
+  {
+    "ContainingType": "SmartCareerHub.Controllers.AnalyticsController",
+    "Method": "GetDashboardOverview",
+    "RelativePath": "api/Analytics/dashboard-overview",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.AnalyticsController",
+    "Method": "GetEventAnalytics",
+    "RelativePath": "api/Analytics/events",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.AnalyticsController",
+    "Method": "GetInternshipAnalytics",
+    "RelativePath": "api/Analytics/internships",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.AnalyticsController",
+    "Method": "GetInterviewAnalytics",
+    "RelativePath": "api/Analytics/interviews",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.AnalyticsController",
+    "Method": "GetInterviewOverTime",
+    "RelativePath": "api/Analytics/interviews/overtime",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "period",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "year",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.AnalyticsController",
+    "Method": "GetJobAnalytics",
+    "RelativePath": "api/Analytics/jobs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.AnalyticsController",
+    "Method": "GetRoadmapAnalytics",
+    "RelativePath": "api/Analytics/roadmaps",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.AnalyticsController",
+    "Method": "GetRoadmapDashboard",
+    "RelativePath": "api/Analytics/roadmaps/dashboard",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.AnalyticsController",
+    "Method": "GetUniversityAnalytics",
+    "RelativePath": "api/Analytics/universities",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.AnalyticsController",
+    "Method": "GetWorkshopAnalytics",
+    "RelativePath": "api/Analytics/workshops",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CalendarController",
+    "Method": "GetEvents",
+    "RelativePath": "api/calendar/events",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "month",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "year",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.CandidatesController",
+    "Method": "GetAll",
+    "RelativePath": "api/Candidates",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.CandidatesController",
+    "Method": "GetById",
+    "RelativePath": "api/Candidates/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.CertificateController",
+    "Method": "GetById",
+    "RelativePath": "api/certificates/{certificateId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "certificateId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.CertificateController",
+    "Method": "DownloadCertificate",
+    "RelativePath": "api/certificates/{certificateId}/download",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "certificateId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.CertificateController",
+    "Method": "GetCertificatePdf",
+    "RelativePath": "api/certificates/{certificateId}/pdf",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "certificateId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.CertificateController",
+    "Method": "RequestCertificate",
+    "RelativePath": "api/certificates/request",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ChatController",
+    "Method": "GetMyRooms",
+    "RelativePath": "api/Chat/rooms",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ChatController",
+    "Method": "GetOrCreateRoom",
+    "RelativePath": "api/Chat/rooms",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "CreateRoomDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ChatController",
+    "Method": "GetMessages",
+    "RelativePath": "api/Chat/rooms/{roomId}/messages",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roomId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ChatController",
+    "Method": "SendMessage",
+    "RelativePath": "api/Chat/rooms/{roomId}/messages",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roomId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "SendMessageDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ChatController",
+    "Method": "MarkAsRead",
+    "RelativePath": "api/Chat/rooms/{roomId}/read",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roomId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CompanyCVController",
+    "Method": "GetMyTemplates",
+    "RelativePath": "api/company/cv/templates",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CompanyCVController",
+    "Method": "DeleteTemplate",
+    "RelativePath": "api/company/cv/templates/{templateId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "templateId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CompanyCVController",
+    "Method": "UploadTemplate",
+    "RelativePath": "api/company/cv/upload-template",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "TemplateFile",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.CompanyAuthController",
+    "Method": "Login",
+    "RelativePath": "api/CompanyAuth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Contracts.Auth.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.CompanyAuthController",
+    "Method": "RegisterCompany",
+    "RelativePath": "api/CompanyAuth/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Email",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Password",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "FirstName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "OrganizationName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "OrganizationLogo",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "Country",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "City",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.CompanyAuthController",
+    "Method": "ResendOtp",
+    "RelativePath": "api/CompanyAuth/resend-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.Auth.ResendOtpRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.CompanyAuthController",
+    "Method": "VerifyEmail",
+    "RelativePath": "api/CompanyAuth/verify-email",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.Auth.VerifyEmailRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventsController",
+    "Method": "Create",
+    "RelativePath": "api/Events",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Banner",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "EventType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Mode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "StartDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "EndDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "StartTime",
+        "Type": "System.TimeSpan",
+        "IsRequired": false
+      },
+      {
+        "Name": "EndTime",
+        "Type": "System.Nullable\u00601[[System.TimeSpan, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "MinimumRequiredPoints",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "CompletedRoadmap",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Completed50PercentCourses",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "HighCommunicationSkills",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "HighTechnicalSkills",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Top30PercentProgress",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "InviteOnlyEligibleStudents",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "MaxCapacity",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "AllowWaitingList",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "SendAutoEmailToEligibleStudents",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "PointsForAttendance",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PointsForFullParticipation",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsPublished",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventsController",
+    "Method": "GetAll",
+    "RelativePath": "api/Events",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventEnrollmentController",
+    "Method": "Enroll",
+    "RelativePath": "api/events/{eventId}/enroll",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "eventId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Contracts.Events.Enrollment.EventEnrollmentRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventEnrollmentController",
+    "Method": "CancelEnrollment",
+    "RelativePath": "api/events/{eventId}/enroll",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "eventId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventEnrollmentController",
+    "Method": "GetParticipants",
+    "RelativePath": "api/events/{eventId}/participants",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "eventId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventsController",
+    "Method": "GetById",
+    "RelativePath": "api/Events/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventsController",
+    "Method": "Update",
+    "RelativePath": "api/Events/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Banner",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "EventType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Mode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "StartDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "EndDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "StartTime",
+        "Type": "System.TimeSpan",
+        "IsRequired": false
+      },
+      {
+        "Name": "EndTime",
+        "Type": "System.Nullable\u00601[[System.TimeSpan, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "MinimumRequiredPoints",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "CompletedRoadmap",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Completed50PercentCourses",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "HighCommunicationSkills",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "HighTechnicalSkills",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Top30PercentProgress",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "InviteOnlyEligibleStudents",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "MaxCapacity",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "AllowWaitingList",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "SendAutoEmailToEligibleStudents",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "PointsForAttendance",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PointsForFullParticipation",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsPublished",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventsController",
+    "Method": "Delete",
+    "RelativePath": "api/Events/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventsController",
+    "Method": "BulkDelete",
+    "RelativePath": "api/Events/bulkdelete",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ids",
+        "Type": "System.Collections.Generic.List\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventsController",
+    "Method": "BulkStatus",
+    "RelativePath": "api/Events/bulkstatus",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "isPublished",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "ids",
+        "Type": "System.Collections.Generic.List\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventEnrollmentController",
+    "Method": "GetMyEvents",
+    "RelativePath": "api/events/my-events",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.EventsController",
+    "Method": "ToggleStatus",
+    "RelativePath": "api/Events/toggle/{id}",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.ForgotPasswordController",
+    "Method": "ResetPassword",
+    "RelativePath": "api/ForgotPassword/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.ResetPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.ForgotPasswordController",
+    "Method": "SendOtp",
+    "RelativePath": "api/ForgotPassword/send-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.SendOtpRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.ForgotPasswordController",
+    "Method": "VerifyOtp",
+    "RelativePath": "api/ForgotPassword/verify-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.VerifyOtpRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Graduate.GraduateJobsController",
+    "Method": "MyApplications",
+    "RelativePath": "api/graduate/jobs/applications",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Graduate.GraduateJobsController",
+    "Method": "Withdraw",
+    "RelativePath": "api/graduate/jobs/applications/{applicationId}/withdraw",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "applicationId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Graduate.GraduateJobsController",
+    "Method": "ApplicationStats",
+    "RelativePath": "api/graduate/jobs/applications/stats",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Graduate.GraduateJobsController",
+    "Method": "Apply",
+    "RelativePath": "api/graduate/jobs/apply",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "ApplyJobRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Graduate.GraduateJobsController",
+    "Method": "GetMyInterviews",
+    "RelativePath": "api/graduate/jobs/my-interviews",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GraduateRoadmapsController",
+    "Method": "GetRoadmapDetails",
+    "RelativePath": "api/graduate/roadmaps/{roadmapId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "RoadmapDetailsResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "GraduateRoadmapsController",
+    "Method": "GetMyAnswers",
+    "RelativePath": "api/graduate/roadmaps/{roadmapId}/quizzes/{quizId}/answers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GraduateRoadmapsController",
+    "Method": "FinishQuiz",
+    "RelativePath": "api/graduate/roadmaps/{roadmapId}/quizzes/{quizId}/finish",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GraduateRoadmapsController",
+    "Method": "SubmitAnswer",
+    "RelativePath": "api/graduate/roadmaps/{roadmapId}/quizzes/{quizId}/questions/{questionId}/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "questionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "answerText",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "answerFile",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GraduateRoadmapsController",
+    "Method": "GetQuizScore",
+    "RelativePath": "api/graduate/roadmaps/{roadmapId}/quizzes/{quizId}/score",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GraduateRoadmapsController",
+    "Method": "Unenroll",
+    "RelativePath": "api/graduate/roadmaps/{roadmapId}/unenroll",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GraduateRoadmapsController",
+    "Method": "GetCatalog",
+    "RelativePath": "api/graduate/roadmaps/catalog",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "SmartCareerHub.Contracts.Student.Roadmaps.RoadmapCatalogResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "GraduateRoadmapsController",
+    "Method": "Enroll",
+    "RelativePath": "api/graduate/roadmaps/enroll",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Contracts.Student.Roadmaps.EnrollRoadmapRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GraduateRoadmapsController",
+    "Method": "GetMyRoadmaps",
+    "RelativePath": "api/graduate/roadmaps/my",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[SmartCareerHub.Contracts.Student.Roadmaps.RoadmapCatalogItemResponse, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "GraduateRoadmapsController",
+    "Method": "GetMyInterviews",
+    "RelativePath": "api/graduate/roadmaps/my-interviews",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GraduateRoadmapsController",
+    "Method": "UpdateProgress",
+    "RelativePath": "api/graduate/roadmaps/progress",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "UpdateRoadmapProgressRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.GraduateAuthController",
+    "Method": "Login",
+    "RelativePath": "api/GraduateAuth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Contracts.Auth.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.GraduateAuthController",
+    "Method": "RegisterGraduate",
+    "RelativePath": "api/GraduateAuth/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Email",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Password",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "FirstName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "University",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Degree",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Major",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "GraduationYear",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "YearsOfExperience",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "ExperienceSummary",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LinkedIn",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "GitHub",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Portfolio",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "City",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Country",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProfileImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.GraduateAuthController",
+    "Method": "ResendOtp",
+    "RelativePath": "api/GraduateAuth/resend-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.Auth.ResendOtpRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.GraduateAuthController",
+    "Method": "VerifyEmail",
+    "RelativePath": "api/GraduateAuth/verify-email",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.Auth.VerifyEmailRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "CreateInternship",
+    "RelativePath": "api/internships",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CreateInternshipRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "GetAll",
+    "RelativePath": "api/internships",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "GetInternshipById",
+    "RelativePath": "api/internships/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "Update",
+    "RelativePath": "api/internships/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "UpdateInternshipRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "Delete",
+    "RelativePath": "api/internships/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "GetApplicants",
+    "RelativePath": "api/internships/{id}/applicants",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "HasApplied",
+    "RelativePath": "api/internships/{id}/applied",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "Apply",
+    "RelativePath": "api/internships/{id}/apply",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "UpdateApplicantStatus",
+    "RelativePath": "api/internships/{internshipId}/applicants/{applicationId}/status",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "internshipId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "applicationId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "UpdateInternshipApplicationStatusRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "Withdraw",
+    "RelativePath": "api/internships/applications/{applicationId}/withdraw",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "applicationId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "MyApplications",
+    "RelativePath": "api/internships/my-applications",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Api.Controllers.InternshipController",
+    "Method": "Search",
+    "RelativePath": "api/internships/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keyword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "type",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "GetAll",
+    "RelativePath": "api/Interviews",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "Create",
+    "RelativePath": "api/Interviews",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "InterviewRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "GetById",
+    "RelativePath": "api/Interviews/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "Update",
+    "RelativePath": "api/Interviews/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "InterviewRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "Delete",
+    "RelativePath": "api/Interviews/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "UpdateStatus",
+    "RelativePath": "api/Interviews/{id}/status",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "GetAIRecommended",
+    "RelativePath": "api/Interviews/ai-recommended",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "BulkDelete",
+    "RelativePath": "api/Interviews/bulkdelete",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ids",
+        "Type": "System.Collections.Generic.List\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "BulkUpdateStatus",
+    "RelativePath": "api/Interviews/bulkstatus",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ids",
+        "Type": "System.Collections.Generic.List\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "GetTotalCount",
+    "RelativePath": "api/Interviews/count",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "GetTodayCount",
+    "RelativePath": "api/Interviews/count/today",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "GetLatest",
+    "RelativePath": "api/Interviews/latest",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "count",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "GetMyInterviewById",
+    "RelativePath": "api/Interviews/me/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "AcceptInterview",
+    "RelativePath": "api/Interviews/me/{id}/accept",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "DeclineInterview",
+    "RelativePath": "api/Interviews/me/{id}/decline",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "GetMyPastInterviews",
+    "RelativePath": "api/Interviews/me/past",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "GetMyUpcomingInterviews",
+    "RelativePath": "api/Interviews/me/upcoming",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "GetByRoadmap",
+    "RelativePath": "api/Interviews/roadmap/{roadmapId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "Search",
+    "RelativePath": "api/Interviews/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keyword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.InterviewsController",
+    "Method": "GetToday",
+    "RelativePath": "api/Interviews/today",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "GetAll",
+    "RelativePath": "api/Jobs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "Create",
+    "RelativePath": "api/Jobs",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "RequiredSkills",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ExperienceLevel",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "JobType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Location",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SalaryRange",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CompanyLogo",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "GetById",
+    "RelativePath": "api/Jobs/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "Update",
+    "RelativePath": "api/Jobs/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "RequiredSkills",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ExperienceLevel",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "JobType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Location",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SalaryRange",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CompanyLogo",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "Delete",
+    "RelativePath": "api/Jobs/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "GetApplicants",
+    "RelativePath": "api/Jobs/{id}/applicants",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "Apply",
+    "RelativePath": "api/Jobs/{id}/apply",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "UpdateApplicantStatus",
+    "RelativePath": "api/Jobs/{jobId}/applicants/{applicationId}/status",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "jobId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "applicationId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "UpdateApplicationStatusRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "GetAvailable",
+    "RelativePath": "api/Jobs/available",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "BulkDelete",
+    "RelativePath": "api/Jobs/bulkdelete",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ids",
+        "Type": "System.Collections.Generic.List\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "GetCount",
+    "RelativePath": "api/Jobs/count",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "GetLatest",
+    "RelativePath": "api/Jobs/latest",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "count",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "GetByExperienceLevel",
+    "RelativePath": "api/Jobs/level/{experienceLevel}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "experienceLevel",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "GetByLocation",
+    "RelativePath": "api/Jobs/location/{location}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "location",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "GetMyApplications",
+    "RelativePath": "api/Jobs/my-applications",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "Search",
+    "RelativePath": "api/Jobs/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keyword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.JobsController",
+    "Method": "GetByType",
+    "RelativePath": "api/Jobs/type/{jobType}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "jobType",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PartnershipsController",
+    "Method": "GetAll",
+    "RelativePath": "api/Partnerships",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PartnershipsController",
+    "Method": "Create",
+    "RelativePath": "api/Partnerships",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CreatePartnershipRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PartnershipsController",
+    "Method": "GetById",
+    "RelativePath": "api/Partnerships/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PartnershipsController",
+    "Method": "Update",
+    "RelativePath": "api/Partnerships/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "UpdatePartnershipRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PartnershipsController",
+    "Method": "Delete",
+    "RelativePath": "api/Partnerships/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PartnershipsController",
+    "Method": "Approve",
+    "RelativePath": "api/Partnerships/{id}/approve",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaymentController",
+    "Method": "CreateRoadmapPayment",
+    "RelativePath": "api/payment/roadmap",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PaymentRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaymentController",
+    "Method": "GetPaymentStatus",
+    "RelativePath": "api/payment/status/{roadmapId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaymentController",
+    "Method": "StripeWebhook",
+    "RelativePath": "api/payment/webhook",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.ProfileController",
+    "Method": "GetPublicProfile",
+    "RelativePath": "api/Profile/public/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "UserProfileResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.ProfileController",
+    "Method": "GetMyProfile",
+    "RelativePath": "api/Profile/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "UserProfileResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.ProfileController",
+    "Method": "UpdateProfile",
+    "RelativePath": "api/Profile/update",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "PhoneNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Country",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "City",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "GitHub",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LinkedIn",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProfileImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "Major",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "University",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Degree",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ExpectedGraduation",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "GraduationYear",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "YearsOfExperience",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ExperienceSummary",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ProgrammingTrackAnalyzerController",
+    "Method": "Analyze",
+    "RelativePath": "api/ProgrammingTrackAnalyzer/analyze",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "ProgrammingTrackAnalyzerRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GetAll",
+    "RelativePath": "api/Roadmaps",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "Create",
+    "RelativePath": "api/Roadmaps",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TargetRole",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CoverImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "StartDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "EndDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsPublished",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Price",
+        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "SkillRequests",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.CreateRoadmap.RequiredSkillRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LearningMaterialRequests",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.CreateRoadmap.LearningMaterialRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProjectRequests",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.CreateRoadmap.ProjectRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "QuizRequests",
+        "Type": "System.Collections.Generic.List\u00601[[QuizRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GetById",
+    "RelativePath": "api/Roadmaps/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "Update",
+    "RelativePath": "api/Roadmaps/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TargetRole",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CoverImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "StartDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "EndDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsPublished",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Price",
+        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "SkillRequests",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.CreateRoadmap.RequiredSkillRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LearningMaterialRequests",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.CreateRoadmap.LearningMaterialRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProjectRequests",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.CreateRoadmap.ProjectRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "QuizRequests",
+        "Type": "System.Collections.Generic.List\u00601[[QuizRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "Delete",
+    "RelativePath": "api/Roadmaps/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GetDetails",
+    "RelativePath": "api/Roadmaps/{id}/details",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GenerateQuizWithAI",
+    "RelativePath": "api/Roadmaps/{roadmapId}/generate-quiz",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "quizType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "numQuestions",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GetGeneratedQuiz",
+    "RelativePath": "api/Roadmaps/{roadmapId}/generated-quiz",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GetQuizzes",
+    "RelativePath": "api/Roadmaps/{roadmapId}/quizzes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "AddQuiz",
+    "RelativePath": "api/Roadmaps/{roadmapId}/quizzes",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Type",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Points",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "RoadmapId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "QuestionRequests",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.CreateRoadmap.QuestionRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "QuestionsFile",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GetQuizById",
+    "RelativePath": "api/Roadmaps/{roadmapId}/quizzes/{quizId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "BulkDelete",
+    "RelativePath": "api/Roadmaps/bulkdelete",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ids",
+        "Type": "System.Collections.Generic.List\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "BulkStatus",
+    "RelativePath": "api/Roadmaps/bulkstatus",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "isPublished",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "ids",
+        "Type": "System.Collections.Generic.List\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GetJobStatus",
+    "RelativePath": "api/Roadmaps/job-status/{jobId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "jobId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GetLatest",
+    "RelativePath": "api/Roadmaps/latest",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "count",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GetPublished",
+    "RelativePath": "api/Roadmaps/published",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "UpdateQuiz",
+    "RelativePath": "api/Roadmaps/quizzes/{quizId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Type",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Points",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "RoadmapId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "QuestionRequests",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.CreateRoadmap.QuestionRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "QuestionsFile",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "DeleteQuiz",
+    "RelativePath": "api/Roadmaps/quizzes/{quizId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "Search",
+    "RelativePath": "api/Roadmaps/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keyword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GetByTargetRole",
+    "RelativePath": "api/Roadmaps/targetrole/{role}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "role",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "ToggleStatus",
+    "RelativePath": "api/Roadmaps/toggle/{id}",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.RoadmapsController",
+    "Method": "GetTopByPoints",
+    "RelativePath": "api/Roadmaps/top",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "count",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CVController",
+    "Method": "GetMyCVs",
+    "RelativePath": "api/student/cv",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CVController",
+    "Method": "DeleteCV",
+    "RelativePath": "api/student/cv/{cvId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "cvId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CVController",
+    "Method": "DownloadTemplate",
+    "RelativePath": "api/student/cv/download-template/{templateId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "templateId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CVController",
+    "Method": "DownloadCV",
+    "RelativePath": "api/student/cv/download/{cvId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "cvId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CVController",
+    "Method": "GetTemplates",
+    "RelativePath": "api/student/cv/templates",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CVController",
+    "Method": "UploadCV",
+    "RelativePath": "api/student/cv/upload",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "CV",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StudentRoadmapsController",
+    "Method": "GetRoadmapDetails",
+    "RelativePath": "api/student/roadmaps/{roadmapId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "RoadmapDetailsResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "StudentRoadmapsController",
+    "Method": "GetMyAnswers",
+    "RelativePath": "api/student/roadmaps/{roadmapId}/quizzes/{quizId}/answers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StudentRoadmapsController",
+    "Method": "FinishQuiz",
+    "RelativePath": "api/student/roadmaps/{roadmapId}/quizzes/{quizId}/finish",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StudentRoadmapsController",
+    "Method": "GetQuizScore",
+    "RelativePath": "api/student/roadmaps/{roadmapId}/quizzes/{quizId}/score",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StudentRoadmapsController",
+    "Method": "SubmitAnswer",
+    "RelativePath": "api/student/roadmaps/{roadmapId}/quizzes/{quizId}/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "questionId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "answerText",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "answerFile",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "roadmapId",
+        "Type": "",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StudentRoadmapsController",
+    "Method": "Unenroll",
+    "RelativePath": "api/student/roadmaps/{roadmapId}/unenroll",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roadmapId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StudentRoadmapsController",
+    "Method": "GetCatalog",
+    "RelativePath": "api/student/roadmaps/catalog",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "SmartCareerHub.Contracts.Student.Roadmaps.RoadmapCatalogResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "StudentRoadmapsController",
+    "Method": "Enroll",
+    "RelativePath": "api/student/roadmaps/enroll",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Contracts.Student.Roadmaps.EnrollRoadmapRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StudentRoadmapsController",
+    "Method": "GetMyRoadmaps",
+    "RelativePath": "api/student/roadmaps/my",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[SmartCareerHub.Contracts.Student.Roadmaps.RoadmapCatalogItemResponse, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "StudentRoadmapsController",
+    "Method": "GetMyInterviews",
+    "RelativePath": "api/student/roadmaps/my-interviews",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StudentRoadmapsController",
+    "Method": "UpdateProgress",
+    "RelativePath": "api/student/roadmaps/progress",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "UpdateRoadmapProgressRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.StudentAuthController",
+    "Method": "Login",
+    "RelativePath": "api/StudentAuth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Contracts.Auth.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.StudentAuthController",
+    "Method": "RegisterStudent",
+    "RelativePath": "api/StudentAuth/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Email",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Password",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "FirstName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "University",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Faculty",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Major",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Degree",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ExpectedGraduation",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "LinkedIn",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "GitHub",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Portfolio",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "City",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Country",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProfileImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.StudentAuthController",
+    "Method": "ResendOtp",
+    "RelativePath": "api/StudentAuth/resend-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.Auth.ResendOtpRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.StudentAuthController",
+    "Method": "VerifyEmail",
+    "RelativePath": "api/StudentAuth/verify-email",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.Auth.VerifyEmailRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.TrainCenterAnalyticsController",
+    "Method": "GetFullAnalytics",
+    "RelativePath": "api/TrainCenterAnalytics",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.TrainCenterAnalyticsController",
+    "Method": "GetAttendanceOverTime",
+    "RelativePath": "api/TrainCenterAnalytics/attendance",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "months",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.TrainCenterAnalyticsController",
+    "Method": "GetCourseCompletionRates",
+    "RelativePath": "api/TrainCenterAnalytics/courses",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.TrainCenterAnalyticsController",
+    "Method": "GetMonthlyEnrollmentVsCompletion",
+    "RelativePath": "api/TrainCenterAnalytics/enrollment",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "months",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.TrainCenterAnalyticsController",
+    "Method": "GetPerformanceDistribution",
+    "RelativePath": "api/TrainCenterAnalytics/performance",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.TrainCenterAnalyticsController",
+    "Method": "GetSummary",
+    "RelativePath": "api/TrainCenterAnalytics/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.TrainingCenterAuthController",
+    "Method": "Login",
+    "RelativePath": "api/TrainingCenterAuth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Contracts.Auth.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.TrainingCenterAuthController",
+    "Method": "RegisterTrainingCenter",
+    "RelativePath": "api/TrainingCenterAuth/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "OrganizationLogo",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Email",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Password",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ConfirmPassword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PhoneNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Country",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "City",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.TrainingCenterAuthController",
+    "Method": "ResendOtp",
+    "RelativePath": "api/TrainingCenterAuth/resend-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.Auth.ResendOtpRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.TrainingCenterAuthController",
+    "Method": "VerifyEmail",
+    "RelativePath": "api/TrainingCenterAuth/verify-email",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.Auth.VerifyEmailRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.UniversityAuthController",
+    "Method": "Login",
+    "RelativePath": "api/UniversityAuth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Contracts.Auth.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.UniversityAuthController",
+    "Method": "RegisterUniversity",
+    "RelativePath": "api/UniversityAuth/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "OrganizationLogo",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Email",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Password",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ConfirmPassword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PhoneNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Country",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "City",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.UniversityAuthController",
+    "Method": "ResendOtp",
+    "RelativePath": "api/UniversityAuth/resend-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.Auth.ResendOtpRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.Auth.UniversityAuthController",
+    "Method": "VerifyEmail",
+    "RelativePath": "api/UniversityAuth/verify-email",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Controllers.Auth.VerifyEmailRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopEnrollmentController",
+    "Method": "CancelEnrollment",
+    "RelativePath": "api/WorkshopEnrollment/{workshopId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "workshopId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopEnrollmentController",
+    "Method": "GetWorkshopDetails",
+    "RelativePath": "api/WorkshopEnrollment/{workshopId}/details",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "workshopId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopEnrollmentController",
+    "Method": "GetWorkshopParticipants",
+    "RelativePath": "api/WorkshopEnrollment/{workshopId}/participants",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "workshopId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopEnrollmentController",
+    "Method": "GetAvailableWorkshops",
+    "RelativePath": "api/WorkshopEnrollment/available",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopEnrollmentController",
+    "Method": "Enroll",
+    "RelativePath": "api/WorkshopEnrollment/enroll",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SmartCareerHub.Contracts.Workshops.Enrollment.EnrollWorkshopRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopEnrollmentController",
+    "Method": "GetMyWorkshops",
+    "RelativePath": "api/WorkshopEnrollment/my-workshops",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopsController",
+    "Method": "GetAll",
+    "RelativePath": "api/Workshops",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "includeDisabled",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopsController",
+    "Method": "Create",
+    "RelativePath": "api/Workshops",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Banner",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "HostType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "UniversityId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "CompanyId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Location",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "MaxCapacity",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "WorkshopType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "RequireCV",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "RequireRoadmapCompletion",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsPublished",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Materials",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.WorkShops.MaterialRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Activities",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.WorkShops.ActivityRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopsController",
+    "Method": "GetById",
+    "RelativePath": "api/Workshops/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopsController",
+    "Method": "Update",
+    "RelativePath": "api/Workshops/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Banner",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "HostType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "UniversityId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "CompanyId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Location",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "MaxCapacity",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "WorkshopType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "RequireCV",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "RequireRoadmapCompletion",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsPublished",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Materials",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.WorkShops.MaterialRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Activities",
+        "Type": "System.Collections.Generic.List\u00601[[SmartCareerHub.Contracts.Company.WorkShops.ActivityRequest, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopsController",
+    "Method": "Delete",
+    "RelativePath": "api/Workshops/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopsController",
+    "Method": "BulkDelete",
+    "RelativePath": "api/Workshops/bulkdelete",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ids",
+        "Type": "System.Collections.Generic.List\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopsController",
+    "Method": "BulkStatus",
+    "RelativePath": "api/Workshops/bulkstatus",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "isPublished",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "ids",
+        "Type": "System.Collections.Generic.List\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopsController",
+    "Method": "GetMyWorkshops",
+    "RelativePath": "api/Workshops/my-workshops",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopsController",
+    "Method": "Search",
+    "RelativePath": "api/Workshops/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "searchTerm",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortDirection",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WorkshopsController",
+    "Method": "ToggleStatus",
+    "RelativePath": "api/Workshops/toggle/{id}",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartCareerHub.Controllers.WeatherForecastController",
+    "Method": "Get",
+    "RelativePath": "WeatherForecast",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[SmartCareerHub.WeatherForecast, SmartCareerHub, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ],
+    "EndpointName": "GetWeatherForecast"
+  }
+]
