@@ -1,0 +1,2988 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "SmartCareerHub",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/Analytics/dashboard-overview": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Analytics/roadmaps": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Analytics/workshops": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Analytics/events": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Analytics/jobs": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Analytics/interviews": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/CompanyAuth/register": {
+      "post": {
+        "tags": [
+          "CompanyAuth"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Email": {
+                    "type": "string"
+                  },
+                  "Password": {
+                    "type": "string"
+                  },
+                  "FirstName": {
+                    "type": "string"
+                  },
+                  "LastName": {
+                    "type": "string"
+                  },
+                  "OrganizationName": {
+                    "type": "string"
+                  },
+                  "OrganizationLogo": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "Country": {
+                    "type": "string"
+                  },
+                  "City": {
+                    "type": "string"
+                  }
+                }
+              },
+              "encoding": {
+                "Email": {
+                  "style": "form"
+                },
+                "Password": {
+                  "style": "form"
+                },
+                "FirstName": {
+                  "style": "form"
+                },
+                "LastName": {
+                  "style": "form"
+                },
+                "OrganizationName": {
+                  "style": "form"
+                },
+                "OrganizationLogo": {
+                  "style": "form"
+                },
+                "Country": {
+                  "style": "form"
+                },
+                "City": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Events/{id}": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Id": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "Title": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
+                  "BannerUrl": {
+                    "type": "string"
+                  },
+                  "EventType": {
+                    "type": "string"
+                  },
+                  "Mode": {
+                    "type": "string"
+                  },
+                  "StartDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "EndDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "StartTime": {
+                    "type": "string",
+                    "format": "date-span"
+                  },
+                  "EndTime": {
+                    "type": "string",
+                    "format": "date-span"
+                  },
+                  "MinimumRequiredPoints": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "CompletedRoadmap": {
+                    "type": "boolean"
+                  },
+                  "Completed50PercentCourses": {
+                    "type": "boolean"
+                  },
+                  "HighCommunicationSkills": {
+                    "type": "boolean"
+                  },
+                  "HighTechnicalSkills": {
+                    "type": "boolean"
+                  },
+                  "Top30PercentProgress": {
+                    "type": "boolean"
+                  },
+                  "InviteOnlyEligibleStudents": {
+                    "type": "boolean"
+                  },
+                  "EligibleStudentsCount": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "ExpectedAttendees": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "CurrentRegistrations": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "MaxCapacity": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "AllowWaitingList": {
+                    "type": "boolean"
+                  },
+                  "SendAutoEmailToEligibleStudents": {
+                    "type": "boolean"
+                  },
+                  "PointsForAttendance": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "PointsForFullParticipation": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "IsPublished": {
+                    "type": "boolean"
+                  },
+                  "CreatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "UpdatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              "encoding": {
+                "Id": {
+                  "style": "form"
+                },
+                "Title": {
+                  "style": "form"
+                },
+                "Description": {
+                  "style": "form"
+                },
+                "BannerUrl": {
+                  "style": "form"
+                },
+                "EventType": {
+                  "style": "form"
+                },
+                "Mode": {
+                  "style": "form"
+                },
+                "StartDate": {
+                  "style": "form"
+                },
+                "EndDate": {
+                  "style": "form"
+                },
+                "StartTime": {
+                  "style": "form"
+                },
+                "EndTime": {
+                  "style": "form"
+                },
+                "MinimumRequiredPoints": {
+                  "style": "form"
+                },
+                "CompletedRoadmap": {
+                  "style": "form"
+                },
+                "Completed50PercentCourses": {
+                  "style": "form"
+                },
+                "HighCommunicationSkills": {
+                  "style": "form"
+                },
+                "HighTechnicalSkills": {
+                  "style": "form"
+                },
+                "Top30PercentProgress": {
+                  "style": "form"
+                },
+                "InviteOnlyEligibleStudents": {
+                  "style": "form"
+                },
+                "EligibleStudentsCount": {
+                  "style": "form"
+                },
+                "ExpectedAttendees": {
+                  "style": "form"
+                },
+                "CurrentRegistrations": {
+                  "style": "form"
+                },
+                "MaxCapacity": {
+                  "style": "form"
+                },
+                "AllowWaitingList": {
+                  "style": "form"
+                },
+                "SendAutoEmailToEligibleStudents": {
+                  "style": "form"
+                },
+                "PointsForAttendance": {
+                  "style": "form"
+                },
+                "PointsForFullParticipation": {
+                  "style": "form"
+                },
+                "IsPublished": {
+                  "style": "form"
+                },
+                "CreatedAt": {
+                  "style": "form"
+                },
+                "UpdatedAt": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Events": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "name": "includeDisabled",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Events"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Id": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "Title": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
+                  "BannerUrl": {
+                    "type": "string"
+                  },
+                  "EventType": {
+                    "type": "string"
+                  },
+                  "Mode": {
+                    "type": "string"
+                  },
+                  "StartDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "EndDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "StartTime": {
+                    "type": "string",
+                    "format": "date-span"
+                  },
+                  "EndTime": {
+                    "type": "string",
+                    "format": "date-span"
+                  },
+                  "MinimumRequiredPoints": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "CompletedRoadmap": {
+                    "type": "boolean"
+                  },
+                  "Completed50PercentCourses": {
+                    "type": "boolean"
+                  },
+                  "HighCommunicationSkills": {
+                    "type": "boolean"
+                  },
+                  "HighTechnicalSkills": {
+                    "type": "boolean"
+                  },
+                  "Top30PercentProgress": {
+                    "type": "boolean"
+                  },
+                  "InviteOnlyEligibleStudents": {
+                    "type": "boolean"
+                  },
+                  "EligibleStudentsCount": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "ExpectedAttendees": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "CurrentRegistrations": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "MaxCapacity": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "AllowWaitingList": {
+                    "type": "boolean"
+                  },
+                  "SendAutoEmailToEligibleStudents": {
+                    "type": "boolean"
+                  },
+                  "PointsForAttendance": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "PointsForFullParticipation": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "IsPublished": {
+                    "type": "boolean"
+                  },
+                  "CreatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "UpdatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              "encoding": {
+                "Id": {
+                  "style": "form"
+                },
+                "Title": {
+                  "style": "form"
+                },
+                "Description": {
+                  "style": "form"
+                },
+                "BannerUrl": {
+                  "style": "form"
+                },
+                "EventType": {
+                  "style": "form"
+                },
+                "Mode": {
+                  "style": "form"
+                },
+                "StartDate": {
+                  "style": "form"
+                },
+                "EndDate": {
+                  "style": "form"
+                },
+                "StartTime": {
+                  "style": "form"
+                },
+                "EndTime": {
+                  "style": "form"
+                },
+                "MinimumRequiredPoints": {
+                  "style": "form"
+                },
+                "CompletedRoadmap": {
+                  "style": "form"
+                },
+                "Completed50PercentCourses": {
+                  "style": "form"
+                },
+                "HighCommunicationSkills": {
+                  "style": "form"
+                },
+                "HighTechnicalSkills": {
+                  "style": "form"
+                },
+                "Top30PercentProgress": {
+                  "style": "form"
+                },
+                "InviteOnlyEligibleStudents": {
+                  "style": "form"
+                },
+                "EligibleStudentsCount": {
+                  "style": "form"
+                },
+                "ExpectedAttendees": {
+                  "style": "form"
+                },
+                "CurrentRegistrations": {
+                  "style": "form"
+                },
+                "MaxCapacity": {
+                  "style": "form"
+                },
+                "AllowWaitingList": {
+                  "style": "form"
+                },
+                "SendAutoEmailToEligibleStudents": {
+                  "style": "form"
+                },
+                "PointsForAttendance": {
+                  "style": "form"
+                },
+                "PointsForFullParticipation": {
+                  "style": "form"
+                },
+                "IsPublished": {
+                  "style": "form"
+                },
+                "CreatedAt": {
+                  "style": "form"
+                },
+                "UpdatedAt": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Events/published": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Events/search": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Events/latest": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Events/toggle/{id}": {
+      "patch": {
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Events/bulkstatus": {
+      "patch": {
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "name": "isPublished",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Events/bulkdelete": {
+      "delete": {
+        "tags": [
+          "Events"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews": {
+      "get": {
+        "tags": [
+          "Interviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Interviews"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterviewRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterviewRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews/{id}": {
+      "get": {
+        "tags": [
+          "Interviews"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Interviews"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterviewRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterviewRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Interviews"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews/today": {
+      "get": {
+        "tags": [
+          "Interviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews/ai-recommended": {
+      "get": {
+        "tags": [
+          "Interviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews/roadmap/{roadmapId}": {
+      "get": {
+        "tags": [
+          "Interviews"
+        ],
+        "parameters": [
+          {
+            "name": "roadmapId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews/search": {
+      "get": {
+        "tags": [
+          "Interviews"
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews/{id}/status": {
+      "patch": {
+        "tags": [
+          "Interviews"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews/bulkstatus": {
+      "patch": {
+        "tags": [
+          "Interviews"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews/count": {
+      "get": {
+        "tags": [
+          "Interviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews/count/today": {
+      "get": {
+        "tags": [
+          "Interviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews/latest": {
+      "get": {
+        "tags": [
+          "Interviews"
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Interviews/bulkdelete": {
+      "delete": {
+        "tags": [
+          "Interviews"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Jobs/{id}": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Jobs"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Title": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
+                  "RequiredSkills": {
+                    "type": "string"
+                  },
+                  "ExperienceLevel": {
+                    "type": "string"
+                  },
+                  "JobType": {
+                    "type": "string"
+                  },
+                  "Location": {
+                    "type": "string"
+                  },
+                  "SalaryRange": {
+                    "type": "string"
+                  },
+                  "CompanyLogo": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Title": {
+                  "style": "form"
+                },
+                "Description": {
+                  "style": "form"
+                },
+                "RequiredSkills": {
+                  "style": "form"
+                },
+                "ExperienceLevel": {
+                  "style": "form"
+                },
+                "JobType": {
+                  "style": "form"
+                },
+                "Location": {
+                  "style": "form"
+                },
+                "SalaryRange": {
+                  "style": "form"
+                },
+                "CompanyLogo": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Jobs"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Jobs": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Jobs"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Title": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
+                  "RequiredSkills": {
+                    "type": "string"
+                  },
+                  "ExperienceLevel": {
+                    "type": "string"
+                  },
+                  "JobType": {
+                    "type": "string"
+                  },
+                  "Location": {
+                    "type": "string"
+                  },
+                  "SalaryRange": {
+                    "type": "string"
+                  },
+                  "CompanyLogo": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Title": {
+                  "style": "form"
+                },
+                "Description": {
+                  "style": "form"
+                },
+                "RequiredSkills": {
+                  "style": "form"
+                },
+                "ExperienceLevel": {
+                  "style": "form"
+                },
+                "JobType": {
+                  "style": "form"
+                },
+                "Location": {
+                  "style": "form"
+                },
+                "SalaryRange": {
+                  "style": "form"
+                },
+                "CompanyLogo": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Jobs/search": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Jobs/type/{jobType}": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "parameters": [
+          {
+            "name": "jobType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Jobs/level/{experienceLevel}": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "parameters": [
+          {
+            "name": "experienceLevel",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Jobs/location/{location}": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "parameters": [
+          {
+            "name": "location",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Jobs/latest": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Jobs/count": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Jobs/bulkdelete": {
+      "delete": {
+        "tags": [
+          "Jobs"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/{id}": {
+      "get": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Title": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
+                  "TargetRole": {
+                    "type": "string"
+                  },
+                  "CoverImage": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "StartDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "EndDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "IsPublished": {
+                    "type": "boolean"
+                  },
+                  "SkillRequests": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/RequiredSkillRequest"
+                    }
+                  },
+                  "LearningMaterialRequests": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/LearningMaterialRequest"
+                    }
+                  },
+                  "ProjectRequests": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ProjectRequest"
+                    }
+                  },
+                  "QuizRequests": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/QuizRequest"
+                    }
+                  }
+                }
+              },
+              "encoding": {
+                "Title": {
+                  "style": "form"
+                },
+                "Description": {
+                  "style": "form"
+                },
+                "TargetRole": {
+                  "style": "form"
+                },
+                "CoverImage": {
+                  "style": "form"
+                },
+                "StartDate": {
+                  "style": "form"
+                },
+                "EndDate": {
+                  "style": "form"
+                },
+                "IsPublished": {
+                  "style": "form"
+                },
+                "SkillRequests": {
+                  "style": "form"
+                },
+                "LearningMaterialRequests": {
+                  "style": "form"
+                },
+                "ProjectRequests": {
+                  "style": "form"
+                },
+                "QuizRequests": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps": {
+      "get": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Title": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
+                  "TargetRole": {
+                    "type": "string"
+                  },
+                  "CoverImage": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "StartDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "EndDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "IsPublished": {
+                    "type": "boolean"
+                  },
+                  "SkillRequests": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/RequiredSkillRequest"
+                    }
+                  },
+                  "LearningMaterialRequests": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/LearningMaterialRequest"
+                    }
+                  },
+                  "ProjectRequests": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ProjectRequest"
+                    }
+                  },
+                  "QuizRequests": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/QuizRequest"
+                    }
+                  }
+                }
+              },
+              "encoding": {
+                "Title": {
+                  "style": "form"
+                },
+                "Description": {
+                  "style": "form"
+                },
+                "TargetRole": {
+                  "style": "form"
+                },
+                "CoverImage": {
+                  "style": "form"
+                },
+                "StartDate": {
+                  "style": "form"
+                },
+                "EndDate": {
+                  "style": "form"
+                },
+                "IsPublished": {
+                  "style": "form"
+                },
+                "SkillRequests": {
+                  "style": "form"
+                },
+                "LearningMaterialRequests": {
+                  "style": "form"
+                },
+                "ProjectRequests": {
+                  "style": "form"
+                },
+                "QuizRequests": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/published": {
+      "get": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/targetrole/{role}": {
+      "get": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "role",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/search": {
+      "get": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/latest": {
+      "get": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/top": {
+      "get": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/toggle/{id}": {
+      "patch": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/bulkstatus": {
+      "patch": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "isPublished",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/bulkdelete": {
+      "delete": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/{roadmapId}/quizzes": {
+      "get": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "roadmapId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "roadmapId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Title": {
+                    "type": "string"
+                  },
+                  "Type": {
+                    "type": "string"
+                  },
+                  "Points": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "RoadmapId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "QuestionRequests": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/QuestionRequest"
+                    }
+                  },
+                  "QuestionsFile": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Title": {
+                  "style": "form"
+                },
+                "Type": {
+                  "style": "form"
+                },
+                "Points": {
+                  "style": "form"
+                },
+                "RoadmapId": {
+                  "style": "form"
+                },
+                "QuestionRequests": {
+                  "style": "form"
+                },
+                "QuestionsFile": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/{roadmapId}/quizzes/{quizId}": {
+      "get": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "roadmapId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "quizId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Roadmaps/quizzes/{quizId}": {
+      "put": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "quizId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Title": {
+                    "type": "string"
+                  },
+                  "Type": {
+                    "type": "string"
+                  },
+                  "Points": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "RoadmapId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "QuestionRequests": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/QuestionRequest"
+                    }
+                  },
+                  "QuestionsFile": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "Title": {
+                  "style": "form"
+                },
+                "Type": {
+                  "style": "form"
+                },
+                "Points": {
+                  "style": "form"
+                },
+                "RoadmapId": {
+                  "style": "form"
+                },
+                "QuestionRequests": {
+                  "style": "form"
+                },
+                "QuestionsFile": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Roadmaps"
+        ],
+        "parameters": [
+          {
+            "name": "quizId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/WeatherForecast": {
+      "get": {
+        "tags": [
+          "WeatherForecast"
+        ],
+        "operationId": "GetWeatherForecast",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WeatherForecast"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WeatherForecast"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WeatherForecast"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Workshops/{id}": {
+      "get": {
+        "tags": [
+          "Workshops"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Workshops"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Title": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
+                  "Banner": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "UniversityId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "Location": {
+                    "type": "string"
+                  },
+                  "MaxCapacity": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "WorkshopType": {
+                    "type": "string"
+                  },
+                  "RequireCV": {
+                    "type": "boolean"
+                  },
+                  "IsPublished": {
+                    "type": "boolean"
+                  },
+                  "RequireRoadmapCompletion": {
+                    "type": "boolean"
+                  },
+                  "Materials": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/MaterialRequest"
+                    }
+                  },
+                  "Activities": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ActivityRequest"
+                    }
+                  }
+                }
+              },
+              "encoding": {
+                "Title": {
+                  "style": "form"
+                },
+                "Description": {
+                  "style": "form"
+                },
+                "Banner": {
+                  "style": "form"
+                },
+                "UniversityId": {
+                  "style": "form"
+                },
+                "Location": {
+                  "style": "form"
+                },
+                "MaxCapacity": {
+                  "style": "form"
+                },
+                "WorkshopType": {
+                  "style": "form"
+                },
+                "RequireCV": {
+                  "style": "form"
+                },
+                "IsPublished": {
+                  "style": "form"
+                },
+                "RequireRoadmapCompletion": {
+                  "style": "form"
+                },
+                "Materials": {
+                  "style": "form"
+                },
+                "Activities": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Workshops"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Workshops": {
+      "get": {
+        "tags": [
+          "Workshops"
+        ],
+        "parameters": [
+          {
+            "name": "includeDisabled",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Workshops"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Title": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
+                  "Banner": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "UniversityId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "Location": {
+                    "type": "string"
+                  },
+                  "MaxCapacity": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "WorkshopType": {
+                    "type": "string"
+                  },
+                  "RequireCV": {
+                    "type": "boolean"
+                  },
+                  "IsPublished": {
+                    "type": "boolean"
+                  },
+                  "RequireRoadmapCompletion": {
+                    "type": "boolean"
+                  },
+                  "Materials": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/MaterialRequest"
+                    }
+                  },
+                  "Activities": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ActivityRequest"
+                    }
+                  }
+                }
+              },
+              "encoding": {
+                "Title": {
+                  "style": "form"
+                },
+                "Description": {
+                  "style": "form"
+                },
+                "Banner": {
+                  "style": "form"
+                },
+                "UniversityId": {
+                  "style": "form"
+                },
+                "Location": {
+                  "style": "form"
+                },
+                "MaxCapacity": {
+                  "style": "form"
+                },
+                "WorkshopType": {
+                  "style": "form"
+                },
+                "RequireCV": {
+                  "style": "form"
+                },
+                "IsPublished": {
+                  "style": "form"
+                },
+                "RequireRoadmapCompletion": {
+                  "style": "form"
+                },
+                "Materials": {
+                  "style": "form"
+                },
+                "Activities": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Workshops/toggle/{id}": {
+      "patch": {
+        "tags": [
+          "Workshops"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Workshops/bulkstatus": {
+      "patch": {
+        "tags": [
+          "Workshops"
+        ],
+        "parameters": [
+          {
+            "name": "isPublished",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Workshops/bulkdelete": {
+      "delete": {
+        "tags": [
+          "Workshops"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActivityRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "difficulty": {
+            "type": "string",
+            "nullable": true
+          },
+          "points": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InterviewRequest": {
+        "type": "object",
+        "properties": {
+          "studentName": {
+            "type": "string",
+            "nullable": true
+          },
+          "roadmapId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cv": {
+            "type": "string",
+            "nullable": true
+          },
+          "isAIPick": {
+            "type": "boolean"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "interviewType": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "interviewerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "additionalNotes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LearningMaterialRequest": {
+        "type": "object",
+        "properties": {
+          "titleVideos": {
+            "type": "string",
+            "nullable": true
+          },
+          "titlePdf": {
+            "type": "string",
+            "nullable": true
+          },
+          "duration": {
+            "type": "string",
+            "nullable": true
+          },
+          "durationpdf": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "points": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "filePath": {
+            "type": "string",
+            "format": "binary",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MaterialRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "titleVideo": {
+            "type": "string",
+            "nullable": true
+          },
+          "titlePdf": {
+            "type": "string",
+            "nullable": true
+          },
+          "titleAssignment": {
+            "type": "string",
+            "nullable": true
+          },
+          "pageCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "points": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "filePath": {
+            "type": "string",
+            "format": "binary",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProjectRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "difficulty": {
+            "type": "string",
+            "nullable": true
+          },
+          "points": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuestionRequest": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "optionsJson": {
+            "type": "string",
+            "nullable": true
+          },
+          "correctAnswer": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "points": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roadmapId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "questionRequests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionRequest"
+            },
+            "nullable": true
+          },
+          "questionsFile": {
+            "type": "string",
+            "format": "binary",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RequiredSkillRequest": {
+        "type": "object",
+        "properties": {
+          "skillName": {
+            "type": "string",
+            "nullable": true
+          },
+          "level": {
+            "type": "string",
+            "nullable": true
+          },
+          "levelPoints": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WeatherForecast": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "temperatureC": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "temperatureF": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
