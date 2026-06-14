@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Partnership Integration</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+:root{
+ --blue:#3498db;
+ --bg:#f4f6fa;
+ --card:#ffffff;
+ --border:#e6eaf0;
+ --text:#1f2937;
+ --muted:#6b7280;
+}
+
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ font-family:Inter,Arial;
+ background:var(--bg);
+ color:var(--text);
+ padding:28px;
+}
+
+.page-header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:20px;
+}
+
+.add-btn{
+ background:var(--blue);
+ color:white;
+ border:none;
+ padding:12px 18px;
+ border-radius:10px;
+ cursor:pointer;
+ font-size:14px;
+ margin-right: 25px;
+}
+
+.add-btn i{margin-right:8px;}
+
+.partner-grid{
+  margin-top:25px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill, 380px); /* نفس عرض الكارد */
+  gap:18px;
+}
+
+.partner-card{
+  background:white;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 6px 20px rgba(0,0,0,.06);
+  position:relative;
+  transition:.25s;
+
+  width: 370px; 
+  height: 430px;  /* 👈 يخليه مربع */
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.partner-card img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+}
+
+.partner-body{
+  padding:12px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.partner-head{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:8px;
+}
+
+.badge{
+ background:#e7f8ee;
+ color:#1b8f4b;
+ padding:4px 10px;
+ border-radius:999px;
+ font-size:12px;
+}
+
+.partner-type{
+ color:var(--muted);
+ font-size:14px;
+ margin-bottom:10px;
+}
+
+.partner-info{
+ font-size:14px;
+ color:#374151;
+ margin:6px 0;
+ display:flex;
+ justify-content:space-between;
+}
+
+.card-buttons{
+ display:flex;
+ gap:10px;
+ margin-top:10px;
+}
+
+.view-btn,
+.delete-btn{
+ flex:1;
+ padding:10px;
+ border-radius:10px;
+ border:none;
+ cursor:pointer;
+ font-size:14px;
+}
+
+.view-btn{
+ background:#f9fafb;
+ border:1px solid var(--border);
+}
+
+.delete-btn{
+ background:#fee2e2;
+ border:1px solid #fca5a5;
+ color:#b91c1c;
+}
+
+/* ===== MODAL ===== */
+.modal{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.35);
+ display:none;
+ align-items:center;
+ justify-content:center;
+}
+
+.modal.show{
+ display:flex;
+}
+.modal-box{
+ background:white;
+ width:520px;
+ max-width:95%;
+ border-radius:16px;
+ padding:22px;
+
+ max-height:90vh;       /* يمنع إنه يكبر زيادة عن الشاشة */
+ overflow-y:auto;       /* يخلي فيه Scroll */
+}
+.modal-box::-webkit-scrollbar{
+ width:6px;
+}
+
+.modal-box::-webkit-scrollbar-thumb{
+ background:#ccc;
+ border-radius:10px;
+}
+
+.modal-header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:6px;
+}
+
+.modal-sub{
+ color:var(--muted);
+ font-size:14px;
+ margin-bottom:16px;
+}
+
+.close{
+ cursor:pointer;
+ font-size:18px;
+}
+
+.form-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+}
+
+.form-group{
+ display:flex;
+ flex-direction:column;
+ font-size:14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+ padding:10px;
+ border-radius:10px;
+ border:1px solid var(--border);
+ margin-top:6px;
+}
+
+.form-group.full{
+ grid-column:1/3;
+}
+
+.modal-actions{
+ display:flex;
+ gap:12px;
+ margin-top:16px;
+}
+
+.btn-primary{
+ background:var(--blue);
+ color:white;
+ border:none;
+ padding:12px;
+ border-radius:10px;
+ flex:1;
+ cursor:pointer;
+}
+
+.btn-outline{
+ border:1px solid var(--border);
+ background:white;
+ padding:12px;
+ border-radius:10px;
+ flex:1;
+ cursor:pointer;
+}
+
+/* ===== IMAGE PREVIEW ===== */
+#imagePreview{
+ width:100%;
+ height:180px;
+ object-fit:cover;
+ border-radius:10px;
+ margin-bottom:10px;
+ display:none;
+}
+.page-sub{
+  color: var(--muted);
+  font-size:14px;
+  margin-top:6px;
+}
+
+.header-actions{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+.search-box{
+  position:relative;
+}
+
+.search-box input{
+  padding:10px 14px 10px 36px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  width:780px;
+  font-size:14px;
+}
+
+.search-box i{
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--muted);
+}
+</style>
+</head>
+
+<body>
+
+<div class="page-header">
+  <div>
+    <h2>Partnership Integration</h2>
+    <p class="page-sub">
+      Manage and track all strategic company partnerships in one place.
+    </p>
+  </div>
+
+  <div class="header-actions">
+    <div class="search-box">
+      <i class="fa fa-search"></i>
+      <input type="text" placeholder="Search by company name..."
+             id="searchInput" onkeyup="searchPartners()">
+    </div>
+
+    <button class="add-btn" onclick="openModal()">
+      <i class="fa fa-plus"></i> Add New Partnership
+    </button>
+  </div>
+</div>
+
+<div class="partner-grid"></div>
+
+<!-- ===== DETAILS MODAL ===== -->
+<div class="modal" id="detailsModal">
+  <div class="modal-box" style="max-width:620px">
+    <div class="modal-header">
+      <h3>Partnership Details</h3>
+      <div class="close" onclick="closeDetails()">×</div>
+    </div>
+    <div class="modal-sub">Complete information about the partnership</div>
+    <div id="detailsContent"></div>
+    <div class="modal-actions" id="detailsActions">
+      <button class="btn-outline" onclick="closeDetails()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADD MODAL ===== -->
+<div class="modal" id="modal">
+<div class="modal-box">
+
+<div class="modal-header">
+<h3>Add Partnerships</h3>
+<div class="close" onclick="closeModal()">×</div>
+</div>
+
+<div class="modal-sub">
+Register a new company partnership
+</div>
+
+<div class="form-grid">
+
+<!-- IMAGE PREVIEW -->
+<img id="imagePreview" alt="Company Image Preview">
+
+<div class="form-group full">
+  <label>Upload Company Image</label>
+  <input type="file" id="imageUpload" accept="image/*" onchange="previewImage(event)">
+  <label>Company Name</label>
+  <input placeholder="e.g., Microsoft" id="companyName">
+</div>
+
+<div class="form-group">
+<label>Industry</label>
+<input placeholder="AI & Cloud" id="industry">
+</div>
+
+<div class="form-group">
+<label>Partnership Type</label>
+<select style="color: #555; background-color: #f8f8f8;" id="partnershipType">
+<option>Select type</option>
+<option>Events & Workshops</option>
+<option>Internships Program</option>
+<option>Research Collaboration</option>
+<option>Full Partnership</option>
+</select>
+</div>
+
+<div class="form-group full">
+<label>Contact Person</label>
+<input placeholder="Full name" id="contactPerson">
+</div>
+
+<div class="form-group">
+<label>Email</label>
+<input placeholder="contact@company.com" id="Email">
+</div>
+
+<div class="form-group">
+<label>Phone</label>
+<input placeholder="+20 xxx xxx" id="Phone">
+</div>
+
+<div class="form-group">
+<label>Website</label>
+<input placeholder="www.company.com" id="website">
+</div>
+
+<div class="form-group">
+<label>Location</label>
+<input placeholder="City, Country" id="location">
+</div>
+
+<div class="form-group full">
+<label>Partnership Details</label>
+<textarea rows="3" placeholder="Describe the partnership objectives..." id="details"></textarea>
+</div>
+
+</div>
+
+<div class="modal-actions">
+<button class="btn-primary" onclick="addPartner()">Add Partnership</button>
+<button class="btn-outline" onclick="closeModal()">Cancel</button>
+</div>
+
+</div>
+</div>
+
+<script>
+// ===== MODAL FUNCTIONS =====
+function openModal(){document.getElementById("modal").classList.add("show");}
+function closeModal(){ 
+  document.getElementById("modal").classList.remove("show"); 
+  document.getElementById("imagePreview").style.display="none";
+}
+
+function closeDetails(){
+  document.getElementById("detailsModal").classList.remove("show");
+}
+
+function searchPartners(){
+  const value = document.getElementById("searchInput").value.toLowerCase();
+  const cards = document.querySelectorAll(".partner-card");
+
+  cards.forEach(card=>{
+    const name = card.querySelector("h3").innerText.toLowerCase();
+    if(name.includes(value)){
+      card.style.display = "flex";
+    } else {
+      card.style.display = "none";
+    }
+  });
+}
+
+// ===== IMAGE PREVIEW =====
+function previewImage(event){
+  const preview = document.getElementById("imagePreview");
+  preview.src = URL.createObjectURL(event.target.files[0]);
+  preview.style.display = "block";
+}
+
+// ===== LOCAL STORAGE HANDLING =====
+let partners = JSON.parse(localStorage.getItem("partners")) || [];
+
+function saveToLocal(){ localStorage.setItem("partners", JSON.stringify(partners)); }
+
+function renderPartners(){
+  const partnerGrid = document.querySelector(".partner-grid");
+  partnerGrid.innerHTML = "";
+  partners.forEach((p, idx)=>{
+    const card = document.createElement("div");
+    card.classList.add("partner-card");
+    card.dataset.index = idx;
+    card.innerHTML = `
+      ${p.image? `<img src="${p.image}">` : ""}
+      <div class="partner-body">
+        <div class="partner-head">
+          <h3>${p.name}</h3>
+          <span class="badge">Active</span>
+        </div>
+        <div class="partner-type">${p.industry}</div>
+        <div class="partner-info"><span>Partner since:</span>${p.year}</div>
+        <div class="partner-info"><span>Events hosted:</span>${p.events}</div>
+        <div class="partner-info"><span>Students reached:</span>${p.students}</div>
+        <div class="card-buttons">
+          <button class="view-btn" onclick="showDetailsCard(${idx})">
+            <i class="fa fa-eye"></i> View Details
+          </button>
+          <button class="delete-btn" onclick="deletePartner(${idx})">
+            <i class="fa fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    `;
+    partnerGrid.appendChild(card);
+  });
+}
+
+// ===== ADD PARTNER =====
+function addPartner(){
+  const name = document.getElementById("companyName").value;
+  const industry = document.getElementById("industry").value;
+  const imageFile = document.getElementById("imageUpload").files[0];
+
+  if(!name || !industry){
+    alert("Please fill required fields");
+    return;
+  }
+
+  if(imageFile){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      savePartner(e.target.result);
+    }
+    reader.readAsDataURL(imageFile);
+  } else {
+    savePartner("");
+  }
+}
+
+function savePartner(imageURL){
+  const partner = {
+    name: document.getElementById("companyName").value,
+    industry: document.getElementById("industry").value,
+    type: document.getElementById("partnershipType").value,
+    contact: document.getElementById("contactPerson").value,
+    email: document.getElementById("Email").value,
+    phone: document.getElementById("Phone").value,
+    website: document.getElementById("website").value,
+    location: document.getElementById("location").value,
+    details: document.getElementById("details").value,
+    image: imageURL,
+    year: new Date().getFullYear(),
+
+// رقم عشوائي بين 1 و 10
+events: Math.floor(Math.random() * 10) + 1,
+
+// رقم عشوائي بين 50 و 500
+students: Math.floor(Math.random() * 451) + 50
+  };
+
+  partners.push(partner);
+  saveToLocal();
+  renderPartners();
+  closeModal();
+}
+
+// ===== DELETE PARTNER =====
+function deletePartner(idx){
+  if(confirm("Are you sure you want to delete this partner?")){
+    partners.splice(idx,1);
+    saveToLocal();
+    renderPartners();
+  }
+}
+
+// ===== VIEW & EDIT DETAILS =====
+function showDetailsCard(idx){
+  const p = partners[idx];
+  const detailsActions = document.getElementById("detailsActions");
+  document.getElementById("detailsContent").innerHTML = `
+    <div style="display:flex;gap:14px;margin-bottom:18px;align-items:center">
+      ${p.image? `<img src="${p.image}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;">` : ""}
+      <div>
+        <h3 style="margin:0">${p.name}</h3>
+        <div style="color:#6b7280;font-size:14px">${p.industry}</div>
+        <span class="badge" style="margin-top:6px;display:inline-block">Active</span>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;background:#f4f6fa;padding:16px;border-radius:12px;margin-bottom:18px">
+      <div style="text-align:center"><div style="color:#2f80ed;font-size:18px">${p.year}</div><div style="font-size:13px;color:#6b7280">Since</div></div>
+      <div style="text-align:center"><div style="color:#2f80ed;font-size:18px">${p.events}</div><div style="font-size:13px;color:#6b7280">Events</div></div>
+      <div style="text-align:center"><div style="color:#2f80ed;font-size:18px">${p.students}</div><div style="font-size:13px;color:#6b7280">Students</div></div>
+    </div>
+    <div style="margin-bottom:14px"><div style="font-size:14px;color:#6b7280;margin-bottom:6px">Partnership Type</div><div style="padding:10px;border-radius:10px;border:1px solid #e6eaf0;background:#f9fafb">${p.type}</div></div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:14px;color:#6b7280;margin-bottom:6px">Contact Information</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div><i class="fa fa-user" style="color:#2f80ed"></i> ${p.contact}</div>
+        <div><i class="fa fa-envelope" style="color:#2f80ed"></i> ${p.email}</div>
+        <div><i class="fa fa-phone" style="color:#2f80ed"></i> ${p.phone}</div>
+        <div><i class="fa fa-globe" style="color:#2f80ed"></i> ${p.website}</div>
+        <div><i class="fa fa-location-dot" style="color:#2f80ed"></i> ${p.location}</div>
+      </div>
+    </div>
+    <div><div style="font-size:14px;color:#6b7280;margin-bottom:6px">Partnership Details</div><div style="background:#f9fafb;border-radius:10px;padding:12px;font-size:14px;color:#374151">${p.details}</div></div>
+  `;
+  detailsActions.innerHTML = `
+    <button class="btn-primary" onclick="enableEdit(${idx})">Edit</button>
+    <button class="btn-outline" onclick="closeDetails()">Close</button>
+  `;
+  document.getElementById("detailsModal").classList.add("show");
+}
+
+// ===== EDIT PARTNER =====
+function enableEdit(idx){
+  const p = partners[idx];
+  const detailsActions = document.getElementById("detailsActions");
+  document.getElementById("detailsContent").innerHTML = `
+    <div style="display:flex;gap:14px;margin-bottom:18px;align-items:center">
+      ${p.image? `<img src="${p.image}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;">` : ""}
+      <div>
+        <input id="editName" value="${p.name}" style="font-size:16px;margin-bottom:4px;padding:6px;border-radius:6px;border:1px solid #e6eaf0;">
+        <input id="editIndustry" value="${p.industry}" style="font-size:14px;color:#6b7280;padding:6px;border-radius:6px;border:1px solid #e6eaf0;">
+      </div>
+    </div>
+    <div style="margin-bottom:14px">
+      <label>Partnership Type</label>
+      <input id="editType" value="${p.type}" style="width:100%;padding:6px;border-radius:6px;border:1px solid #e6eaf0;">
+    </div>
+    <div style="margin-bottom:14px">
+      <label>Contact Person</label>
+      <input id="editContact" value="${p.contact}" style="width:100%;padding:6px;border-radius:6px;border:1px solid #e6eaf0;">
+      <label>Email</label>
+      <input id="editEmail" value="${p.email}" style="width:100%;padding:6px;border-radius:6px;border:1px solid #e6eaf0;">
+      <label>Phone</label>
+      <input id="editPhone" value="${p.phone}" style="width:100%;padding:6px;border-radius:6px;border:1px solid #e6eaf0;">
+      <label>Website</label>
+      <input id="editWebsite" value="${p.website}" style="width:100%;padding:6px;border-radius:6px;border:1px solid #e6eaf0;">
+      <label>Location</label>
+      <input id="editLocation" value="${p.location}" style="width:100%;padding:6px;border-radius:6px;border:1px solid #e6eaf0;">
+    </div>
+    <div>
+      <label>Partnership Details</label>
+      <textarea id="editDetails" style="width:100%;padding:6px;border-radius:6px;border:1px solid #e6eaf0;">${p.details}</textarea>
+    </div>
+  `;
+  detailsActions.innerHTML = `
+    <button class="btn-primary" onclick="saveEdit(${idx})">Save</button>
+    <button class="btn-outline" onclick="showDetailsCard(${idx})">Cancel</button>
+  `;
+}
+
+function saveEdit(idx){
+  const p = partners[idx];
+  p.name = document.getElementById("editName").value;
+  p.industry = document.getElementById("editIndustry").value;
+  p.type = document.getElementById("editType").value;
+  p.contact = document.getElementById("editContact").value;
+  p.email = document.getElementById("editEmail").value;
+  p.phone = document.getElementById("editPhone").value;
+  p.website = document.getElementById("editWebsite").value;
+  p.location = document.getElementById("editLocation").value;
+  p.details = document.getElementById("editDetails").value;
+  saveToLocal();
+  renderPartners();
+  showDetailsCard(idx);
+}
+
+// ===== INITIAL RENDER =====
+renderPartners();
+</script>
+</body>
+</html>

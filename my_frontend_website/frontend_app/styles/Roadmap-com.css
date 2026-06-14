@@ -58,7 +58,7 @@ body{
 
 
 .create-btn{
-  background:#155fc4;
+  background:#3498db;
   color:#fff;
   border:none;
   padding:10px 14px;
@@ -71,7 +71,7 @@ body{
   gap:8px;
 }
 .create-btn:hover{
-  background:#0f4da5;
+  background:#1879bb;
 }
 /* ---------------- CARDS GRID ---------------- */
 .container{
@@ -167,4 +167,265 @@ body{
   justify-content:space-between;
   padding:8px 0;
   border-bottom:1px dashed #eef2f8;
+}
+
+/* ===== GRID ===== */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+  gap:25px;
+  margin-top:30px;
+}
+
+/* ===== CARD ===== */
+.card{
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.08);
+  overflow:hidden;
+  transition:0.3s ease;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 12px 30px rgba(0,0,0,0.15);
+}
+
+/* ===== IMAGE ===== */
+.card-image{
+  position:relative;
+  height:180px;
+}
+
+.card-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  padding:6px 12px;
+  font-size:12px;
+  border-radius:20px;
+  font-weight:600;
+}
+
+.badge.published{
+  background:#d4f5df;
+  color:#1e9e58;
+}
+
+.badge.draft{
+  background:#eee;
+  color:#666;
+}
+
+/* ===== CONTENT ===== */
+.card-content{
+  padding:20px;
+}
+
+.card-content h3{
+  margin:0 0 8px;
+  font-size:18px;
+  font-weight:600;
+}
+
+.level-badge{
+  display:inline-block;
+  background:#e8ddff;
+  color:#6c3df4;
+  padding:4px 10px;
+  border-radius:12px;
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+.role{
+  font-size:14px;
+  color:#555;
+  margin-bottom:10px;
+}
+
+.meta{
+  display:flex;
+  gap:15px;
+  font-size:13px;
+  color:#666;
+  margin-bottom:10px;
+}
+
+.price{
+  font-weight:600;
+  margin-bottom:15px;
+  color:#2c3e50;
+}
+
+/* ===== PROGRESS ===== */
+.progress-box{
+  margin-bottom:15px;
+}
+
+.progress-text{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  margin-bottom:5px;
+}
+
+.progress{
+  height:8px;
+  background:#eee;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.progress-bar{
+  height:100%;
+  background:#3498db;
+  border-radius:20px;
+  transition:0.3s;
+}
+
+/* ===== BUTTONS ===== */
+.card-buttons{
+  display:flex;
+  gap:10px;
+}
+
+.card-buttons button{
+  flex:1;
+  padding:8px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-size:13px;
+  transition:0.3s;
+}
+
+.btn-edit{
+  background:#f4f6f9;
+}
+
+.btn-edit:hover{
+  background:#e2e6ec;
+}
+
+.btn-analysis{
+  background:#e8f1ff;
+  color:#3498db;
+}
+
+.btn-analysis:hover{
+  background:#d6e7ff;
+}
+
+.btn-delete{
+  background:#ffeaea;
+  color:red;
+  flex:0.4;
+}
+
+.btn-delete:hover{
+  background:#ffd6d6;
+}
+
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+/* ===== MODAL BOX ===== */
+.modal-box{
+  background:#fff;
+  width:600px;
+  max-height:85vh;
+  overflow-y:auto;
+  border-radius:15px;
+  padding:20px;
+  animation:fadeIn 0.3s ease;
+  box-shadow:0 20px 50px rgba(0,0,0,0.3);
+}
+
+@keyframes fadeIn{
+  from{ transform:scale(0.9); opacity:0;}
+  to{ transform:scale(1); opacity:1;}
+}
+
+/* HEADER */
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.close-btn{
+  border:none;
+  background:#eee;
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  cursor:pointer;
+}
+
+.close-btn:hover{
+  background:#ddd;
+}
+
+/* CONTENT */
+.modal-box img{
+  width:100%;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+
+.modal-section{
+  margin-top:15px;
+}
+
+.modal-section strong{
+  display:block;
+  margin-bottom:5px;
+}
+
+.card-extra{
+  margin-top:10px;
+  font-size:13px;
+  color:#555;
+}
+
+.card-extra div{
+  margin-top:4px;
+}
+
+.level-badge{
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+}
+
+.level-badge.beginner{
+  background:#e8f5e9;
+  color:#2e7d32;
+}
+
+.level-badge.intermediate{
+  background:#fff8e1;
+  color:#f9a825;
+}
+
+.level-badge.advanced{
+  background:#ffebee;
+  color:#c62828;
 }

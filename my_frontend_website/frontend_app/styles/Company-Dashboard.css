@@ -21,13 +21,13 @@ body {
 } 
 
 .sidebar ul li {
-    padding: 15px 25px;
+    padding: 14px 25px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
 }
 
 .sidebar ul li a {
-    color: black;
+    color: rgb(55, 55, 55);
     text-decoration: none;
     color: #414141;
 }
@@ -43,7 +43,7 @@ body {
 }  
 
 .logout {
-    color: black;
+    color: rgb(55, 55, 55);
 }
 
 .logout:hover{
@@ -183,7 +183,7 @@ header.hamburger-active {
     font-size: 16px;
     font-family: Arial, sans-serif;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 4px;
     border: 2px solid transparent;
     transition: 0.2s ease;
 }
@@ -193,7 +193,7 @@ header.hamburger-active {
     background-color: #3498DB;
     color: white;
     border-color: #1e88e5;
-    border-radius: 15px;
+    border-radius: 10px;
 }
 
 /* Outline buttons */
@@ -201,12 +201,9 @@ header.hamburger-active {
     background-color: white;
     color: #1e88e5;
     border: solid 1px #1e88e5;
-    border-radius: 15px;
+    border-radius: 10px;
 }
 
-.btn.outline:hover {
-    color: black;
-}
 
 /* Icon */
 .icon {
@@ -251,4 +248,8 @@ header.hamburger-active {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.chart-box{
+  height:220px;
 }

@@ -168,3 +168,7 @@ td {
     text-decoration: none;
     font-weight: lighter;
 }
+
+.view:hover{
+    text-decoration: underline;
+}

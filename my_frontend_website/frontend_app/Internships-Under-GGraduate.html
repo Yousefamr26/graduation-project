@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Career Hub</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+/* Main Content Stats */
+.stat-card {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 20px 10px; 
+    border-radius: 12px;
+    text-align: center; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    min-height: 100px; 
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem; 
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #888;
+    white-space: nowrap; 
+}
+
+.text-orange { color: #fd7e14; }
+.bg-orange { background-color: #fd7e14; }
+
+.job-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.job-card:hover {
+    transform: translateY(-5px);
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge.interview { background-color: #fff4e6; color: #fd7e14; }
+.status-badge.review { background-color: #fff9db; color: #d28b26; }
+.status-badge.applied { background-color: #e7f5ff; color: #228be6; }
+.status-badge.Offer { background-color: #dcf6e1; color: #3bc854; }
+.status-badge.Rejected { background-color: #f1dedb; color: #c22f1c; }
+
+/* Progress Bars */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.progress-bar-dark {
+    background-color: #212529 !important; 
+}
+
+
+.btn-apply {
+    background-color: #3498db !important;
+    border: none;
+    font-weight: bold;
+    padding: 8px 20px;
+    border-radius: 10px;
+}
+
+.btn-view {
+    border: 1px solid #dee2e6 !important;
+    color: #333 !important;
+    padding: 8px 15px;
+    border-radius: 10px;
+    background: white;
+}
+
+.pts-label {
+    font-size: 10px;
+    margin-top: -5px;
+    padding-left: 22px; /* لمحاذاة كلمة pts تحت الرقم */
+}
+
+/* ألوان Pipeline المخصصة بناءً على الصورة */
+.bg-primary { background-color: #0d6efd !important; } 
+.bg-warning { background-color: #ddb244 !important; } 
+.bg-orange { background-color: #eb8f3f !important; } 
+.bg-success { background-color: #39bc6f !important; } 
+
+
+.progress {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    border-radius: 15px;
+    font-size: 0.85rem;
+}
+
+
+.pipeline-item span {
+    white-space: nowrap;
+}
+
+.card-footer-custom {
+    border-top: 1px solid #f0f0f0; 
+    padding-top: 15px;
+}
+
+
+.status-badge.Offer { background-color: #dcf6e1; color: #3bc854; }
+.status-badge.Rejected { background-color: #f1dedb; color: #c22f1c; }
+.status-badge.Interview { background-color: #fff4e6; color: #fd7e14; }  
+.status-badge.Review { background-color: #fff9db; color: #d28b26; } 
+.status-badge.Applied { background-color: #e7f5ff; color: #228be6; }
+#page-content-wrapper {
+    width: 100%;
+}</style>
+</head>
+
+<body>
+
+<div class="d-flex" id="wrapper">
+<div id="page-content-wrapper">
+
+<div class="container-fluid p-4">
+
+<h2 class="fw-bold" style="margin-left: 100px;">Internships</h2>
+<p class="text-muted" style="margin-left: 100px;">Track your applications and their progress</p>
+
+</div>
+
+
+<!-- Search Section -->
+<div class="container mb-4">
+
+<div class="p-3 border rounded-4">
+
+<div class="row g-3 align-items-center">
+
+<div class="col-md-8">
+<div class="input-group">
+<span class="input-group-text bg-white border-end-0">
+<i class="fa fa-search"></i>
+</span>
+
+<input 
+type="text" 
+id="searchInput"
+class="form-control border-start-0"
+placeholder="Search by title, company, or skills..."
+>
+</div>
+</div>
+
+<div class="col-md-2">
+<select id="typeFilter" class="form-select">
+<option value="All">All Types</option>
+<option value="Remote">Remote</option>
+<option value="Onsite">Onsite</option>
+<option value="Hybrid">Hybrid</option>
+</select>
+</div>
+
+<div class="col-md-2">
+<select id="statusFilter" class="form-select">
+<option value="All">All Status</option>
+<option value="Active">Active</option>
+<option value="Completed">Completed</option>
+<option value="Rejected">Rejected</option>
+</select>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- jobs container -->
+<div class="row px-4" id="jobsContainer"></div>
+
+
+<!-- modal -->
+<div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-hidden="true">
+
+<div class="modal-dialog modal-dialog-centered">
+
+<div class="modal-content" style="border-radius:15px;border:none;">
+
+<div class="modal-header border-0 pb-0">
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body pt-0 px-4">
+
+<h4 class="fw-bold mb-1" id="mTitle"></h4>
+
+<p class="text-muted small mb-4">
+Information about <span id="mCompany"></span>
+</p>
+
+</div>
+
+</div>
+</div>
+</div>
+
+
+
+<!-- toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+
+<div id="applyToast" class="toast" role="alert">
+
+<div class="toast-body">
+
+<i class="fas fa-check-circle text-success me-2"></i>
+
+Applied to
+<span id="toastJob"></span>
+at
+<span id="toastCompany"></span>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+/*
+Backend will provide the data later
+*/
+
+let jobs = [];
+
+
+const jobsContainer = document.getElementById("jobsContainer");
+
+
+function displayJobs(list){
+
+jobsContainer.innerHTML = "";
+
+list.forEach(job => {
+
+const card = `
+<div class="col-md-4 mb-4 job-item"
+data-title="${job.title}"
+data-company="${job.company}"
+data-skills="${job.skills}"
+data-type="${job.type}"
+data-status="${job.status}">
+
+<div class="card job-card h-100">
+
+<img src="${job.image}" class="card-img-top">
+
+<div class="card-body">
+
+<h5>${job.title}</h5>
+<p class="text-muted">${job.company}</p>
+
+</div>
+
+</div>
+
+</div>
+`;
+
+jobsContainer.innerHTML += card;
+
+});
+
+}
+
+
+/* SEARCH + FILTER */
+
+const searchInput = document.getElementById("searchInput");
+const typeFilter = document.getElementById("typeFilter");
+const statusFilter = document.getElementById("statusFilter");
+
+
+function filterJobs(){
+
+let search = searchInput.value.toLowerCase();
+let type = typeFilter.value;
+let status = statusFilter.value;
+
+let filtered = jobs.filter(job => {
+
+let matchSearch =
+job.title.toLowerCase().includes(search) ||
+job.company.toLowerCase().includes(search) ||
+job.skills.toLowerCase().includes(search);
+
+let matchType =
+type === "All" || job.type === type;
+
+let matchStatus =
+status === "All" || job.status === status;
+
+return matchSearch && matchType && matchStatus;
+
+});
+
+displayJobs(filtered);
+
+}
+
+
+searchInput.addEventListener("input", filterJobs);
+typeFilter.addEventListener("change", filterJobs);
+statusFilter.addEventListener("change", filterJobs);
+
+
+/*
+Example when backend sends data later:
+
+fetch("/api/internships")
+.then(res => res.json())
+.then(data => {
+    jobs = data;
+    displayJobs(jobs);
+});
+*/
+
+</script>
+
+</body>
+</html>

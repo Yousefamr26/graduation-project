@@ -1,297 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Company Events</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-  :root{
-    --bg:#f4f7fb;
-    --card:#fff;
-    --accent:#155fc4;
-    --muted:#788090;
-  }
+:root{
+  --bg:#f4f7fb;
+  --card:#fff;
+  --accent:#3498db;
+}
 
-  body{
-    font-family:"Segoe UI",Arial,sans-serif;
-    background:var(--bg);
-    margin:0;
-    padding:26px;
-  }
+body{
+  font-family:"Segoe UI",sans-serif;
+  background:var(--bg);
+  margin:0;
+  padding:30px;
+}
 
-  .wrap{max-width:1100px;margin:0 auto;}
+.wrap{width:100%;margin:auto}
 
-  header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:18px;
-    width: 1470px;
-    background-color: white;
-    height: 100px;
-    padding: 30px;
-    margin-left: -215px;
-    margin-top: -30px;
-    box-shadow:0 6px 20px rgba(0,0,0,.06);
-  }
+/* ===== TOP BAR ===== */
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+  background:#fff;
+  padding:20px 30px;
+  border-radius:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.05);
+}
 
-  h1{
-  margin-top: -15px;
-  margin-bottom:10px;}
+/* HEADER */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:30px;
+}
 
-  .controls{
-    display:flex;
-    gap:12px;
-    align-items:center;
-  }
+.controls{display:flex;gap:10px}
 
-  input.search{
-    padding:10px;
-    border-radius:8px;
-    border:1px solid #cfd0d1;
-    width:680px;
-  }
+input.search{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ddd;
+  width:500px;
+  margin-left: -35px;
+}
 
-  select{
-    padding:10px;
-    border-radius:8px;
-    border:1px solid #cfd0d1;
-    width: 120px;
-    color: #777;
-  }
+select{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ddd;
+  width: 200px;
+}
 
-  button.create{
-    background:var(--accent);
-    color:#fff;
-    padding:10px 14px;
-    border-radius:8px;
-    border:0;
-    cursor:pointer;
-  }
+.create{
+  background:var(--accent);
+  color:#fff;
+  border:0;
+  padding:10px 15px;
+  border-radius:8px;
+  cursor:pointer;
+}
 
-  /* ---------- SMALLER CARDS ---------- */
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-    gap:14px;
-  }
+/* CARDS */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+  gap:20px;
+}
 
-  .card{
-    background:var(--card);
-    padding:12px;
-    border-radius:10px;
-    box-shadow:0 1px 4px rgba(18,34,63,0.08);
-    min-height:150px;
-  }
+.card{
+  background:#fff;
+  border-radius:15px;
+  overflow:hidden;
+  box-shadow:0 8px 25px rgba(0,0,0,.05);
+  position:relative;
+  transition:.3s;
+}
 
-  .card h3{
-    margin:0 0 4px;
-    font-size:17px;
-  }
+.card:hover{transform:translateY(-5px)}
 
-  .meta{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    color:var(--muted);
-    font-size:12px;
-    margin-bottom:6px;
-  }
+.card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
 
-  .status{
-    padding:4px 8px;
-    border-radius:8px;
-    font-weight:700;
-    font-size:11px;
-  }
+.status-badge{
+  position:absolute;
+  top:15px;
+  right:15px;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:700;
+}
 
-  .published{background:#ecfff1;color:#0b8f46;}
-  .draft{background:#fff7e8;color:#a76c00;}
+.published{background:#eafff2;color:#0b8f46}
+.draft{background:#fff5e6;color:#c67a00}
 
-  img.thumb{
-    width:100%;
-    height:130px;
-    object-fit:cover;
-    border-radius:8px;
-    margin-top:8px;
-  }
+.card-body{
+  padding:18px;
+}
 
-  .actions{
-    display:flex;
-    gap:6px;
-    margin-top:8px;
-  }
+.card-body h3{
+  margin:0 0 8px;
+}
 
-  .actions button{
-    padding:6px 8px;
-    border-radius:8px;
-    font-size:12px;
-    border:0;
-    cursor:pointer;
-  }
+.meta{
+  color:#666;
+  font-size:13px;
+  margin-bottom:10px;
+}
 
-  .btn-edit{background:#2b8bf2;color:#fff}
-  .btn-delete{background:#ff5a5a;color:#fff}
-  .btn-analysis{background:#6f42c1;color:#fff}
+.actions{
+  display:flex;
+  gap:8px;
+  margin-top:15px;
+}
 
-  .analysis-box{
-    margin-top:10px;
-    padding:10px;
-    border-radius:8px;
-    background:#ffffff;
-    display:none;
-    border-left:4px solid #155fc4;
-    font-size:13px;
-  }
+.actions button{
+  flex:1;
+  padding:8px;
+  border-radius:8px;
+  border:0;
+  cursor:pointer;
+  font-weight:600;
+}
 
-  .empty{
-    color:var(--muted);
-    padding:40px;
-    text-align:center;
-    border-radius:8px;
-    background:#fff;
-    font-size:15px;
-  }
+.btn-edit{background:#eef2ff;color:#3730a3}
+.btn-delete{background:#fee2e2;color:#b91c1c}
+.btn-details{background:#e0f2fe;color:#0369a1}
 
-  @media(max-width:900px){
-    .controls{flex-direction:column;align-items:stretch;gap:8px;}
-    input.search{width:100%}
-  }
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.modal-content{
+  background:#fff;
+  width:630px;
+  max-height:85vh;
+  overflow:auto;
+  border-radius:16px;
+  padding:25px;
+  position:relative;
+}
+
+.modal-content img{
+  width:100%;
+  height:250px;
+  object-fit:cover;
+  border-radius:12px;
+  margin-bottom:15px;
+}
+
+.close-btn{
+  background:#fff;
+  border:none;
+  padding:6px 14px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:600;
+  box-shadow:0 4px 10px rgba(0,0,0,.15);
+  z-index:10;
+  margin-top: -50px;
+  margin-left: 530px;
+  margin-bottom: 10px;
+}
+
+.section{
+  margin-top:15px;
+}
+.section b{color:#333}
+
+.empty{
+  text-align:center;
+  padding:40px;
+  background:#fff;
+  border-radius:12px;
+}
+.actions button{
+  flex:1;
+  padding:10px;
+  border-radius:8px;
+  border:0;
+  cursor:pointer;
+  font-weight:600;
+  transition:.2s;
+}
+
+.actions button:hover{
+  transform:scale(1.05);
+}
 </style>
 </head>
 
 <body>
 <div class="wrap">
 
-  <header>
-    <h1 style="color:var(--accent)"><i class="fa-solid fa-flag"></i> Company Events</h1>
-    <p style="color: #777;position: absolute; left: 40px; top: 80px;">Manage your company events with points-based eligibility</p>
+<div class="top">
+  <h1 style="margin-top: -10px;"><i class="fa fa-calendar" style="color: #3498db;"></i> Events</h2>
+  <p style="margin-left: -260px; margin-top: 70px;color: #555;">Manage events with points-based eligibility and capacity control
+</p>
 
-    <div class="controls">
-      <input class="search" id="search" placeholder="Search events by title..." oninput="renderEvents()">
+  <div class="controls">
+    <input class="search" id="search" placeholder="Search..." oninput="renderEvents()">
+    <select id="filter" onchange="renderEvents()">
+      <option value="all">All</option>
+      <option value="published">Published</option>
+      <option value="draft">Draft</option>
+    </select>
+    <button class="create" onclick="createNew()">
+      <i class="fa-solid fa-plus"></i> Create New Event
+    </button>
+  </div>
+</div>
 
-      <select id="filter" onchange="renderEvents()">
-        <option value="all">All</option>
-        <option value="published">Published</option>
-        <option value="draft">Draft</option>
-      </select>
+<div id="listArea"></div>
 
-      <button class="create" onclick="createNew()">
-        <i class="fa-solid fa-plus"></i> Create New Event
-      </button>
-    </div>
-  </header>
+</div>
 
-  <div id="listArea"></div>
-
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal()">Close</button>
+    <div id="modalBody"></div>
+  </div>
 </div>
 
 <script>
 
-/* -------------------- Go to Create Page -------------------- */
 function createNew(){
   localStorage.removeItem('editEventID');
-  window.location.href = 'create-event.html';
+  window.location.href='create-event.html';
 }
 
-/* -------------------- Fetch Events -------------------- */
 function getEvents(){
-  try{
-    return JSON.parse(localStorage.getItem('events') || '[]')
-      .sort((a,b)=> b.id - a.id);
-  }catch(e){ return []; }
+  return JSON.parse(localStorage.getItem('events')||'[]')
+    .sort((a,b)=>b.id-a.id);
 }
 
-/* -------------------- SEARCH + FILTER LOGIC -------------------- */
 function renderEvents(){
-  const container = document.getElementById('listArea');
-  container.innerHTML = '';
+  const container=document.getElementById('listArea');
+  container.innerHTML='';
+  const events=getEvents();
+  const q=document.getElementById('search').value.toLowerCase();
+  const filter=document.getElementById('filter').value;
 
-  const events = getEvents();
+  let filtered=events.filter(ev=>
+    ev.title.toLowerCase().includes(q)
+  );
 
-  const q = (document.getElementById('search').value || '').toLowerCase();
-  const filter = document.getElementById('filter').value;
+  if(filter!=='all')
+    filtered=filtered.filter(ev=>ev.status===filter);
 
-  let filtered = events;
-
-  /* ------------------------------------------
-     SPECIAL SEARCH:
-     typing "draft"  → only draft events
-     typing "published" → only published events
-  ------------------------------------------- */
-  if(q === "draft"){
-    filtered = events.filter(ev => ev.status === "draft");
-  }
-  else if(q === "published"){
-    filtered = events.filter(ev => ev.status === "published");
-  }
-  else{
-    // normal title search
-    filtered = events.filter(ev =>
-      ev.title.toLowerCase().includes(q)
-    );
-  }
-
-  /* ---------- APPLY DROPDOWN FILTER TOO ---------- */
-  if(filter !== "all"){
-    filtered = filtered.filter(ev => ev.status === filter);
-  }
-
-  if(filtered.length === 0){
-    container.innerHTML = `
-      <div class="empty">
-        <i class="fa-solid fa-calendar-xmark"></i>
-        &nbsp; No events found.
-      </div>`;
+  if(filtered.length===0){
+    container.innerHTML=`<div class="empty">No events found.</div>`;
     return;
   }
 
-  const grid = document.createElement('div');
-  grid.className = 'grid';
+  const grid=document.createElement('div');
+  grid.className='grid';
 
-  filtered.forEach(ev => {
-    const statusClass = (ev.status === "published") ? "published" : "draft";
+  filtered.forEach(ev=>{
+    const card=document.createElement('div');
+    card.className='card';
 
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-      <div style="display:flex;justify-content:space-between;">
-        <div>
-          <h3>${escape(ev.title)}</h3>
-          <div class="meta">
-            <div>${ev.type || "—"}</div>
-            <div>${ev.startDate || "—"}</div>
-          </div>
-        </div>
-        <div><div class="status ${statusClass}">${ev.status}</div></div>
+    card.innerHTML=`
+      <div class="status-badge ${ev.status}">
+        ${ev.status}
       </div>
 
-      <p style="color:#556;font-size:13px;margin:4px 0;">
-        ${ev.description ? escape(truncate(ev.description,120)) : ""}
-      </p>
+      <img src="${ev.image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085'}">
 
-      ${ev.image ? `<img class="thumb" src="${ev.image}">` : ""}
-
-      <div class="actions">
-        <button class="btn-edit" onclick="editEvent('${ev.id}')"><i class="fa-solid fa-pen"></i></button>
-        <button class="btn-delete" onclick="deleteEvent('${ev.id}')"><i class="fa-solid fa-trash"></i></button>
-        <button class="btn-analysis" onclick="toggleAnalysis('${ev.id}')"><i class="fa-solid fa-chart-line"></i></button>
-      </div>
-
-      <div id="analysis-${ev.id}" class="analysis-box">
-        <strong>Event Details</strong>
-        <div style="margin-top:6px;">
-          <div><b>Type:</b> ${ev.type || "—"}</div>
-          <div><b>Mode:</b> ${ev.mode || "—"}</div>
-          <div><b>Start:</b> ${ev.startDate || "—"} ${ev.startTime || ""}</div>
-          <div><b>End:</b> ${ev.endDate || "—"} ${ev.endTime || ""}</div>
-          <div><b>Min Points:</b> ${ev.minPoints || 0}</div>
-          <div><b>Eligible Students:</b> ${ev.expectedEligible || 0}</div>
-          <div><b>Capacity:</b> ${ev.capacity || "—"}</div>
+      <div class="card-body">
+        <h3>${ev.title}</h3>
+        <div class="meta">
+          ${ev.type || ''} • ${ev.startDate || ''}
         </div>
+        <p>${ev.description ? ev.description.slice(0,120)+'...' : ''}</p>
+
+        <div class="actions">
+  <button class="btn-details" onclick="openDetails('${ev.id}')">
+    Details
+  </button>
+
+  <button class="btn-edit" onclick="editEvent('${ev.id}')">
+    Edit
+  </button>
+
+  <button class="btn-delete" onclick="deleteEvent('${ev.id}')">
+    Delete
+  </button>
+</div>
       </div>
     `;
 
@@ -301,39 +315,51 @@ function renderEvents(){
   container.appendChild(grid);
 }
 
-/* -------------------- Edit / Delete -------------------- */
+/* DETAILS MODAL */
+function openDetails(id){
+  const ev=getEvents().find(e=>String(e.id)===String(id));
+  if(!ev) return;
+
+  document.getElementById('modalBody').innerHTML=`
+    <img src="${ev.image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085'}">
+
+    <h2>${ev.title}</h2>
+
+    <div class="section"><b>Description:</b> ${ev.description}</div>
+    <div class="section"><b>Type:</b> ${ev.type}</div>
+    <div class="section"><b>Mode:</b> ${ev.mode}</div>
+    <div class="section"><b>Date:</b> ${ev.startDate} → ${ev.endDate}</div>
+    <div class="section"><b>Time:</b> ${ev.startTime} → ${ev.endTime}</div>
+    <div class="section"><b>Min Points:</b> ${ev.minPoints} pts</div>
+    <div class="section"><b>Capacity:</b> ${ev.capacity}</div>
+    <div class="section"><b>Points Awarded:</b> ${ev.pointsAttend} / ${ev.pointsFull}</div>
+    <div class="section"><b>Eligible Students:</b> ${ev.expectedEligible}</div>
+    <div class="section"><b>Status:</b> ${ev.status}</div>
+  `;
+
+  document.getElementById('modal').style.display='flex';
+}
+
+function closeModal(){
+  document.getElementById('modal').style.display='none';
+}
+
 function editEvent(id){
-  localStorage.setItem("editEventID", id);
-  window.location.href = "create-event.html";
+  localStorage.setItem('editEventID',id);
+  window.location.href='create-event.html';
 }
 
 function deleteEvent(id){
-  if(confirm("Delete this event?")){
-    let evs = getEvents().filter(e => String(e.id) !== String(id));
-    localStorage.setItem("events", JSON.stringify(evs));
+  if(confirm('Delete this event?')){
+    let arr=getEvents().filter(e=>String(e.id)!==String(id));
+    localStorage.setItem('events',JSON.stringify(arr));
     renderEvents();
   }
 }
 
-function toggleAnalysis(id){
-  const box = document.getElementById("analysis-" + id);
-  box.style.display = (box.style.display === "block") ? "none" : "block";
-}
-
-/* -------------------- Helpers -------------------- */
-function truncate(text,n){
-  return text.length > n ? text.slice(0,n) + "…" : text;
-}
-
-function escape(str){
-  return String(str).replace(/[&<>"']/g, m => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
-  }[m]));
-}
-
 renderEvents();
-</script>
 
+</script>
 </body>
 </html>
 

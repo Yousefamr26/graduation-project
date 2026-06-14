@@ -12,21 +12,13 @@
 <div class="container">
 
     <h2>Interview Scheduling</h2>
+<p style="color:#777; margin-top:-10px; margin-bottom:20px;">
+  Manage and schedule interviews with top AI-matched candidates
+</p>
 
-    <!-- Banner -->
-    <div class="banner">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-        AI suggests <b>4 best-fit candidates</b> based on points and skills
-    </div>
 
     <!-- Stats -->
     <div class="stats-row">
-
-        <div class="stat-card">
-            <i class="fa-solid fa-person-rays" style="color: rgb(234, 196, 6);"></i>
-            <h4 class="stat-number">4</h4>
-            <p class="stat-label">AI Recommended</p>
-        </div>
 
         <div class="stat-card">
             <i class="fa-solid fa-calendar-check" style="color: rgb(8, 111, 208);"></i>
@@ -36,7 +28,7 @@
 
         <div class="stat-card">
             <i class="fa-solid fa-video" style="color: rgb(2, 174, 2);"></i>
-            <h4 class="stat-number">8</h4>
+            <h4 class="stat-number">5</h4>
             <p class="stat-labell">Scheduled</p>
         </div>
 
@@ -45,6 +37,12 @@
             <h4 class="stat-number">3</h4>
             <p class="stat-labelll">Today</p>
         </div>
+
+        <div class="stat-card">
+    <i class="fa-solid fa-user-check" style="color: rgb(170, 85, 255);"></i>
+    <h4 class="stat-number">2</h4>
+    <p class="stat-label">Completed</p>
+</div>
 
     </div>
 
@@ -56,9 +54,9 @@
                     <th>Student Name</th>
                     <th>Email</th>
                     <th>Skill Match %</th>
-                    <th>Total Points</th>
+                    <!-- <th>Total Points</th> -->
                     <th>Roadmap</th>
-                    <th>CV</th>
+                    <th>Profile</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -72,10 +70,10 @@
                     <td>
                         <div class="progress-bar"><span style="width:85%"></span></div> 85%
                     </td>
-                    <td>3250</td>
+                    <!-- <td>3250</td> -->
                     <td><span class="tag">Data Analysis</span></td>
                     <td><a href="#" class="view">View</a></td>
-                    <td><button class="btn-blue">Schedule</button></td>
+                    <td><button class="btn-blue" onclick="goscheduleinterview()">Schedule</button></td>
                 </tr>
 
                 <tr>
@@ -84,10 +82,10 @@
                     <td>
                         <div class="progress-bar"><span style="width:78%"></span></div> 78%
                     </td>
-                    <td>2800</td>
+                    <!-- <td>2800</td> -->
                     <td><span class="tag">Web Development</span></td>
                     <td><a href="#" class="view">View</a></td>
-                    <td><button class="btn-blue">Schedule</button></td>
+                    <td><button class="btn-blue" onclick="goscheduleinterview()">Schedule</button></td>
                 </tr>
 
                 <tr>
@@ -96,10 +94,10 @@
                     <td>
                         <div class="progress-bar"><span style="width:82%"></span></div> 82%
                     </td>
-                    <td>3100</td>
+                    <!-- <td>3100</td> -->
                     <td><span class="tag">UI/UX Design</span></td>
                     <td><a href="#" class="view">View</a></td>
-                    <td><button class="btn-blue">Schedule</button></td>
+                    <td><button class="btn-blue" onclick="goscheduleinterview()">Schedule</button></td>
                 </tr>
 
                 <tr>
@@ -108,10 +106,10 @@
                     <td>
                         <div class="progress-bar"><span style="width:90%"></span></div> 90%
                     </td>
-                    <td>3500</td>
+                    <!-- <td>3500</td> -->
                     <td><span class="tag">Machine Learning</span></td>
                     <td><a href="#" class="view">View</a></td>
-                    <td><button class="btn-blue">Schedule</button></td>
+                    <td><button class="btn-blue" onclick="goscheduleinterview()">Schedule</button></td>
                 </tr>
 
                 <tr>
@@ -120,10 +118,10 @@
                     <td>
                         <div class="progress-bar"><span style="width:75%"></span></div> 75%
                     </td>
-                    <td>2650</td>
+                    <!-- <td>2650</td> -->
                     <td><span class="tag">Mobile Development</span></td>
                     <td><a href="#" class="view">View</a></td>
-                    <td><button class="btn-blue">Schedule</button></td>
+                    <td><button class="btn-blue" onclick="goscheduleinterview()">Schedule</button></td>
                 </tr>
 
                 <tr>
@@ -132,10 +130,10 @@
                     <td>
                         <div class="progress-bar"><span style="width:88%"></span></div> 88%
                     </td>
-                    <td>3350</td>
+                    <!-- <td>3350</td> -->
                     <td><span class="tag">DevOps</span></td>
                     <td><a href="#" class="view">View</a></td>
-                    <td><button class="btn-blue">Schedule</button></td>
+                    <td><button class="btn-blue" onclick="goscheduleinterview()">Schedule</button></td>
                 </tr>
 
             </tbody>
@@ -143,6 +141,10 @@
     </div>
 
 </div>
-
+<script>
+ function goscheduleinterview() {
+    window.location.href = "schedule-interview.html";
+}
+</script>
 </body>
 </html>

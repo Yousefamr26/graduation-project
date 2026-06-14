@@ -87,6 +87,7 @@ body {
 }
 
 /* ROLE TABS */
+
 .role-tabs {
   display: flex;
   justify-content: space-between;
@@ -201,6 +202,37 @@ footer {
   color: #777;
   margin-top: 15px;
 }
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #777;
+}
+.role-title{
+  display:block;
+  text-align:center;
+  color:#777;
+  font-size:16px;
+  margin-bottom:10px;
+}
+
+.upload-text{
+  display:block;
+  text-align:center;
+  color:#777;
+  font-size:14px;
+  margin-top:8px;
+}
 </style>
 </head>
 
@@ -240,26 +272,31 @@ footer {
     </div>
 
     <!-- PROFILE UPLOAD -->
-     <small id="roleName" style="margin-left: 170px;color: #777; font-size: 16px;">Student</small>
-    <div class="image-upload-box">
-      <div class="image-circle" id="iconCircle">
-        <i class="fa-solid fa-user-graduate"></i>
-        <label class="upload-btn">
-          <i class="fa-solid fa-upload"></i>
-          <input type="file" id="profileImage" accept="image/*" style="display:none" />
-        </label>
-      </div>
-    </div>
-    <small id="roleName" style="margin-left: 115px; color: #777; font-size: 16px;">Upload your photo / Logo</small>
+     <div class="image-upload-box">
+
+  <small id="roleName" class="role-title">Under Graduate</small>
+
+  <div class="image-circle" id="iconCircle">
+    <i class="fa-solid fa-user-graduate"></i>
+    <label class="upload-btn">
+      <i class="fa-solid fa-upload"></i>
+      <input type="file" id="profileImage" accept="image/*" style="display:none" />
+    </label>
+  </div>
+
+  <small class="upload-text">Upload your photo / Logo</small>
+
+</div>
 
     <!-- FORM -->
     <form id="regForm" style="margin-top: 10px;">
       <div id="dynamicFields"></div>
 
-      <select id="country" style="color: #777;">Country</select>
-      <select id="city" style="color: #777;">City/State</select>
+      <input type="text" id="country" placeholder="Country" required>
+      <input type="text" id="city" placeholder="City/State" required>
+ 
 
-      <button class="button" id="submitBtn" type="submit" onclick="goLogin()">Continue</button>
+      <button class="button" id="submitBtn" type="submit">Continue</button>
     </form>
 
     <p class="login-text">Already have an account? <a href="#" onclick="goLogin()">Login</a></p>
@@ -270,28 +307,6 @@ footer {
 
 
 <script>
-// ------------------------------
-// COUNTRY & CITY LISTS
-// ------------------------------
-const countries = [
-  "Country","Egypt","United States","United Kingdom","Canada","France","Germany",
-  "Italy","Spain","Saudi Arabia","UAE","Kuwait","Qatar","Oman","Bahrain",
-  "India","China","Japan","Brazil","Argentina","South Africa"
-];
-
-const egyptGov = [
-  "City/State","Cairo","Giza","Alexandria","Aswan","Luxor","Suez","Port Said","Ismailia",
-  "Dakahlia","Sharqia","Gharbia","Monufia","Qalyubia","Kafr El Sheikh",
-  "Fayoum","Beni Suef","Minya","Sohag","Qena","Red Sea","Matruh",
-  "North Sinai","South Sinai","Beheira","Assiut"
-];
-
-document.getElementById("country").innerHTML =
-  countries.map(c => `<option value="${c}">${c}</option>`).join('');
-
-document.getElementById("city").innerHTML =
-  egyptGov.map(c => `<option value="${c}">${c}</option>`).join('');
-
 // ------------------------------
 // ROLE FIELDS
 // ------------------------------
@@ -318,12 +333,26 @@ loadFields("student");
 function loadFields(role) {
   const container = document.getElementById("dynamicFields");
 
-  container.innerHTML = fields[role].map((label, index) => {
+  container.innerHTML = fields[role].map((label) => {
+
     let type = "text";
     if (label.includes("Email")) type = "email";
     if (label.includes("Password")) type = "password";
-    return `<input placeholder="${label}" required class="field-input">`;
+
+    // لو حقل باسورد نضيف أيقونة عين
+    if (label.includes("Password")) {
+      return `
+        <div class="password-wrapper">
+          <input type="password" placeholder="${label}" required class="field-input">
+          <i class="fa-solid fa-eye toggle-password"></i>
+        </div>
+      `;
+    }
+
+    return `<input type="${type}" placeholder="${label}" required class="field-input">`;
   }).join('');
+
+  addPasswordToggle();
 }
 
 // ------------------------------
@@ -347,8 +376,12 @@ tabs.forEach(tab => {
       "fa-solid " + roleIcons[role];
 
     // update role name
-    roleName.textContent =
-      role.charAt(0).toUpperCase() + role.slice(1);
+    if(role === "student"){
+  roleName.textContent = "Under Graduate";
+} else {
+  roleName.textContent =
+    role.charAt(0).toUpperCase() + role.slice(1);
+}
   });
 });
 
@@ -370,46 +403,111 @@ document.getElementById("regForm").addEventListener("submit", function(e) {
   e.preventDefault();
 
   const inputs = document.querySelectorAll(".field-input");
-  let email = null;
-  let password = null;
-  let confirmPassword = null;
-  let phone = null;
+  const country = document.getElementById("country");
+  const city = document.getElementById("city");
 
+  let email, password, confirmPassword, phone;
+
+  let isValid = true;
+
+  // Reset previous errors
+  document.querySelectorAll(".error-msg").forEach(el => el.remove());
+  document.querySelectorAll("input").forEach(input => {
+    input.style.border = "1px solid #ccc";
+  });
+
+  // Loop through inputs
   inputs.forEach(input => {
+    if (input.value.trim() === "") {
+      showError(input, "This field is required");
+      isValid = false;
+    }
+
     if (input.placeholder.includes("Email")) email = input;
     if (input.placeholder === "Password") password = input;
     if (input.placeholder === "Confirm Password") confirmPassword = input;
     if (input.placeholder.includes("Phone")) phone = input;
   });
 
-  // email validation
-  const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-  if (!emailPattern.test(email.value)) {
-    alert("Please enter a valid email address.");
-    return;
+  if (country.value.trim() === "") {
+    showError(country, "Country is required");
+    isValid = false;
   }
 
-  // phone validation (digits only / 10-15 digits)
+  if (city.value.trim() === "") {
+    showError(city, "City is required");
+    isValid = false;
+  }
+
+  // Email validation
+  const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,}$/i;
+  if (email && !emailPattern.test(email.value)) {
+    showError(email, "Enter a valid email address");
+    isValid = false;
+  }
+
+  // Phone validation
   const phonePattern = /^[0-9]{10,15}$/;
-  if (!phonePattern.test(phone.value)) {
-    alert("Phone number must be 10–15 digits.");
-    return;
+  if (phone && !phonePattern.test(phone.value)) {
+    showError(phone, "Phone must be 10–15 digits");
+    isValid = false;
   }
 
-  // password match
-  if (password.value !== confirmPassword.value) {
-    alert("Passwords do not match.");
-    return;
+  // Password length
+  if (password && password.value.length < 6) {
+    showError(password, "Password must be at least 6 characters");
+    isValid = false;
   }
 
-  alert("Form submitted successfully!");
+  // Confirm password
+  if (password && confirmPassword && password.value !== confirmPassword.value) {
+    showError(confirmPassword, "Passwords do not match");
+    isValid = false;
+  }
+
+  if (!isValid) return;
+
+  // If everything is valid → redirect
+  window.location.href = "verify-email.html";
 });
 
+function showError(input, message) {
+  input.style.border = "1px solid red";
+
+  const error = document.createElement("small");
+  error.className = "error-msg";
+  error.style.color = "red";
+  error.style.display = "block";
+  error.style.marginTop = "4px";
+  error.textContent = message;
+
+  input.parentNode.insertBefore(error, input.nextSibling);
+}
+
 function goLogin() {
-    window.location.href = "login.html";
+    window.location.href = "Login.html";
+}
+
+function addPasswordToggle() {
+  const toggles = document.querySelectorAll(".toggle-password");
+
+  toggles.forEach(icon => {
+    icon.addEventListener("click", function () {
+      const input = this.previousElementSibling;
+
+      if (input.type === "password") {
+        input.type = "text";
+        this.classList.remove("fa-eye");
+        this.classList.add("fa-eye-slash");
+      } else {
+        input.type = "password";
+        this.classList.remove("fa-eye-slash");
+        this.classList.add("fa-eye");
+      }
+    });
+  });
 }
 
 </script>
-
 </body>
-</html>
+</html> 

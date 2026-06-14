@@ -11,14 +11,14 @@
   <div class="container">
     <div class="top-row">
       <div>
-        <h2 id="pageTitle">Create New Roadmap</h2>
+        <h2 id="pageTitle" style="color: black">Create New Roadmap</h2>
         <p class="help">Build a comprehensive learning path for students and graduates</p>
       </div>
     </div>
 
     <!-- BASIC INFO -->
     <div class="section-box">
-      <h3 class="section-title1"><i class="fa-solid fa-circle-info" style="color: var(--blue)"></i>&nbsp; Basic Information</h3>
+      <h3 class="section-title1"><i class="fa-solid fa-circle-info" style="color:#3498db"></i>&nbsp; Basic Information</h3>
 
       <label>Roadmap Title</label>
       <input id="title" type="text" placeholder="e.g., Flutter Developer Roadmap">
@@ -26,13 +26,24 @@
       <label>Description</label>
       <textarea id="description" placeholder="Write a brief overview of the roadmap..."></textarea>
 
-      <label>Target Role</label>
-      <select id="targetRole" style="color: #777;">
-        <option value="">Select target audience</option>
-        <option>Student</option>
-        <option>Graduate</option>
-        <option>Both</option>
-      </select>
+      <div style="display:flex; gap:20px; align-items:flex-end; flex-wrap:wrap;">
+  
+  <div style="flex:1; min-width:200px;">
+    <label>Target Role</label>
+    <select id="targetRole" style="color: #777; width:100%;">
+      <option value="">Select target audience</option>
+      <option>Student</option>
+      <option>Graduate</option>
+      <option>Both</option>
+    </select>
+  </div>
+
+  <div style="flex:1; min-width:200px;">
+    <label>Price (Optional)</label>
+    <input id="price" type="number" min="0" step="0.01" placeholder="Enter price in EGP (optional)">
+  </div>
+
+</div>
 
       <label>Upload Cover Image (≤ 5 MB)</label>
       <div class="upload-box" id="imageDrop">
@@ -51,7 +62,7 @@
     <div class="section-box">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div style="display:flex;align-items:center;gap:8px">
-          <i class="fa-solid fa-book-open" style="color:var(--blue)"></i>
+          <i class="fa-solid fa-book-open" style="color:#3498db"></i>
           <h3>Required Skills</h3>
         </div>
         <div class="collapsible" id="skillsHeader" onclick="toggleSkills()">
@@ -60,7 +71,7 @@
       </div>
 
       <!-- Add Skill button is visible below heading (like add-video) -->
-      <div style="margin-bottom:8px">
+      <div style="margin-bottom:8px;">
         <button id="addSkillBtn" class="add-btn" onclick="openSkillsAndAdd()"><i class="fa-solid fa-plus"></i> Add Skill</button>
       </div>
 
@@ -71,7 +82,7 @@
 
     <!-- VIDEOS -->
     <div class="section-box">
-      <h3 style="margin:0"><i class="fa-solid fa-video" style="color:var(--blue)"></i>&nbsp; Videos (Learning Materials)</h3>
+      <h3 style="margin:0"><i class="fa-solid fa-video" style="color:#3498db"></i>&nbsp; Videos (Learning Materials)</h3>
       <div style="margin-top:8px">
         <button class="add-video-btn" onclick="addVideo()"><i class="fa-solid fa-plus"></i> Add Video</button>
       </div>
@@ -81,7 +92,7 @@
 
     <!-- MATERIALS -->
     <div class="section-box">
-      <h3 style="margin:0"><i class="fa-solid fa-file-pdf" style="color:var(--blue)"></i>&nbsp; PDF / Reading Materials</h3>
+      <h3 style="margin:0"><i class="fa-solid fa-file-pdf" style="color:#3498db"></i>&nbsp; PDF / Reading Materials</h3>
       <div style="margin-top:8px">
         <button class="add-material-btn" onclick="addMaterial()"><i class="fa-solid fa-plus"></i> Add Material</button>
       </div>
@@ -91,7 +102,7 @@
 
     <!-- PROJECTS -->
     <div class="section-box">
-      <h3 style="margin:0"><i class="fa-solid fa-trophy" style="color:var(--blue)"></i>&nbsp; Projects</h3>
+      <h3 style="margin:0"><i class="fa-solid fa-trophy" style="color:#3498db"></i>&nbsp; Projects</h3>
       <div style="margin-top:8px">
         <button class="add-project-btn" onclick="addProject()"><i class="fa-solid fa-plus"></i> Add Project</button>
       </div>
@@ -101,7 +112,7 @@
     <!-- QUIZZES -->
     <div class="section-box">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0"><i class="fa-solid fa-brain" style="color:var(--blue)"></i>&nbsp; Quizzes</h3>
+        <h3 style="margin:0"><i class="fa-solid fa-brain" style="color:#3498db"></i>&nbsp; Quizzes</h3>
         <button class="add-quiz-btn" onclick="addQuiz()"><i class="fa-solid fa-plus"></i> Add Quiz</button>
       </div>
       <div id="quizzesList" style="margin-top:8px"></div>
@@ -109,7 +120,7 @@
 
     <!-- TIMELINE -->
     <div class="section-box">
-      <h3 class="section-title11"><i class="fa-solid fa-calendar" style="color:var(--blue)"></i>&nbsp; Timeline</h3>
+      <h3 class="section-title11"><i class="fa-solid fa-calendar" style="color:#3498db"></i>&nbsp; Timeline</h3>
       <label>Start Date</label>
       <input id="startDate" type="date">
       <label>End Date</label>
@@ -121,7 +132,7 @@
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
           <div style="display:flex;gap:12px;align-items:center">
-            <i class="fa-solid fa-award" style="color:var(--blue)"></i>
+            <i class="fa-solid fa-award" style="color:#3498db"></i>
             <h3>Roadmap Summary</h3>
           </div>
           <p class="meta-small">Totals are calculated from points fields (if set) — you can edit points in items.</p>
@@ -266,7 +277,7 @@
         <option>15-30 min (9 pts)</option>
         <option>30+ min (15 pts)</option>
       </select>
-      <input type="number" class="skill-points" placeholder="0" style="width:12%">
+      <input type="number" class="video-points" placeholder="0" style="width:12%">
       <button class="upload-btn file-btn">Choose File</button>
       <input type="file" accept="video/*" style="display:none" class="video-file">
       <div class="meta-small file-meta" style="width:100%"></div>
@@ -351,9 +362,9 @@
     });
 
     if (prefill){
-      c.querySelector('.title-input').value = prefill.title || '';
-      c.querySelector('.size-select').value = prefill.size || 'Size';
-      c.querySelector('.points-box').value = prefill.points || 0;
+  c.querySelector('.title-input').value = prefill.title || '';
+  c.querySelector('.size-select').value = prefill.sizeLabel || 'Size';
+  c.querySelector('.skill-points').value = prefill.points || 0;
       if (prefill.fileMeta) fileMeta.textContent = `${prefill.fileMeta.name} — ${bytesToMB(prefill.fileMeta.size)} — ${prefill.fileMeta.type}`;
     }
     updateSummaryCounts();
@@ -384,8 +395,8 @@
 
     if (prefill){
       div.querySelector('.project-input').value = prefill.title || '';
-      div.querySelector('.difficulty-select').value = prefill.difficulty || 'Difficulty';
-      div.querySelector('.project-points').value = prefill.points || 0;
+      div.querySelector('.select').value = prefill.difficulty || 'Difficulty';
+div.querySelector('.skill-points').value = prefill.points || 0;
       div.querySelector('.project-desc').value = prefill.description || '';
     }
     updateSummaryCounts();
@@ -447,7 +458,7 @@
     document.getElementById('sumProjects').textContent = document.querySelectorAll('.project-box').length;
     document.getElementById('sumQuizzes').textContent = document.querySelectorAll('.quiz-row').length;
 
-    const pointsInputs = document.querySelectorAll('.skill-points, .video-points, .points-box, .project-points');
+    const pointsInputs = document.querySelectorAll('.skill-points, .video-points');
     let total = 0;
     pointsInputs.forEach(inp=>{
       const v = Number(inp.value) || 0;
@@ -461,6 +472,8 @@
     const title = document.getElementById('title').value.trim();
     const description = document.getElementById('description').value.trim();
     const targetRole = document.getElementById('targetRole').value;
+    const priceInput = document.getElementById('price').value.trim();
+const price = priceInput !== "" ? Number(priceInput) : null;
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
 
@@ -488,7 +501,7 @@
       return {
         title: box.querySelector('.title-input').value || '',
         sizeLabel: box.querySelector('.size-select').value || '',
-        points: Number(box.querySelector('.points-box').value) || 0,
+        points: Number(box.querySelector('.skill-points').value) || 0,
         fileMeta: fm
       };
     });
@@ -496,8 +509,8 @@
     const projects = Array.from(document.querySelectorAll('.project-box')).map(box=>{
       return {
         title: box.querySelector('.project-input').value || '',
-        difficulty: box.querySelector('.difficulty-select').value || '',
-        points: Number(box.querySelector('.project-points').value) || 0,
+        difficulty: box.querySelector('.select').value || '',
+points: Number(box.querySelector('.skill-points').value) || 0,
         description: box.querySelector('.project-desc').value || ''
       };
     });
@@ -514,10 +527,21 @@
     const totalPoints = Number(document.getElementById('sumPoints').textContent) || 0;
 
     return {
-      title, description, targetRole, startDate, endDate,
-      coverDataURL, skills, videos, materials, projects, quizzes, totalPoints,
-      savedAt: new Date().toISOString()
-    };
+  title,
+  description,
+  targetRole,
+  price,   // ← كده بيتخزن رقم حقيقي أو null
+  startDate,
+  endDate,
+  coverDataURL,
+  skills,
+  videos,
+  materials,
+  projects,
+  quizzes,
+  totalPoints,
+  savedAt: new Date().toISOString()
+};
   }
 
   function parseFileMetaText(text){
@@ -617,6 +641,8 @@
       document.getElementById('title').value = r.title || '';
       document.getElementById('description').value = r.description || '';
       document.getElementById('targetRole').value = r.targetRole || '';
+     document.getElementById('price').value =
+  r.price !== null && r.price !== undefined ? r.price : '';
       document.getElementById('startDate').value = r.startDate || '';
       document.getElementById('endDate').value = r.endDate || '';
       if (r.coverDataURL){

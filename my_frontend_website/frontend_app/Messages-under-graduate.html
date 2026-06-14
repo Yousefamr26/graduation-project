@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Messages</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+body{
+font-family:'Inter',sans-serif;
+background:#f5f7fb;
+color:#1f2937;
+padding:30px;
+}
+
+.page-title{
+font-size:28px;
+font-weight:600;
+margin-bottom:5px;
+}
+
+.page-sub{
+color:#64748b;
+margin-bottom:25px;
+}
+
+.chat-layout{
+display:flex;
+gap:30px;
+height:620px;
+}
+
+/* LEFT PANEL */
+
+.conversations{
+width:320px;
+background:white;
+border-radius:14px;
+padding:20px;
+border:1px solid #e5e7eb;
+}
+
+.conversations h3{
+margin-bottom:20px;
+font-size:18px;
+}
+
+.conv-item{
+display:flex;
+gap:15px;
+padding:15px;
+border-radius:12px;
+cursor:pointer;
+border:1px solid transparent;
+background:#3b82f6;
+color:white;
+}
+
+.avatar{
+width:40px;
+height:40px;
+border-radius:50%;
+background:white;
+color:#3b82f6;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:600;
+}
+
+.conv-text h4{
+font-size:15px;
+margin-bottom:3px;
+}
+
+.conv-text p{
+font-size:13px;
+color:#e5e7eb;
+}
+
+.time{
+font-size:12px;
+margin-top:4px;
+}
+
+/* RIGHT CHAT */
+
+.chat-box{
+flex:1;
+background:white;
+border-radius:14px;
+border:1px solid #e5e7eb;
+display:flex;
+flex-direction:column;
+}
+
+.chat-header{
+padding:18px;
+display:flex;
+gap:12px;
+align-items:center;
+border-bottom:1px solid #e5e7eb;
+}
+
+.chat-header .avatar{
+width:38px;
+height:38px;
+background:#3b82f6;
+color:white;
+}
+
+.chat-header p{
+font-size:13px;
+color:#64748b;
+}
+
+/* MESSAGES */
+
+.messages{
+flex:1;
+padding:25px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:18px;
+}
+
+.message{
+max-width:60%;
+padding:14px 18px;
+border-radius:12px;
+font-size:14px;
+line-height:1.4;
+}
+
+.received{
+background:#f1f5f9;
+align-self:flex-start;
+}
+
+.sent{
+background:#3b82f6;
+color:white;
+align-self:flex-end;
+}
+
+.msg-time{
+font-size:12px;
+margin-top:6px;
+opacity:.7;
+}
+
+/* INPUT */
+
+.chat-input{
+border-top:1px solid #e5e7eb;
+padding:15px;
+display:flex;
+gap:10px;
+}
+
+.chat-input input{
+flex:1;
+padding:12px 14px;
+border-radius:8px;
+border:1px solid #e5e7eb;
+font-size:14px;
+}
+
+.chat-input input:focus{
+outline:none;
+border-color:#3b82f6;
+}
+
+.send-btn{
+background:#3b82f6;
+border:none;
+color:white;
+width:44px;
+height:44px;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
+}
+
+.send-btn:hover{
+background:#2563eb;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page-title">Messages</div>
+<div class="page-sub">Communicate with companies</div>
+
+<div class="chat-layout">
+
+<!-- LEFT PANEL -->
+
+<div class="conversations">
+
+<h3>Conversations</h3>
+
+<!--
+Backend will inject conversations here
+Example:
+<div class="conv-item">
+  company name
+</div>
+-->
+
+<div id="conversationsList"></div>
+
+</div>
+
+<!-- RIGHT CHAT -->
+
+<div class="chat-box">
+
+<div class="chat-header">
+
+<div class="avatar">C</div>
+
+<div>
+<h4 id="chatCompanyName">Company Name</h4>
+<p>HR Department</p>
+</div>
+
+</div>
+
+<!-- Messages container -->
+
+<div class="messages" id="messages">
+
+<!--
+Backend will inject messages here
+Example message:
+
+<div class="message received">
+Message text
+<div class="msg-time">10:00 AM</div>
+</div>
+
+-->
+
+</div>
+
+<!-- INPUT -->
+
+<div class="chat-input">
+
+<input id="messageInput" placeholder="Type your message...">
+
+<button class="send-btn" onclick="sendMessage()">
+<i class="fa-solid fa-paper-plane"></i>
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* Send message to backend */
+
+function sendMessage(){
+
+let input=document.getElementById("messageInput");
+let text=input.value.trim();
+
+if(text==="") return;
+
+/* send to backend API */
+
+fetch("/api/messages",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+message:text
+})
+});
+
+/* clear input */
+
+input.value="";
+
+}
+
+</script>
+
+</body>
+</html>

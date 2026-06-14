@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Applications</title>
+
+<!-- Font Awesome -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body{
+  font-family:Arial;
+  background:#f5f7fb;
+  padding:30px;
+  color:#333;
+}
+
+h1{margin:0}
+.sub{color:#777;margin-top:6px}
+
+/* ===== stat cards ===== */
+
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:16px;
+margin:25px 0;
+height: 100px;
+}
+
+.stat{
+background:white;
+border-radius:14px;
+padding:18px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 2px 6px rgba(0,0,0,.05);
+}
+
+.stat i{
+font-size:26px;
+}
+
+.stat .num{
+font-size:22px;
+font-weight:bold;
+color:#1e88e5;
+}
+
+/* ===== search ===== */
+
+.searchBox{
+background:white;
+padding:16px;
+border-radius:14px;
+box-shadow:0 2px 6px rgba(0,0,0,.05);
+margin-bottom:18px;
+}
+
+.searchBox input{
+width:98%;
+padding:12px;
+border-radius:10px;
+border:1px solid #ccc;
+}
+
+/* ===== tabs ===== */
+
+.tabs{
+display:flex;
+gap:10px;
+margin-bottom:16px;
+}
+
+.tab{
+padding:8px 14px;
+border-radius:20px;
+background:#e9edf3;
+cursor:pointer;
+font-size:14px;
+}
+
+.tab.active{
+background:white;
+box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+
+/* ===== table ===== */
+
+.tableWrap{
+background:white;
+border-radius:16px;
+box-shadow:0 2px 6px rgba(0,0,0,.06);
+overflow:hidden;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:14px;
+}
+
+th,td{
+padding:14px;
+border-bottom:1px solid #eee;
+text-align:left;
+}
+
+th{background:#fafbfe}
+
+.avatar{
+width:34px;
+height:34px;
+border-radius:50%;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-weight:bold;
+margin-right:8px;
+}
+
+.badge{
+padding:5px 10px;
+border-radius:20px;
+font-size:12px;
+color:white;
+}
+
+.review{background:#f4b400}
+.short{background:#1db954}
+.interview{background:#4285f4}
+
+.skill{
+background:#eef2f7;
+padding:4px 8px;
+border-radius:12px;
+font-size:12px;
+margin-right:4px;
+display:inline-block;
+}
+
+.viewBtn{
+color:#1e88e5;
+cursor:pointer;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Applications</h1>
+<div class="sub">View and manage job and internship applications</div>
+
+<!-- ===== stats ===== -->
+
+<div class="stats">
+<div class="stat">
+<div><i class="fa-solid fa-graduation-cap" style="color:#42a5f5"></i>
+<div style="margin-top: 10px;">Under Graduate Applications</div></div>
+<div class="num" id="ugCount">0</div>
+</div>
+
+<div class="stat">
+<div><i class="fa-solid fa-briefcase" style="color:#00c853"></i>
+<div style="margin-top: 10px;">Graduate Applications</div></div>
+<div class="num" id="gradCount">0</div>
+</div>
+
+<div class="stat">
+<div><i class="fa-solid fa-trophy" style="color:#ffb300"></i>
+<div style="margin-top: 10px;">Shortlisted</div></div>
+<div class="num" id="shortCount">0</div>
+</div>
+
+<div class="stat">
+<div><i class="fa-solid fa-user-check" style="color:#a142f4"></i>
+<div style="margin-top: 10px;">Interviews Scheduled</div></div>
+<div class="num" id="intCount">0</div>
+</div>
+</div>
+
+<!-- ===== search ===== -->
+
+<div class="searchBox">
+<input id="search" placeholder="Search by name, email, or position..." oninput="render()">
+</div>
+
+<!-- ===== tabs ===== -->
+
+<div class="tabs">
+<div class="tab active" onclick="setTab('intern')">
+Internships - Under Graduates & Graduates
+</div>
+<div class="tab" onclick="setTab('jobs')">
+Jobs - Graduates Only
+</div>
+</div>
+
+<!-- ===== table ===== -->
+
+<div class="tableWrap">
+<table>
+<thead id="thead"></thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<script>
+
+/* ===== data ===== */
+
+const interns = [
+{n:"Sarah Ahmed", email:"sarah@student.edu", uni:"Cairo University",
+major:"Computer Science / 3rd Year", pos:"Software Intern", pts:3250,
+skills:["Front-end","Java"], date:"2026-01-28", status:"review"},
+
+{n:"Mohamed Hassan", email:"mohamed@student.edu", uni:"Ain Shams",
+major:"Software Engineering / 4th Year", pos:"Frontend Intern", pts:2980,
+skills:["React","TS"], date:"2026-01-27", status:"review"},
+
+{n:"Nour Khaled", email:"nour@student.edu", uni:"AUC",
+major:"Data Science / 3rd Year", pos:"Data Intern", pts:3500,
+skills:["Python","SQL"], date:"2026-01-26", status:"short"},
+
+{n:"Layla Ibrahim", email:"layla@student.edu", uni:"Cairo",
+major:"	Information Systems / 4th Year", pos:"Mobile Intern", pts:3100,
+skills:["Flutter"], date:"2026-01-24", status:"interview"},
+
+{n:"Omar Youssef", email:"omar@student.edu", uni:"German University",
+major:"Computer Science / 4th Year", pos:"Mobile Intern", pts:3100,
+skills:["Back-end"], date:"2026-01-24", status:"review"},
+
+];
+
+const jobs = [
+{n:"Amira Salah", email:"amira@email.com", uni:"German University",
+major:"Computer Science / 2024", pos:"Full Stack Dev", pts:4200,
+exp:"1 year", skills:["React","Node"], date:"2026-01-29", status:"review"},
+
+{n:"Karim Mostafa", email:"karim@email.com", uni:"Ain Shams",
+major:"Software Engineering / 2023", pos:"Frontend Dev", pts:5100,
+exp:"2 years", skills:["Vue"], date:"2026-01-28", status:"interview"},
+
+
+{n:"Hana Farouk", email:"hana@email.com", uni:"	American University",
+major:"Software Engineering / 2023", pos:"Data Analyst", pts:5100,
+exp:"2 years", skills:["Vue"], date:"2026-01-28", status:"interview"},
+
+
+{n:"Mariam Shereif", email:"mariam@email.com", uni:"Alexandria University",
+major:"Information Systems / 2023", pos:"DevOps Engineer", pts:5100,
+exp:"2 years", skills:["Vue"], date:"2026-01-28", status:"short"},
+
+];
+
+/* ===== helpers ===== */
+
+function avatarColor(name){
+const colors=["#1e88e5","#43a047","#fb8c00","#8e24aa"];
+return colors[name.charCodeAt(0)%colors.length];
+}
+
+function statusBadge(s){
+if(s==="review") return `<span class="badge review">Under Review</span>`;
+if(s==="short") return `<span class="badge short">Shortlisted</span>`;
+return `<span class="badge interview">Interview</span>`;
+}
+
+/* ===== stats ===== */
+
+function updateStats(){
+ugCount.textContent = interns.length;
+gradCount.textContent = jobs.length;
+shortCount.textContent =
+[...interns,...jobs].filter(x=>x.status==="short").length;
+intCount.textContent =
+[...interns,...jobs].filter(x=>x.status==="interview").length;
+}
+updateStats();
+
+/* ===== render ===== */
+
+let tab="intern";
+
+function setTab(t){
+tab=t;
+document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+event.target.classList.add("active");
+render();
+}
+
+function render(){
+
+const q = search.value.toLowerCase();
+const arr = tab==="intern"?interns:jobs;
+
+thead.innerHTML = tab==="intern"
+? `<tr>
+<th>Applicant Name</th><th>Email</th><th>University</th>
+<th>Major/Year</th><th>Internship Position</th>
+<th>Points</th><th>Skills</th>
+<th>Applied Date</th><th>Status</th><th>Profile</th>
+</tr>`
+: `<tr>
+<th>Applicant Name</th><th>Email</th><th>University</th>
+<th>Major/Graduation</th><th>Job Position</th>
+<th>Points</th><th>Experience</th>
+<th>Skills</th><th>Applied Date</th><th>Status</th><th>Profile</th>
+</tr>`;
+
+tbody.innerHTML="";
+
+arr
+.filter(x =>
+x.n.toLowerCase().includes(q) ||
+x.email.toLowerCase().includes(q) ||
+x.pos.toLowerCase().includes(q)
+)
+.forEach(x=>{
+
+tbody.innerHTML += `
+<tr>
+<td>
+<span class="avatar" style="background:${avatarColor(x.n)}">
+${x.n[0]}</span>${x.n}
+</td>
+<td>${x.email}</td>
+<td>${x.uni}</td>
+<td>${x.major}</td>
+<td>${x.pos}</td>
+<td><i class="fa-solid fa-trophy"></i> ${x.pts}</td>
+
+${tab==="jobs" ? `<td>${x.exp}</td>` : ""}
+
+<td>${x.skills.map(s=>`<span class="skill">${s}</span>`).join("")}</td>
+<td>${x.date}</td>
+<td>${statusBadge(x.status)}</td>
+<td class="viewBtn">View</td>
+</tr>`;
+});
+}
+
+render();
+
+</script>
+</body>
+</html>

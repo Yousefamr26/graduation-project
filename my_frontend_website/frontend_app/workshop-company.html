@@ -5,224 +5,461 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Workshop Company</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
 <style>
-  :root{--accent:#155fc4;--muted:#6b7280;--bg:#f4f6f8}
-  body{font-family:"Segoe UI",sans-serif;background:var(--bg);margin:0;padding:24px}
-  .wrap{max-width:1100px;margin:0 auto}
-  
-    .top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:18px;
-    width: 1470px;
-    background-color: white;
-    height: 100px;
-    padding: 30px;
-    margin-left: -215px;
-    margin-top: -30px;
-    box-shadow:0 6px 20px rgba(0,0,0,.06);
-  }
-  .top h1{
-  margin-top: -25px;
-  margin-bottom:10px;}
+:root{
+  --accent:#3498db;
+  --muted:#6b7280;
+  --bg:#f4f6f8;
+}
 
-    .controls{
-    display:flex;
-    gap:12px;
-    align-items:center;
-  }
+body{
+  font-family:"Segoe UI",sans-serif;
+  background:var(--bg);
+  margin:0;
+  padding:24px
+}
 
-  input.search{
-    padding:10px;
-    border-radius:8px;
-    border:1px solid #cfd0d1;
-    width:680px;
-  }
+.wrap{width:100%;margin:auto}
 
-  select{
-    padding:10px;
-    border-radius:8px;
-    border:1px solid #cfd0d1;
-    width: 150px;
-    color: #777;
-  }
+/* ===== TOP BAR ===== */
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+  background:#fff;
+  padding:20px 30px;
+  border-radius:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.05);
+}
 
-  button.create{
-    background:var(--accent);
-    color:#fff;
-    padding:10px 14px;
-    border-radius:8px;
-    border:0;
-    cursor:pointer;
-  }
-  .controls{margin-left:auto;display:flex;gap:8px}
-  .search{padding:8px 12px;border-radius:8px;border:1px solid #d6dbe0;background:#fff}
-  .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-  .btn.primary{background:var(--accent);color:#fff}
-  .cards{margin-top:16px;display:grid;grid-template-columns:repeat(2, 1fr);gap:14px}
-  .card{background:#fff;border-radius:12px;padding:14px;border:1px solid #eef2f7;box-shadow:0 2px 8px rgba(16,24,40,0.03)}
-  .card .title{font-weight:800;color:#0f1724}
-  .meta{color:var(--muted);font-size:13px;margin-top:6px}
-  .pill{padding:6px 10px;border-radius:999px;background:#f1f5f9;border:1px solid #e6eef6;color:#475569;font-weight:700}
-  .analysis{margin-top:10px;padding:10px;border-radius:8px;background:#f8fafc;border:1px solid #e6eef6}
-  .no-items{padding:18px;border-radius:8px;background:#fff;border:1px dashed #e6eef6;color:var(--muted)}
-  .status-dot{display:inline-block;width:10px;height:10px;border-radius:50%}
-  .status-draft{background:#f59e0b}
-  .status-pub{background:#10b981}
-  @media (max-width:900px){ .cards{grid-template-columns:1fr} }
+.controls{display:flex;gap:10px;align-items:center}
+
+.search{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ddd;
+  width:500px;
+  margin-left: 100px;
+}
+
+select{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ddd;
+  width: 200px;
+}
+
+.create{
+  background:var(--accent);
+  color:#fff;
+  padding:10px 14px;
+  border-radius:8px;
+  border:0;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* ===== CARDS ===== */
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+  gap:20px;
+}
+
+.card{
+  background:#fff;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 8px 25px rgba(0,0,0,.05);
+  transition:.3s;
+  display:flex;
+  flex-direction:column;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+}
+
+.card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+
+.card-content{
+  padding:18px;
+  flex:1;
+}
+
+.title{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.meta{
+  color:var(--muted);
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+.description{
+  font-size:14px;
+  color:#555;
+  margin-bottom:15px;
+}
+
+.points-box{
+  background:#f1f5f9;
+  padding:12px;
+  border-radius:10px;
+  font-weight:600;
+  margin-bottom:15px;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+}
+
+.btn{
+  flex:1;
+  padding:8px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.details-btn{
+  background:#e0f2fe;
+  color:#0369a1;
+}
+
+.edit-btn{
+  background:#eef2ff;
+  color:#3730a3;
+}
+
+.delete-btn{
+  background:#fee2e2;
+  color:#b91c1c;
+}
+
+/* ===== MODAL ===== */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.modal-content{
+  background:#fff;
+  width:620px;
+  max-height:80vh;
+  overflow:auto;
+  border-radius:16px;
+  padding:25px;
+  position:relative;
+}
+.modal-content img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  border-radius:12px;
+  margin-bottom:15px;
+}
+
+.modal-content h2{
+  margin:10px 0;
+}
+
+.modal-section{
+  margin-top:15px;
+}
+
+.modal-section ul{
+  padding-left:18px;
+  margin-top:8px;
+}
+
+.modal-section li{
+  margin-bottom:6px;
+}
+.close{
+  position:absolute;
+  right:15px;
+  top:15px;
+  cursor:pointer;
+  font-size:18px;
+  color:#888;
+}
+
+.no-items{
+  margin-top:20px;
+  padding:20px;
+  text-align:center;
+  background:#fff;
+  border-radius:12px;
+  color:var(--muted);
+}
+.close-btn{
+  background:#fff;
+  border:none;
+  padding:6px 14px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:600;
+  box-shadow:0 4px 10px rgba(0,0,0,.15);
+  z-index:10;
+  margin-top: -50px;
+  margin-left: 530px;
+  margin-bottom: 10px;
+}
+
+.close-btn:hover{
+  background:#e2e8f0;
+}
+.status-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:700;
+  color:#fff;
+}
+
+.status-published{
+  background:#16a34a;
+}
+
+.status-draft{
+  background:#f59e0b;
+}
+
+.card{
+  position:relative; /* مهم */
+}
 </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div>
-        <h1 style="color:var(--accent)">
-          <i class="fa-solid fa-briefcase" style="font-size:26px;color:var(--accent)"></i>&nbsp;Workshops</h1>
-        <div style="color: #777;position: absolute; left: 40px; top: 80px;">All your created workshops (drafts & published)</div>
-      </div>
 
-      <div class="controls">
-        <input id="searchInput" class="search" placeholder="Search by title, university or status..." oninput="renderList()"/>
-        <select id="filterSelect" class="search" onchange="renderList()">
-          <option value="all">All</option>
-          <option value="published">Published</option>
-          <option value="draft">Draft</option>
-        </select>
-        <button class="create" onclick="createNew()"><i class="fa-solid fa-plus"></i> Create New Workshop</button>
-      </div>
-    </div>
+<div class="wrap">
 
-    <div id="list" class="cards"></div>
-    <div id="empty" style="display:none" class="no-items">No workshops found.</div>
+<div class="top">
+  <h1 style="margin-top: -10px;"><i class="fa-solid fa-briefcase" style="color: #3498db;"></i> Workshops</h2>
+  <p style="margin-left: -260px; margin-top: 70px;color: #555;">All your created workshops (drafts & published)
+</p>
+
+  <div class="controls">
+    <input id="searchInput" class="search" placeholder="Search..." oninput="renderList()"/>
+    <select id="filterSelect" onchange="renderList()">
+      <option value="all">All</option>
+      <option value="published">Published</option>
+      <option value="draft">Draft</option>
+    </select>
+    <button class="create" onclick="createNew()">
+      <i class="fa-solid fa-plus"></i> Create New Workshop
+    </button>
   </div>
+</div>
+
+<div id="list" class="cards"></div>
+<div id="empty" style="display:none" class="no-items">No workshops found.</div>
+
+</div>
+
+<!-- ===== MODAL ===== -->
+
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal()">Close</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
 
 <script>
 
-  const $ = id => document.getElementById(id);
+const $ = id => document.getElementById(id);
 
-  function loadWorkshops(){ try{return JSON.parse(localStorage.getItem('workshops')||'[]')}catch(e){return[]} }
-  function saveWorkshops(arr){ localStorage.setItem('workshops', JSON.stringify(arr)) }
+function loadWorkshops(){
+  try{return JSON.parse(localStorage.getItem('workshops')||'[]')}
+  catch(e){return[]}
+}
 
-  function createNew(){
-    localStorage.removeItem('editWorkshopId');
-    window.location.href = 'create-workshop.html';
+function saveWorkshops(arr){
+  localStorage.setItem('workshops', JSON.stringify(arr))
+}
+
+function createNew(){
+  localStorage.removeItem('editWorkshopId');
+  window.location.href = 'create-workshop.html';
+}
+
+function renderList(){
+  const arr = loadWorkshops();
+  const search = $('searchInput').value.toLowerCase();
+  const filter = $('filterSelect').value;
+  const list = $('list');
+  list.innerHTML='';
+
+  let filtered = arr.slice().reverse();
+
+  if(filter !== 'all')
+    filtered = filtered.filter(x => x.status === filter);
+
+  if(search){
+    filtered = filtered.filter(x =>
+      (x.title||'').toLowerCase().includes(search) ||
+      (x.university||'').toLowerCase().includes(search)
+    );
   }
 
-  function renderList(){
-    const arr = loadWorkshops();
-    const search = $('searchInput').value.trim().toLowerCase();
-    const filter = $('filterSelect').value;
-    const list = $('list'); 
-    list.innerHTML='';
-
-    let filtered = arr.slice().reverse();
-
-    if(filter !== 'all') filtered = filtered.filter(x => x.status === filter);
-
-    if(search){
-      filtered = filtered.filter(x =>
-        (x.title || '').toLowerCase().includes(search) ||
-        (x.university || '').toLowerCase().includes(search) ||
-        (x.status || '').toLowerCase().includes(search)
-      );
-    }
-
-    if(filtered.length === 0){
-      $('empty').style.display='block';
-      return;
-    } 
-    $('empty').style.display='none';
-
-    filtered.forEach(item=>{
-      const totalPoints = (item.materials||[]).reduce((s,m)=>s+(m.points||0),0)
-                         + (item.activities||[]).reduce((s,a)=>s+(a.points||0),0);
-
-      const card = document.createElement('div');
-      card.className='card';
-
-      card.innerHTML = `
-        <div style="display:flex;justify-content:space-between;gap:12px">
-          <div style="flex:1">
-            <div class="title">${escapeHtml(item.title)}</div>
-            <div class="meta">${escapeHtml(item.university||'')} • ${escapeHtml(item.workType||'')}</div>
-            <div style="color:var(--muted);margin-top:8px">${escapeHtml((item.description||'').slice(0,140))}${(item.description||'').length>140?'...':''}</div>
-          </div>
-
-          <div style="text-align:right">
-            <div class="pill">${item.status === 'published'
-              ? '<span class="status-dot status-pub"></span> Published'
-              : '<span class="status-dot status-draft"></span> Draft'}</div>
-            <div style="font-weight:700;margin-top:8px">${totalPoints} pts</div>
-          </div>
-        </div>
-
-        <div class="actions" style="margin-top:12px;display:flex;gap:8px">
-          <button class="btn" onclick="triggerEdit(${item.id})"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-          <button class="btn" onclick="toggleAnalysis(${item.id})"><i class="fa-solid fa-chart-simple"></i> Analysis</button>
-          <button class="btn" style="background:#fff;border:1px solid #f1a3a3;color:#b91c1c" onclick="confirmDelete(${item.id})"><i class="fa-solid fa-trash"></i> Delete</button>
-        </div>
-
-        <div class="analysis" id="analysis-${item.id}" style="display:none"></div>
-      `;
-      list.appendChild(card);
-    });
+  if(filtered.length === 0){
+    $('empty').style.display='block';
+    return;
   }
 
-  function escapeHtml(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+  $('empty').style.display='none';
 
-  function triggerEdit(id){
-    localStorage.setItem('editWorkshopId', String(id));
-    window.location.href = 'create-workshop.html';
-  }
-
-  function confirmDelete(id){
-    if(!confirm('Delete this workshop?')) return;
-    let arr = loadWorkshops().filter(x=>x.id !== id);
-    saveWorkshops(arr);
-    renderList();
-  }
-
-  /*  ⭐ FIXED — NOW SHOWS FULL WORKSHOP DATA  */
-  function toggleAnalysis(id){
-    const arr = loadWorkshops();
-    const item = arr.find(x => x.id === id);
-    const el = $('analysis-'+id);
-
-    if(el.style.display === 'block'){
-      el.style.display = 'none';
-      return;
-    }
-
-    const materialsHtml = (item.materials||[])
-      .map(m=> `<li>${escapeHtml(m.name)} — ${m.points||0} pts</li>`).join('');
-
-    const activitiesHtml = (item.activities||[])
-      .map(a=> `<li>${escapeHtml(a.name)} — ${a.points||0} pts</li>`).join('');
+  filtered.forEach(item=>{
 
     const totalPoints =
       (item.materials||[]).reduce((s,m)=>s+(m.points||0),0) +
       (item.activities||[]).reduce((s,a)=>s+(a.points||0),0);
 
-    el.innerHTML = `
-      <b>Title:</b> ${escapeHtml(item.title)}<br>
-      <b>University:</b> ${escapeHtml(item.university||'')}<br>
-      <b>Status:</b> ${escapeHtml(item.status)}<br>
-      <b>Description:</b><br>${escapeHtml(item.description||'')}<br><br>
+    const card = document.createElement('div');
+    card.className='card';
 
-      <b>Materials:</b>
-      <ul>${materialsHtml || '<i>No materials</i>'}</ul>
+    card.innerHTML = `
+  <div class="status-badge ${item.status==='published'?'status-published':'status-draft'}">
+    ${item.status}
+  </div>
 
-      <b>Activities:</b>
-      <ul>${activitiesHtml || '<i>No activities</i>'}</ul>
+  <img src="${item.bannerDataURL || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085'}">
 
-      <b>Total Points:</b> ${totalPoints} pts
-    `;
+  <div class="card-content">
+    <div class="title">${item.title}</div>
+    <div class="meta">${item.university}</div>
+    <div class="description">${(item.description||'').slice(0,120)}...</div>
 
-    el.style.display = 'block';
-  }
+    <div class="points-box">
+      Total Points: ${totalPoints}
+    </div>
 
+    <div class="actions">
+      <button class="btn details-btn" onclick="openDetails(${item.id})">
+        Details
+      </button>
+      <button class="btn edit-btn" onclick="triggerEdit(${item.id})">
+        Edit
+      </button>
+      <button class="btn delete-btn" onclick="confirmDelete(${item.id})">
+        Delete
+      </button>
+    </div>
+  </div>
+`;
+
+    list.appendChild(card);
+  });
+}
+
+
+function closeModal(){
+  document.getElementById('modal').style.display='none';
+}
+
+function openDetails(id){
+  const arr = loadWorkshops();
+  const item = arr.find(x=>x.id===id);
+  if(!item) return;
+
+  const materials = (item.materials||[])
+    .map(m=>`
+      <li>
+        <b>${m.title || 'Untitled'}</b> 
+        (${m.type || 'No type'}) 
+        - ${m.points||0} pts
+      </li>
+    `).join('');
+
+  const activities = (item.activities||[])
+    .map(a=>`
+      <li>
+        <b>${a.name || 'Untitled'}</b> 
+        (${a.difficulty || 'No level'}) 
+        - ${a.points||0} pts
+        <br>
+        <small>${a.desc || ''}</small>
+      </li>
+    `).join('');
+
+  const totalPoints =
+    (item.materials||[]).reduce((s,m)=>s+(m.points||0),0) +
+    (item.activities||[]).reduce((s,a)=>s+(a.points||0),0);
+
+  $('modalBody').innerHTML = `
+    <img src="${item.bannerDataURL || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085'}">
+
+    <h2>${item.title}</h2>
+
+    <p><b>Description:</b> ${item.description || '-'}</p>
+
+    <p><b>University:</b> ${item.university || '-'}</p>
+    <p><b>Location:</b> ${item.location || '-'}</p>
+
+    <p><b>Date:</b> ${item.startDate || ''} → ${item.endDate || ''}</p>
+    <p><b>Time:</b> ${item.startTime || ''} → ${item.endTime || ''}</p>
+
+    <p><b>Capacity:</b> ${item.capacity || '-'}</p>
+    <p><b>Type:</b> ${item.workType || '-'}</p>
+
+    <p><b>Status:</b> ${item.status}</p>
+
+    <p><b>Require CV:</b> ${item.reqCv ? 'Yes' : 'No'}</p>
+    <p><b>Require Roadmap:</b> ${item.reqRoadmap ? 'Yes' : 'No'}</p>
+
+    <p><b>Total Points:</b> ${totalPoints} pts</p>
+
+    <div class="modal-section">
+      <h3>Materials</h3>
+      <ul>${materials || '<i>No materials</i>'}</ul>
+    </div>
+
+    <div class="modal-section">
+      <h3>Activities</h3>
+      <ul>${activities || '<i>No activities</i>'}</ul>
+    </div>
+  `;
+
+  $('modal').style.display='flex';
+}
+
+function triggerEdit(id){
+  localStorage.setItem('editWorkshopId', id);
+  window.location.href='create-workshop.html';
+}
+
+function confirmDelete(id){
+  if(!confirm('Delete this workshop?')) return;
+  let arr = loadWorkshops().filter(x=>x.id!==id);
+  saveWorkshops(arr);
   renderList();
+}
+
+renderList();
 
 </script>
 </body>

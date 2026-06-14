@@ -10,10 +10,13 @@
 </head>
 
 <body>
-<!-- TOP BAR -->
+
 <div class="topbar">
   <div class="title-box">
-    <h1 style="color: #155fc4;margin-top: 10px;"> <i class="fa-solid fa-route"></i>&nbsp; Roadmaps Management</h1>
+    <h1 style="color: black;margin-top: 10px;">
+      <i class="fa fa-map" style="color: #3498db;"></i>
+      &nbsp; Roadmaps Management
+    </h1>
     <p>Create and manage career roadmaps for students</p>
   </div>
 
@@ -35,63 +38,149 @@
   <div id="roadmapGrid" class="grid"></div>
   <div id="detailsBox" class="details-box"></div>
 </div>
+<!-- ===== ANALYSIS MODAL ===== -->
+<div id="analysisModal" class="modal-overlay">
+  <div class="modal-box">
+    
+    <div class="modal-header">
+      <h3>Roadmap Analysis & Details</h3>
+      <button class="close-btn" onclick="closeModal()">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+
+    <div id="modalContent"></div>
+
+  </div>
+</div>
 
 <script>
-/* --------------------- STORAGE --------------------- */
+
+/* ---------------- STORAGE ---------------- */
 const STORAGE_KEY = "roadmaps";
 let all = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-/* --------------------- CREATE NEW --------------------- */
-function startNewRoadmap(){
-  localStorage.removeItem("roadmap_edit_id");   // IMPORTANT
-  window.location.href = "create-roadmap.html"; // open new fresh page
+/* ---------------- PRICE FORMATTER ---------------- */
+function formatPrice(price) {
+  if (price === null || price === undefined) return "Free";
+
+  const cleaned = String(price).trim();
+
+  if (cleaned === "") return "Free";
+
+  const numberValue = Number(cleaned);
+
+  if (isNaN(numberValue)) return "Free";
+
+  return numberValue + " EGP";
 }
 
-/* --------------------- RENDER CARDS --------------------- */
+/* ---------------- CREATE ---------------- */
+function startNewRoadmap(){
+  localStorage.removeItem("roadmap_edit_id");
+  window.location.href = "create-roadmap.html";
+}
+
+/* ---------------- RENDER ---------------- */
 function renderRoadmaps(list){
   const grid = document.getElementById("roadmapGrid");
   grid.innerHTML = "";
 
+  const levels = ["Beginner", "Intermediate", "Advanced"];
+
   list.forEach(r => {
+
+    // ✅ Generate Level once and save it
+    if(!r.level){
+      r.level = levels[Math.floor(Math.random() * levels.length)];
+    }
+
+    // ✅ Generate Students once and save
+    if(!r.students){
+      r.students = Math.floor(Math.random() * 900) + 50;
+    }
+
+    // ✅ Generate Completion once
+    if(!r.completion){
+      r.completion = Math.floor(Math.random() * 100);
+    }
+
+    // ✅ Generate Duration (Months) once
+    if(!r.duration){
+      const months = Math.floor(Math.random() * 12) + 1;
+      r.duration = months + " months";
+    }
+
     const div = document.createElement("div");
     div.className = "card";
 
     div.innerHTML = `
-      <img src="${r.coverDataURL || "https://via.placeholder.com/300x150"}">
-      <div class="card-body">
-        <div class="card-title">${r.title || "Untitled Roadmap"}</div>
-        <div class="card-role">${r.targetRole || ""}</div>
-        <span class="status ${r.status === 'published' ? 'published':'draft'}">
-          ${(r.status || "draft").toUpperCase()}
+      <div class="card-image">
+        <img src="${r.coverDataURL || "https://via.placeholder.com/600x300"}">
+        <span class="badge ${r.status === 'published' ? 'published':'draft'}">
+          ${r.status === 'published' ? 'Published' : 'Draft'}
         </span>
       </div>
 
-      <div class="card-btns">
-        <button class="btn-edit" onclick="editRoadmap(${r.id}); event.stopPropagation();">
-          <i class="fa-solid fa-pen-to-square"></i> Edit
-        </button>
+      <div class="card-content">
+        <h3>${r.title || "Untitled Roadmap"}</h3>
 
-        <button class="btn-analysis" onclick="showDetails(${r.id}); event.stopPropagation();">
-          <i class="fa-solid fa-chart-line"></i> Analysis
-        </button>
+        <span class="level-badge ${r.level.toLowerCase()}">
+          ${r.level}
+        </span>
 
-        <button class="btn-trash" onclick="deleteRoadmap(${r.id}); event.stopPropagation();">
-          <i class="fa-solid fa-trash"></i>
-        </button>
+        <div class="role">
+          <i class="fa-solid fa-bullseye"></i>
+          ${r.targetRole || ""}
+        </div>
+
+        <div class="meta">
+          <span><i class="fa-solid fa-users"></i> ${r.students} enrolled</span>
+          <span><i class="fa-solid fa-calendar"></i> ${r.duration}</span>
+        </div>
+
+        <div class="price">${formatPrice(r.price)}</div>
+
+        <div class="progress-box">
+          <div class="progress-text">
+            Completion Rate
+            <span>${r.completion}%</span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar" style="width:${r.completion}%"></div>
+          </div>
+        </div>
+
+        <div class="card-buttons">
+          <button class="btn-edit" onclick="editRoadmap(${r.id});event.stopPropagation();">
+            <i class="fa-solid fa-pen"></i> Edit
+          </button>
+
+          <button class="btn-analysis" onclick="showDetails(${r.id});event.stopPropagation();">
+            <i class="fa-solid fa-chart-line"></i> Analysis
+          </button>
+
+          <button class="btn-delete" onclick="deleteRoadmap(${r.id});event.stopPropagation();">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
       </div>
     `;
 
     grid.appendChild(div);
   });
+
+  // 🔥 Save updated values so they stay ثابتة
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
 }
 
-/* --------------------- EDIT --------------------- */
+/* ---------------- EDIT ---------------- */
 function editRoadmap(id){
   localStorage.setItem("roadmap_edit_id", id);
   window.location.href = "create-roadmap.html";
 }
 
-/* --------------------- DELETE --------------------- */
+/* ---------------- DELETE ---------------- */
 function deleteRoadmap(id){
   if(!confirm("Delete this roadmap?")) return;
 
@@ -102,44 +191,63 @@ function deleteRoadmap(id){
   document.getElementById("detailsBox").style.display = "none";
 }
 
-/* --------------------- DETAILS --------------------- */
+/* ---------------- DETAILS ---------------- */
 function showDetails(id){
   const r = all.find(x => x.id === id);
   if(!r) return;
 
-  const box = document.getElementById("detailsBox");
-  box.style.display = "block";
+  const modal = document.getElementById("analysisModal");
+  const content = document.getElementById("modalContent");
 
-  box.innerHTML = `<img src="${r.coverDataURL || 'https://via.placeholder.com/300x150'}" 
-     style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-bottom:15px;">
+  modal.style.display = "flex";
+
+  content.innerHTML = `
+    <img src="${r.coverDataURL || 'https://via.placeholder.com/600x300'}">
 
     <h2>${r.title}</h2>
     <p>${r.description || ""}</p>
+
     <p><strong>Role:</strong> ${r.targetRole}</p>
-    <p><strong>Date:</strong> ${r.startDate} - ${r.endDate}</p>
+    <p><strong>Price:</strong> ${formatPrice(r.price)}</p>
+    <p><strong>Date:</strong> ${r.startDate || ''} - ${r.endDate || ''}</p>
 
-    <div class="section-block"><strong>Skills</strong></div>
-    ${renderItems(r.skills)}
+    <div class="modal-section">
+      <strong>Skills</strong>
+      ${renderItems(r.skills)}
+    </div>
 
-    <div class="section-block"><strong>Videos</strong></div>
-    ${renderItems(r.videos)}
+    <div class="modal-section">
+      <strong>Videos</strong>
+      ${renderItems(r.videos)}
+    </div>
 
-    <div class="section-block"><strong>Materials</strong></div>
-    ${renderItems(r.materials)}
+    <div class="modal-section">
+      <strong>Materials</strong>
+      ${renderItems(r.materials)}
+    </div>
 
-    <div class="section-block"><strong>Projects</strong></div>
-    ${renderItems(r.projects)}
+    <div class="modal-section">
+      <strong>Projects</strong>
+      ${renderItems(r.projects)}
+    </div>
 
-    <div class="section-block"><strong>Quizzes</strong></div>
-    ${renderItems(r.quizzes)}
+    <div class="modal-section">
+      <strong>Quizzes</strong>
+      ${renderItems(r.quizzes)}
+    </div>
   `;
 }
 
+function closeModal(){
+  document.getElementById("analysisModal").style.display = "none";
+}
+/* ---------------- ITEMS ---------------- */
 function renderItems(arr){
   if(!arr || arr.length === 0) 
-      return `<p style="color:#999;">No items</p>`;
+    return `<p style="color:#999;">No items</p>`;
 
   return arr.map(i => {
+
     let fileInfo = "";
 
     if (i.fileMeta) {
@@ -164,11 +272,12 @@ function renderItems(arr){
   }).join("");
 }
 
-
-/* --------------------- FILTER --------------------- */
+/* ---------------- FILTER ---------------- */
 document.getElementById("searchBar").addEventListener("input", function(){
   let v = this.value.toLowerCase().trim();
+
   if(v === "publish") v = "published";
+
   if(v === "published" || v === "draft"){
     renderRoadmaps(all.filter(r => r.status === v));
   } else {
@@ -184,8 +293,9 @@ document.getElementById("statusFilter").addEventListener("change", function(){
   }
 });
 
-/* --------------------- INIT --------------------- */
+/* ---------------- INIT ---------------- */
 renderRoadmaps(all);
+
 </script>
 </body>
 </html>

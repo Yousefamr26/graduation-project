@@ -56,16 +56,19 @@
       <div>
         <h1>Analytics & Reports</h1>
         <p>Detailed insights about your programs</p>
-        <div class="tabs" id="tabs">
-          <div class="tab active" data-view="roadmaps">Roadmaps</div>
-          <div class="tab" data-view="workshops">Workshops</div>
-          <div class="tab" data-view="interviews">Interviews</div>
-          <div class="tab" data-view="universities">Universities</div>
-        </div>
-      </div>
+  <div class="tabs" id="tabs">
+  <div class="tab active" data-view="roadmaps">Roadmaps</div>
+  <div class="tab" data-view="jobs">Jobs</div>
+  <div class="tab" data-view="internships">Internships</div>
+  <div class="tab" data-view="workshops">Workshops</div>
+    <div class="tab" data-view="events">Events</div>
+  <div class="tab" data-view="interviews">Interviews</div>
+  <div class="tab" data-view="universities">Universities</div>
+</div>
+
 
       <div class="toolbar">
-        <button id="downloadBtn" class="btn"><i class="fa-solid fa-download"></i> Download Report</button>
+        <button id="downloadBtn" class="btn" style="margin-left: 1020px; margin-top: -50px;"><i class="fa-solid fa-download"></i> Download Report</button>
       </div>
     </header>
 
@@ -112,6 +115,56 @@
         </div>
       </section>
 
+      <!-- jobs view -->
+       <section id="view-jobs" class="view" style="display:none">
+  <div class="layout">
+    <div class="card">
+      <h3 style="margin-top:0">Jobs Posted Over Time</h3>
+      <div class="chart-wrap"><canvas id="jobsLine"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0">Jobs by Status</h3>
+      <div class="chart-wrap"><canvas id="jobsBar"></canvas></div>
+    </div>
+
+    <div class="card wide">
+      <h3>Key Metrics</h3>
+      <div class="summary-row">
+        <div class="metric"><h3>Total Jobs</h3><div class="big">142</div></div>
+        <div class="metric"><h3>Open</h3><div class="big">96</div></div>
+        <div class="metric"><h3>Closed</h3><div class="big">46</div></div>
+        <div class="metric"><h3>Applications</h3><div class="big">1,284</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <!-- Internships view -->
+     <section id="view-internships" class="view" style="display:none">
+  <div class="layout">
+    <div class="card">
+      <h3>Internships Growth</h3>
+      <div class="chart-wrap"><canvas id="internLine"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>Internships Status</h3>
+      <div class="chart-wrap"><canvas id="internBar"></canvas></div>
+    </div>
+
+    <div class="card wide">
+      <h3>Key Metrics</h3>
+      <div class="summary-row">
+        <div class="metric"><h3>Total Internships</h3><div class="big">88</div></div>
+        <div class="metric"><h3>Open</h3><div class="big">52</div></div>
+        <div class="metric"><h3>Filled</h3><div class="big">36</div></div>
+        <div class="metric"><h3>Applicants</h3><div class="big">640</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
       <!-- Workshops view -->
       <section id="view-workshops" class="view" style="display:none">
         <div class="layout" style="grid-template-columns:1fr 420px">
@@ -135,6 +188,32 @@
           </div>
         </div>
       </section>
+
+      <!-- Events view -->
+<section id="view-events" class="view" style="display:none">
+  <div class="layout">
+    <div class="card">
+      <h3>Events Attendance</h3>
+      <div class="chart-wrap"><canvas id="eventsLine"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>Events Types</h3>
+      <div class="chart-wrap"><canvas id="eventsBar"></canvas></div>
+    </div>
+
+    <div class="card wide">
+      <h3>Key Metrics</h3>
+      <div class="summary-row">
+        <div class="metric"><h3>Total Events</h3><div class="big">34</div></div>
+        <div class="metric"><h3>Attendees</h3><div class="big">2,140</div></div>
+        <div class="metric"><h3>Avg Attendance</h3><div class="big">63%</div></div>
+        <div class="metric"><h3>Upcoming</h3><div class="big">7</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
       <!-- Interviews view -->
       <section id="view-interviews" class="view" style="display:none">
@@ -224,6 +303,64 @@
         responsive:true
       }
     });
+
+    // Jobs Pie
+    new Chart(document.getElementById('jobsLine'), {
+  type:'line',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets:[{label:'Jobs', data:[12,18,20,25,30,37], borderColor:'#2b9cf5'}]
+  },
+  options:{maintainAspectRatio:false}
+});
+
+new Chart(document.getElementById('jobsBar'), {
+  type:'bar',
+  data:{
+    labels:['Open','Closed'],
+    datasets:[{data:[96,46], backgroundColor:['#18b64b','#ef4444']}]
+  },
+  options:{maintainAspectRatio:false, plugins:{legend:{display:false}}}
+});
+
+// internships pie
+new Chart(document.getElementById('internLine'), {
+  type:'line',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets:[{label:'Internships', data:[8,11,15,18,22,28], borderColor:'#7c3aed'}]
+  },
+  options:{maintainAspectRatio:false}
+});
+
+new Chart(document.getElementById('internBar'), {
+  type:'bar',
+  data:{
+    labels:['Open','Filled'],
+    datasets:[{data:[52,36], backgroundColor:['#2b93f5','#f59e0b']}]
+  },
+  options:{maintainAspectRatio:false, plugins:{legend:{display:false}}}
+});
+
+// events pie
+new Chart(document.getElementById('eventsLine'), {
+  type:'line',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets:[{label:'Attendance', data:[120,180,210,260,300,340], borderColor:'#18b64b'}]
+  },
+  options:{maintainAspectRatio:false}
+});
+
+new Chart(document.getElementById('eventsBar'), {
+  type:'bar',
+  data:{
+    labels:['Tech','Career','HR','Training'],
+    datasets:[{data:[12,9,7,6], backgroundColor:['#2b93f5','#18b64b','#f59e0b','#8b5cf6']}]
+  },
+  options:{maintainAspectRatio:false, plugins:{legend:{display:false}}}
+});
+
 
     // ---------- WORKSHOPS pie ----------
     const workshopPieCtx = document.getElementById('workshopPie').getContext('2d');

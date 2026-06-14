@@ -115,6 +115,10 @@ tabs.forEach(tab => {
         }
     });
 
+function goAnalytics() {
+    window.location.href = "analytics-company.html";
+}
+
 function goLogout() {
     window.location.href = "login.html";
 }
@@ -168,5 +172,11 @@ function goCreateevent() {
     window.location.href = "create-event.html";
 }
 
+function goInternships() {
+    window.location.href = "internships-company.html";
+}
 
+function goApplication() {
+    window.location.href = "applications-company.html";
+}
 

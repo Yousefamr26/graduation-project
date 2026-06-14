@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Schedule Interview</title>
+<link rel="stylesheet" href="styles/schedule-interview.css">
+<link rel="stylesheet" href="styles/all.css">
+</head>
+<body>
+
+<div class="overlay">
+  <div class="modal">
+    <h2>Schedule Interview</h2>
+    <p class="sub">Schedule an interview with Sarah Doe</p>
+
+    <form id="scheduleForm">
+      <div class="row">
+        <div>
+          <label>Date</label>
+          <input type="date" id="date" style="width: 90%;" required>
+        </div>
+        <div>
+          <label>Time</label>
+          <input type="time" id="time" style="width: 90%;"required>
+        </div>
+      </div>
+
+      <label>Interview Type</label>
+      <select id="type" style="width: 99%; background-color: #ececec; color: #555;" required>
+        <option value="">Select interview type</option>
+        <option>Online (Video Call) </option>
+        <option>Onsite</option>
+        <option>Phone Interview</option>
+      </select>
+
+      <label>Location / Meeting Link</label>
+      <input type="text" id="location" placeholder="Enter meeting link or location" required>
+
+      <label>Interviewer</label>
+      <input type="text" id="interviewer" placeholder="Interviewer name" required>
+
+      <label>Additional Notes</label>
+      <textarea id="notes" placeholder="Any special instructions..."></textarea>
+
+      <div class="buttons">
+        <button type="submit" class="confirm" onclick="gocalender()">Confirm Schedule</button>
+        <button type="button" class="cancel" onclick="goCompanyInterview()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+    document.getElementById("scheduleForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const interview = {
+    date: document.getElementById("date").value,
+    time: document.getElementById("time").value,
+    type: document.getElementById("type").value,
+    location: document.getElementById("location").value,
+    interviewer: document.getElementById("interviewer").value,
+    notes: document.getElementById("notes").value
+  };
+
+  localStorage.setItem("interview", JSON.stringify(interview));
+
+  window.location.href = "calender-company.html";
+});
+
+function goCompanyInterview(){
+  window.location.href = "interview-company.html";
+}
+</script>
+</body>
+</html>

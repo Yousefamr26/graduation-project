@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
   :root{
-    --accent:#155fc4; --muted:#7a7f86; --card:#fff; --bg:#f4f6f8;
+    --accent:#3498db; --muted:#7a7f86; --card:#fff; --bg:#f4f6f8;
     --toggle-off:#e6e9ee; --toggle-on:var(--accent);
   }
   *{box-sizing:border-box}
@@ -27,7 +27,7 @@
   .row > div{flex:1}
   .upload-area{ border:2px dashed #e4e7ee;border-radius:8px;padding:16px;text-align:center;color:#5b6b7a;cursor:pointer}
   .upload-area:hover{
-    border: 2px dashed #155fc4;
+    border: 2px dashed #3498db;
   }
   .btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
   .btn.primary{background:var(--accent);color:#fff}
@@ -61,9 +61,9 @@
 <body>
   <div class="wrap">
     <div class="header">
-      <i class="fa-solid fa-chalkboard-user" style="font-size:26px;color:#155fc4"></i>
+      <i class="fa-solid fa-chalkboard-user" style="font-size:26px;color:#3498db"></i>
       <div>
-        <h1 style="color: #155fc4;">Create Workshop</h1>
+        <h1 style="color: #111;">Create Workshop</h1>
         <div class="subtitle" style="font-size: 16px;">Collaborate with universities to create engaging workshops for students</div>
       </div>
     </div>
@@ -157,9 +157,11 @@
           <label>Workshop Type <span style="color: red;">*</span></label>
           <select id="workType" style="color: #777;">
             <option value="">Select type...</option>
-            <option value="Technical">Online</option>
-            <option value="Career">Onsite</option>
-            <option value="Soft Skills">Hybird</option>
+            <option value="Technical">Technical</option>
+            <option value="Design">Design</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Business">Business</option>
+            <option value="Soft Skills">Soft Skills</option>
           </select>
         </div>
       </div>
@@ -176,7 +178,7 @@
       <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Upload resources with auto-calculated points</p>
       <div class="materials-list" id="materialsList"></div>
       <div style="margin-top:10px">
-        <button class="btn add-btn" onclick="addMaterial()" style="background-color: #2e3bf9; color: white;"><i class="fa-solid fa-plus"></i> Add Material</button>
+        <button class="btn add-btn" onclick="addMaterial()" style="background-color: #3498db; color: white;"><i class="fa-solid fa-plus"></i> Add Material</button>
       </div>
     </div>
 
@@ -191,7 +193,7 @@
       <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Define hands-on activities and award points</p>
       <div class="activities-list" id="activitiesList"></div>
       <div style="margin-top:10px">
-        <button class="btn add-btn" onclick="addActivity()" style="background-color: #2e3bf9; color: white;"><i class="fa-solid fa-plus"></i> Add Activity</button>
+        <button class="btn add-btn" onclick="addActivity()" style="background-color: #3498db; color: white;"><i class="fa-solid fa-plus"></i> Add Activity</button>
       </div>
     </div>
 
@@ -230,14 +232,6 @@
       </div>
     </div>
 
-    <!-- AI Recommendations -->
-    <div class="section" style="background:linear-gradient(180deg,#eef6ff,#f8fbff);border: solid 2px #1161c9;">
-      <div class="title"><i class="fa-solid fa-robot"></i> AI Recommendations <span style="font-size:12px;background:#2e3bf9;color:#fff;padding:3px 8px;border-radius:10px;margin-left:8px">Smart</span></div>
-      <p class="small-muted">AI can auto-generate points based on workshop difficulty and duration.</p>
-      <div style="margin-top:8px">
-        <button class="btn ghost" onclick="applyAI()" style="background-color: #2e3bf9;color: white;"> <i class="fa-solid fa-magic"></i> Apply AI Suggestions</button>
-      </div>
-    </div>
 
     <!-- Summary -->
     <div class="section" id="summarySection">

@@ -7,12 +7,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
   :root{
-    --card:#ffffff; --muted:#7a8291; --accent:#155fc4; --success:#1e9b68; --danger:#e74c3c;
+    --card:#ffffff; --muted:#7a8291; --accent:#3498db; --success:#1e9b68; --danger:#e74c3c;
     --soft:#f3f6fb;
   }
   body{font-family: "Segoe UI", Arial, sans-serif; background:var(--soft); margin:0; padding:28px;}
   .wrap{max-width:1000px;margin:0 auto;}
-  h1{color:#133c66;font-weight:600;margin:6px 0 18px;}
+  h1{font-weight:600;margin:6px 0 18px;}
   .section{background:var(--card);border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 2px 6px rgba(20,30,50,0.05);}
   .section h3{margin:0 0 10px;font-size:15px;color:#334;}
   label{display:block;font-weight:600;margin:8px 0 6px;color:#334;}
@@ -59,13 +59,13 @@
 </head>
 <body>
 <div class="wrap">
-  <h1 style="color:#2b8bf2;"><i class="fa-solid fa-calendar-plus" style="color:#2b8bf2;"></i> Create New Event</h1>
-  <p style="margin-top: -10px; margin-left: 40px; color: #777;">Create events with points-based eligibility filtering</p>
+  <h2><i class="fa-solid fa-calendar-plus" style="color:#3498db; margin-top: -70px;"></i>&nbsp; Create New Event</h2>
+  <p style="margin-top: -20px; margin-left: 25px; color: #777;">Create events with points-based eligibility filtering</p>
 
   <!-- EVENT INFO -->
   <div class="section" id="section-info">
       <div style="width: 28px; height: 28px; text-align: center; background-color: #bddbfa;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
-        <i class="fa-solid fa-file-lines" style="color:#2b8bf2;"></i>
+        <i class="fa-solid fa-file-lines" style="color:#3498db;"></i>
       </div>
     <h3 style=" margin-top: -30px;
             margin-left: 50px;
@@ -152,14 +152,14 @@
   <!-- ELIGIBILITY -->
   <div class="section">
         <div style="width: 28px; height: 28px; text-align: center; background-color: #c8ddf5;border-radius: 5px; margin-left: 10px; margin-top: 10px;">
-        <i class="fa-solid fa-shield-halved" style="color:#2b8bf2;"></i>
+        <i class="fa-solid fa-shield-halved" style="color:#3498db;"></i>
         </div>
     <h3 style=" margin-top: -30px;
             margin-left: 50px;
             margin-bottom: 20px;"> Eligibility Settings</h3>
     <p style="margin-top: -20px; margin-left: 50px; font-size: 14px;">Filter students based on their performance and progress</p>
 
-<div style="width: 96%; background-color: #d9e6f6; border-radius: 10px;padding: 20px; border: solid 1px #2b8bf2 ;">
+<div style="width: 96%; background-color: #d9e6f6; border-radius: 10px;padding: 20px; border: solid 1px #3498db ;">
       <label style="margin-left: 10px;">Minimum Required Points: <span id="minPointsLabel">0 pts</span></label>
     <div class="slider-wrap">
       <input id="minPoints" type="range" min="0" max="10000" step="100" value="0">
@@ -172,7 +172,7 @@
       <div class="toggle" data-key="completedRoadmap"><i class="fa-solid fa-road" style="color: #0b8f46;"></i> Completed Roadmap
         <div class="switch" onclick="toggleSwitch(this)" data-key="completedRoadmap" style="margin-left: 650px;"><div class="knob"></div></div>
       </div>
-      <div class="toggle" data-key="completedCourses"><i class="fa-solid fa-book" style="color: #5a8ee8;"></i> Completed ≥50% Courses
+      <div class="toggle" data-key="completedCourses"><i class="fa-solid fa-book" style="color: #3498db;"></i> Completed ≥50% Courses
         <div class="switch" onclick="toggleSwitch(this)" data-key="completedCourses" style="margin-left: 620px;"><div class="knob"></div></div>
       </div>
       <div class="toggle" data-key="highComm"><i class="fa-solid fa-comment" style="color: #ad44ee;"></i> High Communication Skills
@@ -234,7 +234,7 @@
         <label style="margin-top:-20px;margin-left: 10px;">
           <i class="fa-solid fa-users" style="color:#a5a5a5;margin-top: -80px;"></i>&nbsp;
           Send Auto Email to Eligible Students</label>
-        <p style="flex:1; margin-left: -270px;margin-top: 50px; font-size: 14px; color: #777;">Automatically notify eligible students about this event</p>
+        <p style="flex:1; margin-left: -270px;margin-top: 70px; font-size: 14px; color: #777;">Automatically notify eligible students about this event</p>
         <div class="switch" onclick="toggleSwitch(this)" data-key="sendAutoEmail"><div class="knob"></div></div>
       </div>
     </div>
@@ -263,13 +263,7 @@
 
     <div style="margin-top:14px;padding: 10px;" class="ai-box">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <strong>AI Recommendations</strong>
-          <div class="small-muted">AI can suggest a points threshold based on event type and expected audience.</div>
-        </div>
-        <button id="applyAI" onclick="applyAISuggestion()" style="background:#1360c8;border:1px solid #d7eaff;padding:8px 10px;border-radius:8px;cursor:pointer;color: white;">
-          <i class="fa-solid fa-robot"></i>&nbsp; Apply AI Suggestions
-        </button>
+  
       </div>
       <div id="aiNote" class="small-muted" style="margin-top:8px;color:#c0392b;display:none;">Please select an event type first</div>
     </div>
@@ -297,11 +291,11 @@
 
   <!-- ACTIONS -->
   <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
-    <div style="font-size:14px;color:var(--muted)"><i class="fa-solid fa-circle-info" style="color: #2b8bf2;"></i> Min Points: <b id="footerMin">0 pts</b> &nbsp;&nbsp;&nbsp;&nbsp;
+    <div style="font-size:14px;color:var(--muted)"><i class="fa-solid fa-circle-info" style="color: #3498db;"></i> Min Points: <b id="footerMin">0 pts</b> &nbsp;&nbsp;&nbsp;&nbsp;
       <i class="fa-solid fa-users" style="color: #0b8f46;"></i> &nbsp; Eligible: <b id="footerEligible">500</b></div>
     <div class="controls">
       <button class="btn-cancel" onclick="cancelForm()">Cancel</button>
-      <button class="btn-draft" onclick="submitForm('draft')"><i class="fa-solid fa-file"></i>&nbsp; Save as Draft</button>
+      <button class="btn-draft" onclick="submitForm('draft')" style="color: #3498db;"><i class="fa-solid fa-file"></i>&nbsp; Save as Draft</button>
       <button class="btn-publish" onclick="submitForm('published')"><i class="fa-solid fa-paper-plane"></i>&nbsp; Publish Event</button>
     </div>
   </div>

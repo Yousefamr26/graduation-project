@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CV Templates</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+body{
+font-family:Arial, Helvetica, sans-serif;
+background:#f4f6fb;
+margin:0;
+padding:40px;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+}
+
+/* ---------- TOP BAR ---------- */
+
+.top-bar{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:15px;
+margin-bottom:40px;
+text-align:center;
+}
+
+.upload-btn{
+background:#4e73df;
+color:white;
+border:none;
+padding:11px 22px;
+border-radius:10px;
+cursor:pointer;
+font-size:15px;
+box-shadow:0 6px 14px rgba(0,0,0,0.12);
+transition:0.2s;
+}
+
+.upload-btn:hover{
+background:#3f63c9;
+transform:translateY(-2px);
+}
+
+.title h1{
+margin:0;
+font-size:32px;
+}
+
+.title p{
+color:#777;
+margin-top:6px;
+}
+
+/* ---------- GRID ---------- */
+
+.templates-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+gap:25px;
+}
+
+/* ---------- CARD ---------- */
+
+.card{
+background:white;
+border-radius:14px;
+box-shadow:0 8px 18px rgba(0,0,0,0.08);
+padding:22px;
+text-align:center;
+transition:0.25s;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+.card:hover{
+transform:translateY(-6px);
+box-shadow:0 14px 28px rgba(0,0,0,0.12);
+}
+
+/* ---------- TEMPLATE PREVIEW BOX ---------- */
+
+.preview-box{
+height:150px;
+width:100%;
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+margin-bottom:15px;
+}
+
+.preview-box i{
+font-size:50px;
+color:white;
+background:rgba(255,255,255,0.25);
+padding:18px;
+border-radius:50%;
+}
+
+/* ---------- TEXT ---------- */
+
+.card h3{
+margin:8px 0 6px;
+font-size:18px;
+}
+
+.card p{
+color:#666;
+font-size:13px;
+line-height:1.5;
+text-align:center;
+max-width:220px;
+
+/* حل المشكلة */
+word-break: break-word;
+overflow-wrap: break-word;
+white-space: normal;
+}
+
+/* ---------- BUTTONS ---------- */
+
+.buttons{
+margin-top:12px;
+}
+
+.buttons button{
+border:none;
+padding:8px 15px;
+margin:4px;
+border-radius:6px;
+cursor:pointer;
+font-size:13px;
+font-weight:500;
+transition:0.15s;
+}
+
+.preview-btn{
+background:#e8f8f1;
+color:#1cc88a;
+}
+
+.preview-btn:hover{
+background:#d2f2e5;
+}
+
+.delete-btn{
+background:#fdeaea;
+color:#e74a3b;
+}
+
+.delete-btn:hover{
+background:#f8d7d7;
+}
+
+/* ---------- MODAL ---------- */
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.45);
+backdrop-filter:blur(3px);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.modal-content{
+background:white;
+padding:28px;
+border-radius:12px;
+width:460px;
+box-shadow:0 15px 35px rgba(0,0,0,0.25);
+animation:modalIn .25s ease;
+}
+
+@keyframes modalIn{
+from{transform:scale(.95);opacity:.5}
+to{transform:scale(1);opacity:1}
+}
+
+.modal-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:12px;
+}
+
+.modal-header h2{
+margin:0;
+font-size:20px;
+}
+
+.close-x{
+cursor:pointer;
+font-size:18px;
+color:#777;
+}
+
+.modal-content input,
+.modal-content textarea{
+width:95%;
+padding:10px;
+margin:8px 0;
+border-radius:6px;
+border:1px solid #dcdcdc;
+font-size:13px;
+}
+
+.modal-content textarea{
+resize:none;
+height:75px;
+width: 96%;
+}
+
+.modal-buttons{
+margin-top:14px;
+text-align:right;
+}
+
+.modal-buttons button{
+padding:7px 14px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.save-btn{
+background:#516fca;
+color:white;
+}
+
+.close-btn{
+background:#7b7c88;
+color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="top-bar">
+
+<div class="title">
+<h1>CV Templates</h1>
+<p>Our company provides CV templates to help you prepare your resume.</p>
+</div>
+
+<button class="upload-btn" onclick="openModal()">
+<i class="fa-solid fa-upload"></i> Upload Template
+</button>
+
+</div>
+
+<div id="templatesContainer" class="templates-grid"></div>
+
+</div>
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+<div class="modal-content">
+
+<div class="modal-header">
+<h2>Upload Template</h2>
+<i class="fa-solid fa-xmark close-x" onclick="closeModal()"></i>
+</div>
+
+<input type="text" id="templateName" placeholder="Template Name">
+
+<textarea id="templateDesc" placeholder="Template Description"></textarea>
+
+<input type="file" id="templateFile" accept="application/pdf">
+
+<div class="modal-buttons">
+<button class="save-btn" onclick="addTemplate()">Upload</button>
+<button class="close-btn" onclick="closeModal()">Cancel</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+const container = document.getElementById("templatesContainer")
+let db
+
+function randomColor(){
+const hue=Math.floor(Math.random()*360)
+return `hsl(${hue},65%,55%)`
+}
+
+/* ---------- IndexedDB ---------- */
+
+const request = indexedDB.open("CVTemplatesDB",1)
+
+request.onupgradeneeded = function(e){
+
+ db = e.target.result
+
+ if(!db.objectStoreNames.contains("templates")){
+ db.createObjectStore("templates",{keyPath:"id",autoIncrement:true})
+ }
+
+}
+
+request.onsuccess = function(e){
+ db = e.target.result
+ loadTemplates()
+}
+
+/* ---------- LOAD ---------- */
+
+function loadTemplates(){
+
+const tx = db.transaction("templates","readonly")
+const store = tx.objectStore("templates")
+const req = store.getAll()
+
+req.onsuccess = function(){
+ renderTemplates(req.result)
+}
+
+}
+
+function renderTemplates(list){
+
+container.innerHTML=""
+
+list.forEach(t=>{
+
+let card=document.createElement("div")
+card.className="card"
+
+card.innerHTML=`
+
+<div class="preview-box" style="background:${t.color}">
+<i class="fa-solid fa-id-card"></i>
+</div>
+
+<h3>${t.name}</h3>
+<p>${t.description || ''}</p>
+
+<div class="buttons">
+
+<button class="preview-btn" onclick="previewTemplate(${t.id})">
+Preview
+</button>
+
+<button class="delete-btn" onclick="deleteTemplate(${t.id})">
+Delete
+</button>
+
+</div>
+
+`
+
+container.appendChild(card)
+
+})
+
+}
+
+function openModal(){
+document.getElementById("modal").style.display="flex"
+}
+
+function closeModal(){
+document.getElementById("modal").style.display="none"
+}
+
+/* ---------- ADD ---------- */
+
+function addTemplate(){
+
+let name=document.getElementById("templateName").value.trim()
+let desc=document.getElementById("templateDesc").value.trim()
+let file=document.getElementById("templateFile").files[0]
+
+if(!name || !file){
+alert("Please enter all data")
+return
+}
+
+const tx=db.transaction("templates","readwrite")
+const store=tx.objectStore("templates")
+
+store.add({
+name:name,
+description:desc,
+file:file,
+color:randomColor()
+})
+
+tx.oncomplete=function(){
+loadTemplates()
+}
+
+closeModal()
+
+document.getElementById("templateName").value=""
+document.getElementById("templateDesc").value=""
+document.getElementById("templateFile").value=""
+
+}
+
+/* ---------- DELETE ---------- */
+
+function deleteTemplate(id){
+
+if(!confirm("Are you sure you want to delete this template?")) return
+
+const tx=db.transaction("templates","readwrite")
+const store=tx.objectStore("templates")
+
+store.delete(id)
+
+tx.oncomplete=function(){
+loadTemplates()
+}
+
+}
+
+/* ---------- PREVIEW ---------- */
+
+function previewTemplate(id){
+
+const tx=db.transaction("templates","readonly")
+const store=tx.objectStore("templates")
+const req=store.get(id)
+
+req.onsuccess=function(){
+
+let file=req.result.file
+let url=URL.createObjectURL(file)
+
+window.open(url)
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

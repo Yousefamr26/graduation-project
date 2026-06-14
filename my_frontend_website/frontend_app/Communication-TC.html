@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Trainee Communication</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f4f6fa;
+margin:0;
+padding:30px;
+}
+
+.container{
+max-width:1500px;
+margin-left:20px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+h3{
+margin-top:0;
+}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin-top:10px;
+border:1px solid #ddd;
+border-radius:6px;
+}
+
+textarea{
+resize:none;
+height:80px;
+width:97%;
+}
+
+button{
+border:none;
+padding:8px 15px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.send-btn{
+background:#3498db;
+color:white;
+width:100%;
+margin-top:10px;
+}
+
+.message{
+background:#eef3f9;
+padding:12px;
+border-left:4px solid #3498db;
+border-radius:6px;
+margin-bottom:10px;
+}
+
+.actions{
+margin-top:8px;
+}
+
+.reply-btn{
+background:#eee;
+}
+
+.accept{
+background:#2ecc71;
+color:white;
+}
+
+.reject{
+background:#e74c3c;
+color:white;
+}
+
+.enrollment{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#fff;
+padding:15px;
+border-radius:8px;
+margin-bottom:10px;
+box-shadow:0 1px 5px rgba(0,0,0,0.05);
+}
+
+.status{
+margin-top:15px;
+}
+
+.reply-box{
+margin-top:10px;
+display:none;
+}
+
+.reply-box textarea{
+height:60px;
+}
+
+.small-btn{
+background:#3498db;
+color:white;
+margin-top:5px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2 style="margin-left:20px;">Trainee Communication</h2>
+
+<div class="container">
+
+<div class="grid">
+
+<!-- Send Notification -->
+
+<div class="card" style="width:710px;">
+
+<h3>Send Notification</h3>
+
+<select id="course">
+<option value="">Select Course</option>
+<!-- COURSES FROM BACKEND -->
+</select>
+
+<textarea id="notificationText" placeholder="Write your announcement..."></textarea>
+
+<button class="send-btn" onclick="sendNotification()">
+<i class="fa fa-paper-plane"></i> Send Notification
+</button>
+
+<div id="notifyStatus" class="status"></div>
+
+</div>
+
+
+<!-- Recent Messages -->
+
+<div class="card" style="width:600px;margin-left:-650px;">
+
+<h3>Recent Messages</h3>
+
+<div id="messagesContainer">
+
+<!-- MESSAGES FROM BACKEND -->
+
+</div>
+
+</div>
+
+
+<!-- Enrollment Requests -->
+
+<div class="card" style="margin-top:20px;width:1380px;">
+
+<h3>Enrollment Requests</h3>
+
+<div id="statusMsg"></div>
+
+<div id="enrollmentContainer">
+
+<!-- ENROLLMENT REQUESTS FROM BACKEND -->
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+function handleRequest(btn,status){
+
+let card=btn.closest(".enrollment")
+let name=card.querySelector("b").innerText
+
+card.remove()
+
+let msg=document.getElementById("statusMsg")
+
+msg.innerHTML+=`<p><i class="fa fa-info-circle"></i> ${name} has been ${status}</p>`
+
+}
+
+
+function toggleReply(btn){
+
+let box=btn.parentElement.nextElementSibling
+box.style.display="block"
+
+}
+
+
+function sendReply(btn){
+
+let message=btn.closest(".message")
+message.remove()
+
+}
+
+
+function sendNotification(){
+
+let course=document.getElementById("course")
+let text=document.getElementById("notificationText")
+
+if(course.value=="" || text.value==""){
+alert("Please select course and write message")
+return
+}
+
+document.getElementById("notifyStatus").innerHTML=
+`<p><i class="fa fa-check-circle"></i> Notification sent successfully</p>`
+
+course.value=""
+text.value=""
+
+}
+
+</script>
+
+</body>
+</html>

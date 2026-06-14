@@ -28,7 +28,7 @@
 
     h2{ 
         margin-top:0;
-        color:#155fc4;
+        color:black;
     }
 
     label{
@@ -69,13 +69,13 @@
         transition: all 0.3s;
     }
     .upload-box:hover{
-        border:2px dashed #155fc4;
-        background:#f0f4ff;
+        border:2px dashed #3498db;
+        background:#f6fbff;
     }
 
     .upload-box i{
         font-size:35px;
-        color:#155fc4;
+        color:#3498db;
     }
 
     .preview-img{
@@ -109,7 +109,7 @@
     }
 
     .save-btn{
-        background:#155fc4;
+        background:#3498db;
         color:white;
         padding:12px 22px;
         border:none;
@@ -119,7 +119,7 @@
         transition: all 0.2s;
     }
     .save-btn:hover{ 
-        background:#0e4a9a;
+        background:#218cd3;
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(21, 95, 196, 0.3);
     }
@@ -194,7 +194,7 @@
 
 <div class="header-section">
     <h2>
-        <i class="fa-solid fa-briefcase"></i>
+        <i class="fa-solid fa-briefcase" style="color: #3498db;"></i>
         Create Job
     </h2>
     <p>Post a new job opening to attract talented candidates</p>
@@ -250,7 +250,7 @@
     <div class="upload-box" onclick="document.getElementById('logoInput').click()">
         <i class="fa-solid fa-upload"></i>
         <p>Upload company logo</p>
-        <p style="color:#155fc4;margin-top:-10px;">Browse files</p>
+        <p style="color:#3498db;margin-top:-10px;">Browse files</p>
         <img id="logoPreview" class="preview-img" style="display:none;">
     </div>
     <input type="file" id="logoInput" accept="image/*" style="display:none;" />

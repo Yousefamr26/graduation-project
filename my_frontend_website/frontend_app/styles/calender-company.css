@@ -82,6 +82,42 @@ body {
     border: 2px solid rgb(32, 117, 187);
 }
 
+.day-6 {
+    height: 90px;
+    background: rgb(231, 208, 252);
+    border-radius: 8px;
+    padding: 5px;
+    position: relative;
+    border: 2px solid rgb(163, 95, 240);
+}
+
+.day-15 {
+    height: 90px;
+    background: rgb(198, 252, 200);
+    border-radius: 8px;
+    padding: 5px;
+    position: relative;
+    border: 2px solid rgb(11, 168, 16);
+}
+
+.day-25 {
+    height: 90px;
+    background: rgb(252, 225, 225);
+    border-radius: 8px;
+    padding: 5px;
+    position: relative;
+    border: 2px solid rgb(241, 96, 86);
+}
+
+.day-event-17{
+    height: 90px;
+    background: rgb(253, 220, 191);
+    border-radius: 8px;
+    padding: 5px;
+    position: relative;
+    border: 2px solid rgb(225, 131, 49);
+}
+
 .day-30:hover {
     border: 2px solid rgb(32, 117, 187);
 }
@@ -113,6 +149,7 @@ body {
 }
 
 .event-card.workshop { background: #e8f1ff; }
+.event-card.workshop2 { background: rgb(251, 230, 230);}
 .event-card.interview { background: #f3e8ff; }
 .event-card.event { background: #ffe9d9; }
 .event-card.course { background: #e6ffe6; }
