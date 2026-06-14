@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Settings | Edit Company Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --border: #dcdde1;
+            --radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: clamp(16px, 3vw, 40px) clamp(12px, 3vw, 20px);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: auto;
+        }
+
+        .card {
+            background: var(--white);
+            padding: clamp(20px, 4vw, 40px);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header h2 i {
+            color: var(--primary);
+        }
+
+        .header p {
+            color: var(--text-light);
+            margin: 5px 0 0;
+            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+        }
+
+        /* Loading spinner */
+        .loading-container {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading-container.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: clamp(0.7rem, 1.2vw, 0.8rem);
+            margin-bottom: 8px;
+            color: #576574;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: clamp(10px, 1.5vw, 12px) clamp(12px, 2vw, 15px);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            color: var(--text-dark);
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: clamp(12px, 1.5vw, 14px);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .save-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        .save-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .cancel-btn {
+            background: #fff;
+            color: var(--text-light);
+            border: 1.5px solid var(--border);
+        }
+
+        .cancel-btn:hover:not(:disabled) {
+            background: #f1f2f6;
+            border-color: #ccc;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        /* ===== MODAL STYLES ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: clamp(20px, 4vw, 28px);
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: slideUp 0.3s ease;
+            text-align: center;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .modal-content h3 {
+            margin: 0 0 10px 0;
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        .modal-content p {
+            color: var(--text-light);
+            margin: 0 0 24px 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-modal {
+            padding: 10px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            min-width: 100px;
+            font-family: inherit;
+        }
+
+        .btn-modal:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-modal-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-modal-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-modal-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-modal-success:hover {
+            background: #219a52;
+        }
+
+        .btn-modal-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-modal-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-modal-secondary {
+            background: #e9edf3;
+            color: #555;
+        }
+
+        .btn-modal-secondary:hover {
+            background: #d5dce6;
+        }
+
+        .input-error {
+            border-color: var(--danger) !important;
+            background-color: #fff5f5 !important;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.75rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media screen and (max-width: 500px) {
+            .row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 10px 6px;
+            }
+
+            input, select, textarea {
+                padding: 10px;
+                font-size: 0.85rem;
+                border-radius: 8px;
+            }
+
+            .modal-content {
+                padding: 18px 14px;
+                width: 95%;
+            }
+
+            .modal-icon {
+                font-size: 2.5rem;
+            }
+
+            .modal-content h3 {
+                font-size: 1rem;
+            }
+
+            .modal-content p {
+                font-size: 0.85rem;
+            }
+
+            .btn-modal {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Loading Spinner -->
+    <div class="loading-container" id="loadingContainer">
+        <div class="spinner"></div>
+        <p>Loading profile data...</p>
+    </div>
+
+    <div class="card" id="formCard">
+        <div class="header">
+            <h2>
+                <i class="fa-solid fa-building"></i>
+                Edit Company Profile
+            </h2>
+            <p>Maintain your professional presence on the Smart Career Hub network.</p>
+        </div>
+
+        <!-- Company Name -->
+        <div class="form-group">
+            <label><i class="fa-solid fa-building me-1"></i> Company Name *</label>
+            <input id="companyName" type="text" placeholder="TechCorp Solutions">
+            <span class="error-message" id="companyNameError">Company name is required.</span>
+        </div>
+
+        <!-- Industry -->
+        <div class="form-group">
+            <label><i class="fa-solid fa-briefcase me-1"></i> Industry *</label>
+            <select id="industry">
+                <option value="">Select Industry...</option>
+                <option value="Technology & Innovation">Technology & Innovation</option>
+                <option value="Finance & Banking">Finance & Banking</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Education">Education</option>
+                <option value="Other">Other</option>
+            </select>
+            <span class="error-message" id="industryError">Please select an industry.</span>
+        </div>
+
+        <!-- Email & Phone -->
+        <div class="row">
+            <div class="form-group">
+                <label><i class="fa-solid fa-envelope me-1"></i> Email *</label>
+                <input id="email" type="email" placeholder="hr@techcorp.com">
+                <span class="error-message" id="emailError">Please enter a valid email address.</span>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-phone me-1"></i> Phone</label>
+                <input id="phone" type="text" placeholder="+20 123 456 7890">
+            </div>
+        </div>
+
+        <!-- Website -->
+        <div class="form-group">
+            <label><i class="fa-solid fa-globe me-1"></i> Website</label>
+            <input id="website" type="text" placeholder="www.techcorp.com">
+        </div>
+
+        <!-- Location & Company Size -->
+        <div class="row">
+            <div class="form-group">
+                <label><i class="fa-solid fa-location-dot me-1"></i> Location *</label>
+                <input id="location" type="text" placeholder="Cairo, Egypt">
+                <span class="error-message" id="locationError">Location is required.</span>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-users me-1"></i> Company Size</label>
+                <select id="companySize">
+                    <option value="">Select Size...</option>
+                    <option value="1-50">1-50 employees</option>
+                    <option value="51-200">51-200 employees</option>
+                    <option value="201-1000">201-1000 employees</option>
+                    <option value="1000+">1000+ employees</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- About -->
+        <div class="form-group">
+            <label><i class="fa-solid fa-info-circle me-1"></i> About Company</label>
+            <textarea id="about" placeholder="Tell us about your company vision and goals..."></textarea>
+        </div>
+
+        <!-- HR Contact -->
+        <div class="form-group">
+            <label><i class="fa-solid fa-user-tie me-1"></i> HR Contact Person</label>
+            <input id="hrContact" type="text" placeholder="Full Name">
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="btn-group">
+            <button class="btn save-btn" id="saveBtn" onclick="saveChanges()">
+                <i class="fa-solid fa-check"></i> Save Changes
+            </button>
+            <button class="btn cancel-btn" id="cancelBtn" onclick="confirmCancel()">
+                <i class="fa-solid fa-xmark"></i> Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Validation Error Modal -->
+<div class="modal-overlay" id="validationModal">
+    <div class="modal-content">
+        <i class="fa-solid fa-circle-exclamation modal-icon" style="color: var(--warning);"></i>
+        <h3>Missing Information</h3>
+        <p id="validationMessage">Please fill all required fields.</p>
+        <div class="modal-footer">
+            <button class="btn-modal btn-modal-primary" id="validationCloseBtn">
+                <i class="fa-solid fa-check"></i> OK
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="successModal">
+    <div class="modal-content">
+        <i class="fa-solid fa-circle-check modal-icon" style="color: var(--success);"></i>
+        <h3>Profile Updated!</h3>
+        <p id="successMessage">Your company profile has been updated successfully.</p>
+        <div class="modal-footer">
+            <button class="btn-modal btn-modal-success" id="successOkBtn">
+                <i class="fa-solid fa-check"></i> OK
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal (API Error) -->
+<div class="modal-overlay" id="errorModal">
+    <div class="modal-content">
+        <i class="fa-solid fa-circle-xmark modal-icon" style="color: var(--danger);"></i>
+        <h3>Update Failed</h3>
+        <p id="errorMessage">Something went wrong. Please try again.</p>
+        <div class="modal-footer">
+            <button class="btn-modal btn-modal-danger" id="errorCloseBtn">
+                <i class="fa-solid fa-xmark"></i> Close
+            </button>
+            <button class="btn-modal btn-modal-primary" id="errorRetryBtn">
+                <i class="fa-solid fa-rotate-right"></i> Retry
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Confirmation Modal -->
+<div class="modal-overlay" id="cancelModal">
+    <div class="modal-content">
+        <i class="fa-solid fa-question-circle modal-icon" style="color: var(--primary);"></i>
+        <h3>Discard Changes?</h3>
+        <p>Are you sure you want to leave? All unsaved changes will be lost.</p>
+        <div class="modal-footer">
+            <button class="btn-modal btn-modal-danger" id="cancelConfirmBtn">
+                <i class="fa-solid fa-right-from-bracket"></i> Leave
+            </button>
+            <button class="btn-modal btn-modal-secondary" id="cancelStayBtn">
+                <i class="fa-solid fa-xmark"></i> Stay
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============ CONFIGURATION ============
+    const API_URL = 'http://smartcareerhub.runasp.net/api/Profile/update';
+    
+    // ============ GET USER FROM LOCAL STORAGE ============
+    function getUserFromLocalStorage() {
+        const userData = localStorage.getItem('user');
+        
+        if (!userData) {
+            console.log('❌ No user data found in localStorage');
+            return null;
+        }
+        
+        try {
+            const user = JSON.parse(userData);
+            console.log('✅ User data loaded from localStorage:', user);
+            console.log('🆔 User ID:', user.id);
+            return user;
+        } catch (error) {
+            console.error('❌ Error parsing user data:', error);
+            return null;
+        }
+    }
+
+    // ============ LOAD USER DATA INTO FORM ============
+    function loadUserDataIntoForm() {
+        const user = getUserFromLocalStorage();
+        
+        if (!user) {
+            console.log('⚠️ No user to load');
+            document.getElementById('loadingContainer').classList.remove('active');
+            return;
+        }
+        
+        console.log('📝 Filling form with user data...');
+        
+        // Fill form fields using user object properties
+        document.getElementById('companyName').value = user.organizationName || '';
+        document.getElementById('email').value = user.email || '';
+        document.getElementById('phone').value = user.phone || '';
+        document.getElementById('website').value = user.website || '';
+        document.getElementById('location').value = user.city || user.country || '';
+        document.getElementById('companySize').value = user.companySize || '';
+        document.getElementById('about').value = user.about || '';
+        document.getElementById('hrContact').value = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        
+        // Set industry if exists in user data
+        if (user.industry) {
+            document.getElementById('industry').value = user.industry;
+        }
+        
+        console.log('✅ Form filled successfully');
+        
+        // Hide loading, show form
+        document.getElementById('loadingContainer').classList.remove('active');
+    }
+
+    // ============ MODAL FUNCTIONS ============
+    function openValidationModal(message) {
+        document.getElementById('validationMessage').innerHTML = message;
+        document.getElementById('validationModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeValidationModal() {
+        document.getElementById('validationModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function openSuccessModal(message) {
+        document.getElementById('successMessage').textContent = message || 'Your company profile has been updated successfully.';
+        document.getElementById('successModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSuccessModal() {
+        document.getElementById('successModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function openErrorModal(message) {
+        document.getElementById('errorMessage').textContent = message || 'Something went wrong. Please try again.';
+        document.getElementById('errorModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeErrorModal() {
+        document.getElementById('errorModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function openCancelModal() {
+        document.getElementById('cancelModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeCancelModal() {
+        document.getElementById('cancelModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function closeAllModals() {
+        closeValidationModal();
+        closeSuccessModal();
+        closeErrorModal();
+        closeCancelModal();
+    }
+
+    // ============ MODAL EVENT LISTENERS ============
+    document.getElementById('validationCloseBtn').addEventListener('click', closeValidationModal);
+    document.getElementById('validationModal').addEventListener('click', function(e) {
+        if (e.target === this) closeValidationModal();
+    });
+
+    document.getElementById('successOkBtn').addEventListener('click', () => {
+        closeSuccessModal();
+        window.location.href = 'profile-company.html';
+    });
+    document.getElementById('successModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeSuccessModal();
+            window.location.href = 'profile-company.html';
+        }
+    });
+
+    document.getElementById('errorCloseBtn').addEventListener('click', closeErrorModal);
+    document.getElementById('errorRetryBtn').addEventListener('click', () => {
+        closeErrorModal();
+        saveChanges();
+    });
+    document.getElementById('errorModal').addEventListener('click', function(e) {
+        if (e.target === this) closeErrorModal();
+    });
+
+    document.getElementById('cancelConfirmBtn').addEventListener('click', () => {
+        closeCancelModal();
+        window.location.href = 'profile-company.html';
+    });
+    document.getElementById('cancelStayBtn').addEventListener('click', closeCancelModal);
+    document.getElementById('cancelModal').addEventListener('click', function(e) {
+        if (e.target === this) closeCancelModal();
+    });
+
+    // Close all modals with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeAllModals();
+        }
+    });
+
+    // ============ CLEAR ERROR STYLES ============
+    function clearErrors() {
+        document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+        document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+    }
+
+    // ============ VALIDATE EMAIL ============
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    // ============ DISABLE/ENABLE BUTTONS ============
+    function setButtonsDisabled(disabled) {
+        document.getElementById('saveBtn').disabled = disabled;
+        document.getElementById('cancelBtn').disabled = disabled;
+        
+        if (disabled) {
+            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+        } else {
+            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-check"></i> Save Changes';
+        }
+    }
+
+    // ============ SAVE CHANGES ============
+    async function saveChanges() {
+        clearErrors();
+
+        const companyName = document.getElementById('companyName').value.trim();
+        const industry = document.getElementById('industry').value;
+        const email = document.getElementById('email').value.trim();
+        const location = document.getElementById('location').value.trim();
+
+        let hasError = false;
+        const errorMessages = [];
+
+        // Validate Company Name
+        if (!companyName) {
+            document.getElementById('companyName').classList.add('input-error');
+            document.getElementById('companyNameError').classList.add('show');
+            errorMessages.push('Company name is required.');
+            hasError = true;
+        }
+
+        // Validate Industry
+        if (!industry) {
+            document.getElementById('industry').classList.add('input-error');
+            document.getElementById('industryError').classList.add('show');
+            errorMessages.push('Industry is required.');
+            hasError = true;
+        }
+
+        // Validate Email
+        if (!email) {
+            document.getElementById('email').classList.add('input-error');
+            document.getElementById('emailError').textContent = 'Email address is required.';
+            document.getElementById('emailError').classList.add('show');
+            errorMessages.push('Email is required.');
+            hasError = true;
+        } else if (!isValidEmail(email)) {
+            document.getElementById('email').classList.add('input-error');
+            document.getElementById('emailError').textContent = 'Please enter a valid email address.';
+            document.getElementById('emailError').classList.add('show');
+            errorMessages.push('Invalid email format.');
+            hasError = true;
+        }
+
+        // Validate Location
+        if (!location) {
+            document.getElementById('location').classList.add('input-error');
+            document.getElementById('locationError').classList.add('show');
+            errorMessages.push('Location is required.');
+            hasError = true;
+        }
+
+        if (hasError) {
+            openValidationModal(
+                'Please fix the following issues:<br><br>' + 
+                errorMessages.map(m => '• ' + m).join('<br>')
+            );
+            return;
+        }
+
+        // Prepare data for saving
+        const formData = {
+            companyName: companyName,
+            industry: industry,
+            email: email,
+            phone: document.getElementById('phone').value.trim(),
+            website: document.getElementById('website').value.trim(),
+            location: location,
+            companySize: document.getElementById('companySize').value,
+            about: document.getElementById('about').value.trim(),
+            hrContact: document.getElementById('hrContact').value.trim()
+        };
+
+        console.log('💾 Data to save:', formData);
+
+        // Save to localStorage
+        localStorage.setItem('companyData', JSON.stringify(formData));
+        console.log('✅ Data saved to localStorage');
+
+        // Get user for API call
+        const user = getUserFromLocalStorage();
+        
+        if (!user || !user.id) {
+            console.error('❌ No user ID found for API call');
+            openSuccessModal('Profile saved locally. Please login again to sync with server.');
+            return;
+        }
+
+        // Prepare API payload
+        const apiPayload = {
+            id: user.id,
+            organizationName: formData.companyName,
+            email: formData.email,
+            phone: formData.phone,
+            website: formData.website,
+            city: formData.location,
+            country: user.country || '',
+            industry: formData.industry,
+            companySize: formData.companySize,
+            about: formData.about
+        };
+
+        console.log('📤 Sending to API:', apiPayload);
+
+        // Disable buttons during API call
+        setButtonsDisabled(true);
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(apiPayload)
+            });
+
+            console.log('📥 API Response Status:', response.status);
+
+            if (response.ok) {
+                const responseData = await response.json();
+                console.log('✅ API Response Data:', responseData);
+                
+                // Update user in localStorage with new data
+                const updatedUser = {
+                    ...user,
+                    organizationName: formData.companyName,
+                    email: formData.email,
+                    phone: formData.phone,
+                    website: formData.website,
+                    city: formData.location,
+                    industry: formData.industry,
+                    companySize: formData.companySize,
+                    about: formData.about
+                };
+                
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                console.log('✅ User data updated in localStorage');
+                
+                openSuccessModal('Profile updated successfully!');
+            } else {
+                const errorData = await response.json().catch(() => ({}));
+                console.error('❌ API Error:', errorData);
+                openErrorModal(errorData.message || 'Failed to update profile on server. Data saved locally.');
+            }
+        } catch (error) {
+            console.error('❌ Network Error:', error);
+            openErrorModal('Network error. Please check your connection and try again. Data saved locally.');
+        } finally {
+            setButtonsDisabled(false);
+        }
+    }
+
+    // ============ CANCEL ============
+    function confirmCancel() {
+        const companyName = document.getElementById('companyName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const location = document.getElementById('location').value.trim();
+        const about = document.getElementById('about').value.trim();
+
+        // Check if any field has been modified
+        if (companyName || email || location || about) {
+            openCancelModal();
+        } else {
+            window.location.href = 'profile-company.html';
+        }
+    }
+
+    // ============ INITIALIZATION ============
+    window.addEventListener('DOMContentLoaded', function () {
+        console.log('🚀 Edit Profile Page Loaded');
+        
+        // Show loading
+        document.getElementById('loadingContainer').classList.add('active');
+        
+        // First try to load saved company data
+        const savedData = JSON.parse(localStorage.getItem('companyData'));
+        
+        if (savedData) {
+            console.log('📋 Found saved company data, filling form...');
+            document.getElementById('companyName').value = savedData.companyName || '';
+            document.getElementById('industry').value = savedData.industry || '';
+            document.getElementById('email').value = savedData.email || '';
+            document.getElementById('phone').value = savedData.phone || '';
+            document.getElementById('website').value = savedData.website || '';
+            document.getElementById('location').value = savedData.location || '';
+            document.getElementById('companySize').value = savedData.companySize || '';
+            document.getElementById('about').value = savedData.about || '';
+            document.getElementById('hrContact').value = savedData.hrContact || '';
+            
+            document.getElementById('loadingContainer').classList.remove('active');
+        } else {
+            // If no saved data, load from user object
+            console.log('📋 No saved company data, loading from user...');
+            loadUserDataIntoForm();
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>CV Builder | Smart Career Hub</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #3498DB;
+            --primary-hover: #155fc4;
+            --secondary: #1cc88a;
+            --secondary-hover: #17a673;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --bg: #f8fafc;
+            --text-main: #2d3748;
+            --text-muted: #64748b;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: clamp(16px, 3vw, 20px);
+        }
+
+        .main-content {
+            max-width: 1000px;
+            margin: auto;
+            padding: clamp(20px, 5vw, 40px) clamp(12px, 3vw, 20px);
+        }
+
+        .header-title {
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: #1e293b;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+        }
+
+        .header-subtitle {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+        }
+
+        /* CV Choice Cards */
+        .cv-card {
+            background: #fff;
+            border: 2px solid transparent;
+            border-radius: 24px;
+            padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            height: 100%;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cv-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .icon-wrapper {
+            width: clamp(60px, 10vw, 80px);
+            height: clamp(60px, 10vw, 80px);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            transition: var(--transition);
+        }
+
+        .upload-icon { background: #eef2ff; color: var(--primary); }
+        .template-icon { background: #ecfdf5; color: var(--secondary); }
+
+        .cv-card:hover .icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .cv-card h3 {
+            font-weight: 700;
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            margin-bottom: 1rem;
+        }
+
+        .cv-card p {
+            color: #64748b;
+            font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+            line-height: 1.6;
+        }
+
+        /* Buttons Custom */
+        .btn-custom {
+            padding: clamp(10px, 1.5vw, 12px) clamp(18px, 3vw, 25px);
+            border-radius: 12px;
+            font-weight: 600;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 1.5rem;
+            font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+            font-family: inherit;
+            border: none;
+        }
+
+        .btn-upload { 
+            background: var(--primary); 
+            color: white; 
+        }
+
+        .btn-upload:hover:not(:disabled) { 
+            background: var(--primary-hover); 
+            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3); 
+        }
+
+        .btn-upload:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-template { 
+            background: white; 
+            color: var(--secondary); 
+            border: 2px solid var(--secondary); 
+        }
+
+        .btn-template:hover { 
+            background: var(--secondary); 
+            color: white; 
+            box-shadow: 0 4px 12px rgba(28, 200, 138, 0.3);
+        }
+
+        /* File Display & Existing CV Badge */
+        #cvFileName {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: none;
+            color: var(--primary);
+            font-weight: 500;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .existing-cv-badge {
+            background: #e6f7ec;
+            color: #0e6b3e;
+            border-left: 4px solid var(--secondary);
+            padding: 12px 18px;
+            border-radius: 14px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            animation: fadeIn 0.4s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .existing-cv-badge i {
+            font-size: 1.6rem;
+        }
+
+        .existing-cv-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .existing-cv-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+
+        .existing-cv-meta {
+            font-size: 0.7rem;
+            opacity: 0.75;
+        }
+
+        .btn-use-existing {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 7px 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: 0.2s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-use-existing:hover {
+            background: var(--secondary-hover);
+            transform: scale(0.97);
+        }
+
+        .skip-container {
+            margin-top: clamp(30px, 5vw, 50px);
+        }
+
+        .skip-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+            font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+        }
+
+        .skip-link:hover { 
+            color: var(--text-main); 
+        }
+
+        /* Decorative blobs */
+        .blob {
+            position: fixed;
+            width: clamp(150px, 25vw, 200px);
+            height: clamp(150px, 25vw, 200px);
+            background: var(--primary);
+            filter: blur(80px);
+            opacity: 0.1;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ===== MODAL STYLES ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content-custom {
+            background: #fff;
+            border-radius: 20px;
+            padding: clamp(20px, 4vw, 28px);
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: slideUp 0.3s ease;
+            text-align: center;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .modal-content-custom h3 {
+            margin: 0 0 10px 0;
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        .modal-content-custom p {
+            color: var(--text-muted);
+            margin: 0 0 24px 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .modal-footer-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-modal {
+            padding: 10px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            min-width: 100px;
+            font-family: inherit;
+        }
+
+        .btn-modal:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .btn-modal:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-modal-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-modal-primary:hover:not(:disabled) {
+            background: var(--primary-hover);
+        }
+
+        .btn-modal-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-modal-success:hover:not(:disabled) {
+            background: var(--secondary-hover);
+        }
+
+        .btn-modal-secondary {
+            background: #e9edf3;
+            color: #555;
+        }
+
+        .btn-modal-secondary:hover {
+            background: #d5dce6;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* PDF Viewer Modal (larger) */
+        .modal-content-pdf {
+            max-width: 90vw;
+            width: 900px;
+            height: 85vh;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-content-pdf iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .pdf-header {
+            padding: 14px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pdf-header h4 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .close-pdf-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        @media screen and (max-width: 640px) {
+            .modal-content-pdf {
+                width: 95vw;
+                height: 80vh;
+            }
+            .existing-cv-badge {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="blob" style="top: 10%; left: 10%;"></div>
+<div class="blob" style="bottom: 10%; right: 10%; background: var(--secondary);"></div>
+
+<div class="container main-content">
+    <div class="text-center mb-4">
+        <h1 class="header-title">
+            <i class="fa-solid fa-rocket" style="color: var(--primary);"></i> 
+            Elevate Your Career
+        </h1>
+        <p class="header-subtitle text-muted">How would you like to start your professional journey today?</p>
+    </div>
+
+    <!-- Dynamic Existing CV Section (will appear if CV exists) -->
+    <div id="existingCvContainer" style="margin-bottom: 0.5rem;"></div>
+
+    <div class="row g-4 justify-content-center">
+        <!-- Upload CV Card -->
+        <div class="col-md-5">
+            <div class="card cv-card" onclick="document.getElementById('cvFileInput').click()">
+                <div class="icon-wrapper upload-icon">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h3>Upload New CV</h3>
+                <p>Already have a CV? Upload it and let our AI analyze and optimize your content for modern job markets.</p>
+                
+                <button class="btn btn-custom btn-upload" onclick="event.stopPropagation(); document.getElementById('cvFileInput').click()">
+                    <i class="fa-solid fa-file-import me-2"></i> Select File
+                </button>
+                
+                <input type="file" id="cvFileInput" hidden accept=".pdf,.doc,.docx">
+                <div id="cvFileName"><i class="fa-solid fa-check-circle me-1"></i> <span></span></div>
+            </div>
+        </div>
+
+        <!-- Browse Templates Card -->
+        <div class="col-md-5">
+            <div class="card cv-card" onclick="navigateToTemplates()">
+                <div class="icon-wrapper template-icon">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <h3>Browse Templates</h3>
+                <p>No CV yet? Browse our professional, ATS-friendly templates and build one from scratch.</p>
+                
+                <button class="btn btn-custom btn-template" onclick="event.stopPropagation(); navigateToTemplates()">
+                    View Templates <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center skip-container">
+        <a href="#" onclick="event.preventDefault(); confirmSkip()" class="skip-link">
+            Skip for now <i class="fa-solid fa-chevron-right ms-1 small"></i>
+        </a>
+    </div>
+</div>
+
+<!-- Upload Success Modal -->
+<div class="modal-overlay" id="uploadSuccessModal">
+    <div class="modal-content-custom">
+        <i class="fa-solid fa-circle-check modal-icon" style="color: var(--secondary);"></i>
+        <h3>CV Uploaded Successfully!</h3>
+        <p id="uploadSuccessMessage">Your CV has been uploaded and is ready for analysis.</p>
+        <div class="modal-footer-btns">
+            <button class="btn-modal btn-modal-success" id="uploadSuccessOkBtn">
+                <i class="fa-solid fa-check"></i> Continue
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Error Modal -->
+<div class="modal-overlay" id="uploadErrorModal">
+    <div class="modal-content-custom">
+        <i class="fa-solid fa-circle-exclamation modal-icon" style="color: var(--danger);"></i>
+        <h3>Upload Failed</h3>
+        <p id="uploadErrorMessage">Failed to upload CV. Please try again.</p>
+        <div class="modal-footer-btns">
+            <button class="btn-modal btn-modal-primary" id="uploadErrorRetryBtn">
+                <i class="fa-solid fa-arrows-rotate"></i> Retry
+            </button>
+            <button class="btn-modal btn-modal-secondary" id="uploadErrorCloseBtn">
+                <i class="fa-solid fa-xmark"></i> Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- File Type Error Modal -->
+<div class="modal-overlay" id="fileErrorModal">
+    <div class="modal-content-custom">
+        <i class="fa-solid fa-file-circle-exclamation modal-icon" style="color: var(--warning);"></i>
+        <h3>Unsupported File Format</h3>
+        <p>Please upload a PDF, DOC, or DOCX file. Other formats are not supported at this time.</p>
+        <div class="modal-footer-btns">
+            <button class="btn-modal btn-modal-primary" id="fileErrorCloseBtn">
+                <i class="fa-solid fa-check"></i> OK
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- File Size Error Modal -->
+<div class="modal-overlay" id="fileSizeErrorModal">
+    <div class="modal-content-custom">
+        <i class="fa-solid fa-weight-scale modal-icon" style="color: var(--warning);"></i>
+        <h3>File Too Large</h3>
+        <p>Please upload a file smaller than 10MB. Larger files cannot be processed.</p>
+        <div class="modal-footer-btns">
+            <button class="btn-modal btn-modal-primary" id="fileSizeCloseBtn">
+                <i class="fa-solid fa-check"></i> OK
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation Confirmation Modal -->
+<div class="modal-overlay" id="navigateModal">
+    <div class="modal-content-custom">
+        <i class="fa-solid fa-question-circle modal-icon" style="color: var(--primary);"></i>
+        <h3 id="navigateTitle">Confirm Navigation</h3>
+        <p id="navigateMessage">Are you sure you want to proceed?</p>
+        <div class="modal-footer-btns">
+            <button class="btn-modal btn-modal-primary" id="navigateConfirmBtn">
+                <i class="fa-solid fa-check"></i> Yes
+            </button>
+            <button class="btn-modal btn-modal-secondary" id="navigateCancelBtn">
+                <i class="fa-solid fa-xmark"></i> Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- PDF / File Preview Modal (embedded view) -->
+<div class="modal-overlay" id="pdfPreviewModal">
+    <div class="modal-content-custom modal-content-pdf">
+        <div class="pdf-header">
+            <h4 id="previewModalTitle"><i class="fa-regular fa-file-pdf"></i> CV Preview</h4>
+            <button class="close-pdf-btn" id="closePdfModalBtn">&times;</button>
+        </div>
+        <iframe id="cvPreviewIframe" src="about:blank" title="CV Preview"></iframe>
+    </div>
+</div>
+
+<script>
+    const API_BASE_URL = "http://smartcareerhub.runasp.net/api";
+    const TOKEN = localStorage.getItem("authToken");
+
+    const fileInput = document.getElementById("cvFileInput");
+    const fileNameDiv = document.getElementById("cvFileName");
+    const fileNameSpan = fileNameDiv.querySelector("span");
+    let navigateUrl = null;
+    let pendingFile = null;
+
+    // ===== FETCH EXISTING CV (GET) =====
+    async function fetchExistingCV() {
+        const container = document.getElementById("existingCvContainer");
+        if (!TOKEN) {
+            console.warn("No auth token found. Skipping CV fetch.");
+            container.innerHTML = '';
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/student/cv`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    container.innerHTML = '';
+                    return;
+                }
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            let cvList = Array.isArray(data) ? data : (data ? [data] : []);
+            
+            if (cvList.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const latestCV = cvList[0];
+            renderExistingCVBadge(latestCV);
+        } catch (error) {
+            console.error("Error fetching existing CV:", error);
+            container.innerHTML = '';
+        }
+    }
+
+    // Function to open CV in new tab OR fallback to modal
+    function openCVFile(cvData) {
+        // Priority 1: if API provides a downloadable/viewable URL
+        let fileUrl = cvData.fileUrl || cvData.downloadUrl || cvData.url || null;
+        
+        // If we have a direct file URL, open in new tab for native preview/download
+        if (fileUrl) {
+            // Ensure URL is absolute
+            const newTab = window.open(fileUrl, '_blank');
+            if (!newTab) {
+                // Fallback if popup blocked: show in modal iframe
+                showCVModalWithUrl(fileUrl, cvData.title || "CV Document");
+            }
+            return;
+        }
+        
+        // Attempt to construct from ID if we have cvId
+        if (cvData.id || cvData.cvId) {
+            const cvId = cvData.id || cvData.cvId;
+            const constructedUrl = `${API_BASE_URL}/student/cv/download/${cvId}`;
+            // Try opening new tab with auth header? Can't pass headers via window.open. 
+            // We'll show modal with iframe that includes Authorization via blob? Alternatively we can fetch and create blob.
+            fetchCVAndOpenInModal(cvId, cvData.title || "CV Document");
+            return;
+        }
+        
+        // If nothing works, show informative modal
+        openInfoModal("Preview Unavailable", "We couldn't locate the file URL for this CV. Please try uploading the file again or contact support.");
+    }
+
+    // Helper: fetch CV blob using auth, then display in modal
+    async function fetchCVAndOpenInModal(cvId, title) {
+        const loadingModal = openInfoModal("Loading CV", "Fetching your document, please wait...");
+        try {
+            const response = await fetch(`${API_BASE_URL}/student/cv/download/${cvId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${TOKEN}`
+                }
+            });
+            if (!response.ok) throw new Error("Failed to fetch CV file");
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            showCVModalWithUrl(blobUrl, title);
+            // Revoke URL after modal closes? We'll handle cleanup
+        } catch (err) {
+            console.error(err);
+            openInfoModal("Cannot Open CV", "Unable to load the document. The file might be missing or corrupted.");
+        } finally {
+            closeInfoModal(); // close loading modal if open
+        }
+    }
+
+    function showCVModalWithUrl(url, title) {
+        const modal = document.getElementById("pdfPreviewModal");
+        const iframe = document.getElementById("cvPreviewIframe");
+        const titleElem = document.getElementById("previewModalTitle");
+        titleElem.innerHTML = `<i class="fa-regular fa-file-lines"></i> ${escapeHtml(title)}`;
+        iframe.src = url;
+        modal.classList.add("active");
+        document.body.style.overflow = "hidden";
+        
+        // Cleanup blob URL after modal closes (if it's a blob)
+        const cleanup = () => {
+            if (url.startsWith('blob:')) {
+                URL.revokeObjectURL(url);
+            }
+            iframe.src = "about:blank";
+            modal.removeEventListener('close', cleanup);
+        };
+        modal.addEventListener('closeModal', cleanup, { once: true });
+        // Attach close handlers later
+    }
+
+    function closePdfModal() {
+        const modal = document.getElementById("pdfPreviewModal");
+        const iframe = document.getElementById("cvPreviewIframe");
+        if (iframe.src && iframe.src.startsWith('blob:')) {
+            URL.revokeObjectURL(iframe.src);
+        }
+        iframe.src = "about:blank";
+        modal.classList.remove("active");
+        document.body.style.overflow = "";
+        const event = new Event('closeModal');
+        modal.dispatchEvent(event);
+    }
+
+    function renderExistingCVBadge(cvData) {
+        const container = document.getElementById("existingCvContainer");
+        const cvName = cvData.title || cvData.fileName || "My Resume";
+        const uploadDate = cvData.uploadDate ? new Date(cvData.uploadDate).toLocaleDateString() : "recently";
+        
+        const badgeHtml = `
+            <div class="existing-cv-badge">
+                <i class="fa-solid fa-file-lines"></i>
+                <div class="existing-cv-info">
+                    <div class="existing-cv-title">📄 ${escapeHtml(cvName)}</div>
+                    <div class="existing-cv-meta">Uploaded ${escapeHtml(uploadDate)} • Ready for analysis</div>
+                </div>
+                <button class="btn-use-existing" id="useExistingCvBtn">
+                    <i class="fa-solid fa-eye"></i> Use This CV
+                </button>
+            </div>
+        `;
+        container.innerHTML = badgeHtml;
+        
+        const useBtn = document.getElementById("useExistingCvBtn");
+        if (useBtn) {
+            useBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                // action: open the CV file (new tab / modal)
+                openCVFile(cvData);
+            });
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Generic info modal
+    function openInfoModal(title, message) {
+        // Reuse existing simple modal (we'll use a generic info modal)
+        let infoModal = document.getElementById("genericInfoModal");
+        if (!infoModal) {
+            const modalDiv = document.createElement('div');
+            modalDiv.className = 'modal-overlay';
+            modalDiv.id = 'genericInfoModal';
+            modalDiv.innerHTML = `
+                <div class="modal-content-custom">
+                    <i class="fa-solid fa-circle-info modal-icon" style="color: var(--primary);"></i>
+                    <h3 id="genericModalTitle">Information</h3>
+                    <p id="genericModalMessage"></p>
+                    <div class="modal-footer-btns">
+                        <button class="btn-modal btn-modal-primary" id="genericModalCloseBtn">OK</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modalDiv);
+            infoModal = modalDiv;
+            document.getElementById('genericModalCloseBtn').addEventListener('click', () => {
+                infoModal.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+            infoModal.addEventListener('click', (e) => { if(e.target === infoModal) { infoModal.classList.remove('active'); document.body.style.overflow = ''; } });
+        }
+        document.getElementById('genericModalTitle').innerText = title;
+        document.getElementById('genericModalMessage').innerHTML = message;
+        infoModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        return infoModal;
+    }
+
+    function closeInfoModal() {
+        const modal = document.getElementById('genericInfoModal');
+        if (modal && modal.classList.contains('active')) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // ===== FILE UPLOAD =====
+    fileInput.onchange = async (e) => {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const validExtensions = ['.pdf', '.doc', '.docx'];
+            const fileName = file.name.toLowerCase();
+            const isValid = validExtensions.some(ext => fileName.endsWith(ext));
+            if (!isValid) { openFileErrorModal(); fileInput.value = ''; return; }
+            if (file.size > 10 * 1024 * 1024) { openFileSizeErrorModal(); fileInput.value = ''; return; }
+            pendingFile = file;
+            fileNameSpan.textContent = file.name;
+            fileNameDiv.style.display = "inline-block";
+            await uploadCV(file);
+        } else {
+            fileNameDiv.style.display = "none";
+            pendingFile = null;
+        }
+    };
+
+    async function uploadCV(file) {
+        const uploadBtn = document.querySelector('.btn-upload');
+        const originalText = uploadBtn.innerHTML;
+        uploadBtn.innerHTML = '<span class="loading-spinner"></span> Uploading...';
+        uploadBtn.disabled = true;
+        const formData = new FormData();
+        formData.append('CV', file);
+        formData.append('Title', file.name);
+        try {
+            const response = await fetch(`${API_BASE_URL}/student/cv/upload`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${TOKEN}` },
+                body: formData
+            });
+            if (!response.ok) throw new Error(await response.text() || `HTTP ${response.status}`);
+            await fetchExistingCV();  // refresh section with newly uploaded CV
+            openUploadSuccessModal(file.name);
+        } catch (error) {
+            openUploadErrorModal(error.message || 'Upload failed.');
+        } finally {
+            uploadBtn.innerHTML = originalText;
+            uploadBtn.disabled = false;
+        }
+    }
+
+    async function retryUpload() { if (pendingFile) await uploadCV(pendingFile); }
+
+    // Navigation
+    function navigateToTemplates() { openNavigateModal('Browse Templates', 'Ready to explore our professional CV templates?', 'CV-Templates-graduate&undergraduate.html'); }
+    function confirmSkip() { openNavigateModal('Skip CV Builder', 'Are you sure you want to skip? You can always come back later.', 'Graduate-Dashboard.html'); }
+
+    // Modals
+    function openUploadSuccessModal(fileName) {
+        document.getElementById('uploadSuccessMessage').textContent = `"${fileName}" uploaded successfully.`;
+        document.getElementById('uploadSuccessModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeUploadSuccessModal() { document.getElementById('uploadSuccessModal').classList.remove('active'); document.body.style.overflow = ''; }
+    function openUploadErrorModal(msg) { document.getElementById('uploadErrorMessage').textContent = msg; document.getElementById('uploadErrorModal').classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeUploadErrorModal() { document.getElementById('uploadErrorModal').classList.remove('active'); document.body.style.overflow = ''; }
+    function openFileErrorModal() { document.getElementById('fileErrorModal').classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeFileErrorModal() { document.getElementById('fileErrorModal').classList.remove('active'); document.body.style.overflow = ''; }
+    function openFileSizeErrorModal() { document.getElementById('fileSizeErrorModal').classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeFileSizeErrorModal() { document.getElementById('fileSizeErrorModal').classList.remove('active'); document.body.style.overflow = ''; }
+    function openNavigateModal(title, message, url) { navigateUrl = url; document.getElementById('navigateTitle').textContent = title; document.getElementById('navigateMessage').textContent = message; document.getElementById('navigateModal').classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeNavigateModal() { document.getElementById('navigateModal').classList.remove('active'); document.body.style.overflow = ''; navigateUrl = null; }
+
+    // Event listeners
+    document.getElementById('uploadSuccessOkBtn')?.addEventListener('click', closeUploadSuccessModal);
+    document.getElementById('uploadErrorRetryBtn')?.addEventListener('click', () => { closeUploadErrorModal(); retryUpload(); });
+    document.getElementById('uploadErrorCloseBtn')?.addEventListener('click', closeUploadErrorModal);
+    document.getElementById('fileErrorCloseBtn')?.addEventListener('click', closeFileErrorModal);
+    document.getElementById('fileSizeCloseBtn')?.addEventListener('click', closeFileSizeErrorModal);
+    document.getElementById('navigateConfirmBtn')?.addEventListener('click', () => { if (navigateUrl) window.location.href = navigateUrl; closeNavigateModal(); });
+    document.getElementById('navigateCancelBtn')?.addEventListener('click', closeNavigateModal);
+    document.getElementById('closePdfModalBtn')?.addEventListener('click', closePdfModal);
+    document.getElementById('pdfPreviewModal')?.addEventListener('click', (e) => { if (e.target === document.getElementById('pdfPreviewModal')) closePdfModal(); });
+    
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closePdfModal(); closeUploadSuccessModal(); closeUploadErrorModal(); closeFileErrorModal(); closeFileSizeErrorModal(); closeNavigateModal(); closeInfoModal(); } });
+
+    window.addEventListener('DOMContentLoaded', () => { fetchExistingCV(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, shrink-to-fit=no, viewport-fit=cover">
+  <title>Take Quiz · Smart Career Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --surface: #ffffff;
+      --bg: #f5f7fe;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --border: #e8edf5;
+      --shadow-sm: 0 8px 20px rgba(0,0,0,0.04);
+      --shadow-md: 0 20px 35px rgba(0,0,0,0.08);
+      --radius-xl: 28px;
+      --radius-md: 16px;
+      --transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(ellipse at 5% 15%, rgba(79,70,229,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 80%, rgba(124,58,237,0.05) 0%, transparent 50%);
+      line-height: 1.5;
+    }
+
+    .container-main {
+      padding: 28px 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    @media (min-width: 768px) {
+      .container-main { padding: 40px 32px; }
+    }
+
+    /* Header */
+    .quiz-header {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .quiz-title {
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.4px;
+    }
+    .quiz-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .badge-meta {
+      background: #f1f5f9;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge-completed {
+      background: #dcfce7;
+      color: #065f46;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge-loading {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-container { margin-bottom: 24px; }
+    .progress {
+      height: 10px;
+      border-radius: 20px;
+      background: #e9eef3;
+    }
+    .progress-bar {
+      border-radius: 20px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+
+    .question-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    .question-number {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--primary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .question-text {
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      background: #fafbfd;
+      font-weight: 500;
+    }
+    .option-item:hover {
+      background: #f5f7fe;
+      border-color: var(--primary-light);
+    }
+    .option-item.selected {
+      background: #eef2ff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(79,70,229,0.15);
+    }
+    .option-item.answered {
+      opacity: 0.7;
+      cursor: not-allowed;
+      background: #f1f5f9;
+    }
+    .option-item.answered:hover {
+      background: #f1f5f9;
+      border-color: var(--border);
+    }
+    .option-item.correct-highlight {
+      background: #dcfce7;
+      border-color: #10b981;
+    }
+    .option-radio {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #d1d7e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+    .option-text { flex: 1; }
+
+    .nav-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .btn-nav {
+      border-radius: 14px;
+      font-weight: 600;
+      padding: 12px 24px;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+    .btn-prev {
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+    }
+    .btn-prev:hover { background: #f8fafc; }
+    .btn-next {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: white;
+      border: none;
+      box-shadow: 0 6px 16px rgba(79,70,229,0.25);
+    }
+    .btn-next:hover { box-shadow: 0 10px 22px rgba(79,70,229,0.35); }
+    .btn-finish {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      box-shadow: 0 6px 16px rgba(16,185,129,0.3);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 14px 28px;
+    }
+    .btn-finish:hover { box-shadow: 0 10px 22px rgba(16,185,129,0.4); }
+    .btn-submit {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      border: none;
+      box-shadow: 0 6px 16px rgba(245,158,11,0.3);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 14px 28px;
+    }
+    .btn-submit:hover { box-shadow: 0 10px 22px rgba(245,158,11,0.4); }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .question-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+    .question-dot {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .question-dot:hover { border-color: var(--primary); }
+    .question-dot.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .question-dot.answered-dot {
+      background: #dcfce7;
+      border-color: #10b981;
+      color: #065f46;
+    }
+
+    #toastContainer {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .toast-popup {
+      background: #0f172a;
+      color: white;
+      padding: 16px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideUp 0.35s ease;
+      font-size: 0.9rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      max-width: 380px;
+    }
+    .toast-popup.error { background: #dc2626; }
+    .toast-popup.success { background: #059669; }
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, #e9edf5 25%, #f0f4fa 50%, #e9edf5 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 28px;
+      height: 300px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @media (max-width: 576px) {
+      .quiz-header { flex-direction: column; align-items: flex-start; }
+      .option-item { padding: 12px 14px; }
+      .question-dot { width: 32px; height: 32px; font-size: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container-main">
+  <div class="quiz-header" id="quizHeader">
+    <div>
+      <div class="quiz-title" id="quizTitle">📝 Quiz</div>
+      <div class="quiz-meta mt-2">
+        <span class="badge-meta"><i class="bi bi-patch-question"></i> <span id="questionCount">0</span> Questions</span>
+        <span class="badge-meta"><i class="bi bi-star-fill text-warning"></i> <span id="totalPoints">0</span> pts</span>
+      </div>
+    </div>
+    <div>
+      <span class="badge-loading" id="syncBadge" style="display:none;">
+        <i class="bi bi-cloud-download"></i> Syncing answers...
+      </span>
+      <span class="badge-completed" id="completionBadge">
+        <i class="bi bi-check-circle"></i> <span id="answeredCount">0</span>/<span id="totalCount">0</span> Answered
+      </span>
+    </div>
+  </div>
+
+  <div class="question-dots" id="questionDots"></div>
+
+  <div class="progress-container">
+    <div class="d-flex justify-content-between small text-muted mb-1">
+      <span>Progress</span>
+      <span id="progressText">0% Complete</span>
+    </div>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar" style="width:0%">0%</div>
+    </div>
+  </div>
+
+  <div id="mainContent">
+    <div class="skeleton"></div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script>
+  (function () {
+  
+    const API_BASE = "http://smartcareerhub.runasp.net/api";
+    const TOKEN = localStorage.getItem("authToken") || "";
+  
+    const params = new URLSearchParams(window.location.search);
+    const quizId = parseInt(params.get('quizId') || '42');
+    const roadmapId = params.get('roadmapId') || '52';
+  
+    let quizData = null;
+    let questions = [];
+    let savedAnswers = {};
+    let currentIndex = 0;
+  
+    const mainContent = document.getElementById("mainContent");
+    const questionDots = document.getElementById("questionDots");
+  
+    const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
+  
+    const indexToLetter = (i) => labels[i] || '';
+  
+    function esc(str) {
+      if (!str) return '';
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+  
+    function isQuestionAnswered(id) {
+      return savedAnswers[id] !== undefined && savedAnswers[id] !== '';
+    }
+  
+    function getSavedAnswer(id) {
+      return savedAnswers[id] || '';
+    }
+  
+    function saveAnswersToStorage() {
+      let all = {};
+      try {
+        const s = localStorage.getItem('quizAnswers');
+        if (s) all = JSON.parse(s);
+      } catch {}
+  
+      all[quizId] = savedAnswers;
+      localStorage.setItem('quizAnswers', JSON.stringify(all));
+    }
+  
+    function loadLocalAnswers() {
+      try {
+        const s = localStorage.getItem('quizAnswers');
+        if (s) {
+          const all = JSON.parse(s);
+          savedAnswers = all[quizId] || {};
+        }
+      } catch {
+        savedAnswers = {};
+      }
+    }
+  
+    async function loadAnswersFromAPI() {
+      if (!TOKEN || !questions.length) return;
+  
+      try {
+        const res = await fetch(
+          `${API_BASE}/student/roadmaps/${roadmapId}/quizzes/${quizId}/answers`,
+          {
+            headers: { "Authorization": `Bearer ${TOKEN}` }
+          }
+        );
+  
+        if (!res.ok) return;
+  
+        const data = await res.json();
+        if (!Array.isArray(data)) return;
+  
+        data.forEach((ans, i) => {
+          if (i >= questions.length) return;
+  
+          const q = questions[i];
+          const options = q.options || [];
+  
+          const text = ans.answerText;
+  
+          const idx = options.indexOf(text);
+  
+          if (idx !== -1) {
+            savedAnswers[q.id] = indexToLetter(idx);
+          } else {
+            savedAnswers[q.id] = text;
+          }
+        });
+  
+        saveAnswersToStorage();
+  
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+  
+    function updateStats() {
+      const total = questions.length;
+      const answered = Object.values(savedAnswers).filter(v => v).length;
+  
+      const pct = total ? Math.round((answered / total) * 100) : 0;
+  
+      document.getElementById("questionCount").textContent = total;
+      document.getElementById("totalCount").textContent = total;
+      document.getElementById("answeredCount").textContent = answered;
+  
+      document.getElementById("progressText").textContent = pct + "% Complete";
+      document.getElementById("progressBar").style.width = pct + "%";
+      document.getElementById("progressBar").textContent = pct + "%";
+    }
+  
+    function renderDots() {
+      let html = "";
+  
+      questions.forEach((q, i) => {
+        const active = i === currentIndex;
+        const answered = isQuestionAnswered(q.id);
+  
+        html += `
+          <div class="question-dot ${active ? 'active' : ''} ${answered ? 'answered-dot' : ''}"
+            onclick="window.goToQuestion(${i})">
+            ${i + 1}
+          </div>
+        `;
+      });
+  
+      questionDots.innerHTML = html;
+    }
+  
+    function renderQuestion(index) {
+      const q = questions[index];
+      const options = q.options || [];
+      const selected = getSavedAnswer(q.id);
+      const answered = isQuestionAnswered(q.id);
+  
+      mainContent.innerHTML = `
+        <div class="question-card">
+          <div class="question-number">
+            Question ${index + 1} of ${questions.length}
+          </div>
+  
+          <div class="question-text">${esc(q.text)}</div>
+  
+          ${answered ? `
+            <div class="alert alert-success">
+              You answered: <b>${selected}</b>
+            </div>
+          ` : ''}
+  
+          ${options.map((opt, i) => {
+            const letter = indexToLetter(i);
+            const isSelected = selected === letter;
+  
+            return `
+              <div class="option-item ${isSelected ? 'selected' : ''} ${answered ? 'answered' : ''}"
+                onclick="${answered ? '' : `window.selectOption(${q.id}, ${i}, this)`}">
+                <div class="option-radio">${letter}</div>
+                <div class="option-text">${esc(opt)}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+  
+        <div class="nav-buttons">
+          <button class="btn btn-prev"
+            onclick="window.prevQuestion()"
+            ${index === 0 ? 'disabled' : ''}>
+            Prev
+          </button>
+  
+          ${index < questions.length - 1 ? `
+            <button class="btn btn-next" onclick="window.nextQuestion()">
+              Next
+            </button>
+          ` : `
+            <button class="btn btn-finish" onclick="window.finishQuiz()">
+              Finish
+            </button>
+          `}
+        </div>
+      `;
+  
+      renderDots();
+      updateStats();
+    }
+  
+    window.selectOption = async function (qid, optIndex) {
+      const letter = indexToLetter(optIndex);
+  
+      savedAnswers[qid] = letter;
+      saveAnswersToStorage();
+  
+      await submitAnswer(qid, letter);
+  
+      renderQuestion(currentIndex);
+      updateStats();
+  
+      setTimeout(() => {
+        if (currentIndex < questions.length - 1) {
+          window.nextQuestion();
+        }
+      }, 300);
+    };
+  
+    async function submitAnswer(qid, letter) {
+      const form = new FormData();
+      form.append("questionId", qid);
+      form.append("answerText", letter);
+  
+      await fetch(
+        `${API_BASE}/student/roadmaps/${roadmapId}/quizzes/${quizId}/submit`,
+        {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${TOKEN}` },
+          body: form
+        }
+      );
+    }
+  
+    window.nextQuestion = function () {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        renderQuestion(currentIndex);
+      }
+    };
+  
+    window.prevQuestion = function () {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderQuestion(currentIndex);
+      }
+    };
+  
+    window.goToQuestion = function (i) {
+      currentIndex = i;
+      renderQuestion(i);
+    };
+  
+    window.finishQuiz = async function () {
+  
+      await fetch(
+        `${API_BASE}/student/roadmaps/${roadmapId}/quizzes/${quizId}/finish`,
+        {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${TOKEN}` }
+        }
+      );
+  
+      fetchAndShowScore();
+    };
+  
+    async function fetchAndShowScore() {
+      const res = await fetch(
+        `${API_BASE}/student/roadmaps/${roadmapId}/quizzes/${quizId}/score`,
+        {
+          headers: { "Authorization": `Bearer ${TOKEN}` }
+        }
+      );
+  
+      const data = await res.json();
+      showResults(data);
+    }
+  
+    function showResults(data) {
+      const score = data.score || 0;
+      const total = data.total || questions.length;
+      const pct = Math.round((score / total) * 100);
+  
+      mainContent.innerHTML = `
+        <div class="question-card text-center">
+          <h3>${pct >= 70 ? 'Passed 🎉' : 'Try Again'}</h3>
+          <p>${score} / ${total}</p>
+  
+          <button class="btn btn-next" onclick="window.location.reload()">
+            Retry
+          </button>
+        </div>
+      `;
+    }
+  
+    function loadQuiz() {
+      const s = localStorage.getItem("currentroadexams");
+      const quizzes = JSON.parse(s || "[]");
+  
+      quizData = quizzes.find(q => q.id === quizId || q.quizId === quizId);
+  
+      questions = quizData?.questions || [];
+  
+      document.getElementById("quizTitle").textContent = quizData?.title || "Quiz";
+  
+      loadLocalAnswers();
+  
+      loadAnswersFromAPI().then(() => {
+        renderQuestion(0);
+      });
+    }
+  
+    loadQuiz();
+  
+  })();
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

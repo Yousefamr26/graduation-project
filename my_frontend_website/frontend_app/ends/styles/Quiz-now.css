@@ -1,0 +1,26 @@
+/* Light blue background for the selected state or info box */
+.bg-light-blue {
+  background-color: #f0f7ff;
+}
+
+/* Dashed border for the AI section */
+.border-blue-dashed {
+  border: 1px dashed #2A83BD;
+}
+
+/* Custom card hover effect */
+.custom-selection-card {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background-color: #fff;
+}
+
+.custom-selection-card:hover {
+  background-color: #f8fbff;
+  border-color: #2A83BD !important;
+}
+
+/* Highlight card when checkbox is checked (Optional JS required for full effect) */
+.custom-selection-card input:checked + div {
+  /* You can add specific styles here if you want text to change color */
+}

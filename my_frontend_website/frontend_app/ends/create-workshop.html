@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Workshop Designer | Smart Career Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8edf5 100%);
+            padding: 28px 24px;
+            color: #3498db;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 20px 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3498db 0%, #3090ba 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 12px 20px -8px rgba(52, 152, 219, 0.4);
+        }
+
+        .header-text h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3498db, #2e84a9);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .header-text p {
+            color: #5b7c9c;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Cards */
+        .form-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-card:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #eef2ff;
+        }
+
+        .card-title i {
+            font-size: 22px;
+            color: #3498db;
+            background: linear-gradient(135deg, #e0f2fe, #d0e8ff);
+            padding: 10px;
+            border-radius: 16px;
+        }
+
+        .card-title h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e2a3e;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            color: #4a627a;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1.5px solid #e2edf2;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #ffffff;
+            color: #1e2a3e;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.12);
+            transform: translateY(-1px);
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233498db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 18px;
+            cursor: pointer;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        /* File Upload */
+        .file-zone {
+            border: 2px dashed #cbdde6;
+            border-radius: 24px;
+            padding: 28px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(145deg, #fafdff, #f5f9fe);
+        }
+
+        .file-zone:hover {
+            border-color: #3498db;
+            background: linear-gradient(145deg, #f0f7ff, #ebf4fe);
+            transform: scale(1.01);
+        }
+
+        .file-zone i {
+            font-size: 42px;
+            color: #3498db;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-height: 220px;
+            object-fit: cover;
+            border-radius: 20px;
+            margin-top: 18px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dynamic Items */
+        .item-card {
+            background: linear-gradient(135deg, #f8fbfe, #f4f8fe);
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(52, 152, 219, 0.15);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .type-select {
+            background: white;
+            border: 1.5px solid #e2edf2;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-remove {
+            background: rgba(239, 68, 68, 0.1);
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-remove:hover {
+            background: #fee2e2;
+            transform: scale(0.96);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #f1f5f9, #eef2ff);
+            border: 1.5px solid #e2edf2;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.25s;
+            color: #2c7da0;
+        }
+
+        .btn-add:hover {
+            background: #e6f0ff;
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        /* File Input */
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: white;
+            border: 1.5px solid #e2edf2;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #4a627a;
+        }
+
+        .file-input-label:hover {
+            border-color: #3498db;
+            background: #f0f7ff;
+        }
+
+        .file-input-label i {
+            color: #3498db;
+            font-size: 1rem;
+        }
+
+        .file-path-display {
+            font-size: 0.7rem;
+            color: #10b981;
+            margin-top: 6px;
+            padding-left: 12px;
+            word-break: break-all;
+        }
+
+        /* Toggle Switch */
+        .toggle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #eef2ff;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, #3498db, #2c7da0);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Summary */
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(4px);
+            padding: 18px;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid rgba(30, 8, 8, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #38bdf8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* Action Buttons */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 20px 32px;
+            border-radius: 28px;
+            margin-top: 28px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.25s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2c7da0);
+            color: white;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e6edf4;
+            transform: translateY(-1px);
+        }
+
+        /* Loader Popup */
+        .loader-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            z-index: 1200;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loader-modal.active {
+            display: flex;
+        }
+
+        .loader-content {
+            background: white;
+            border-radius: 32px;
+            padding: 32px 48px;
+            text-align: center;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
+            animation: fadeInScale 0.3s ease;
+        }
+
+        .loader-spinner {
+            width: 54px;
+            height: 54px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .loader-content p {
+            color: #1e2a3e;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            padding: 32px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-icon {
+            font-size: 3.5rem;
+            margin-bottom: 16px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 28px;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .row-2 { grid-template-columns: 1fr; gap: 16px; }
+            .summary-stats { grid-template-columns: 1fr; }
+            .action-bar { flex-direction: column; align-items: stretch; }
+            .btn { justify-content: center; }
+            .form-card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loaderModal" class="loader-modal">
+    <div class="loader-content">
+        <div class="loader-spinner"></div>
+        <p id="loaderMessage">Processing...</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="page-header">
+        <div class="header-icon"><i class="fas fa-chalkboard-user"></i></div>
+        <div class="header-text">
+            <h1 id="pageTitle">Create New Workshop</h1>
+            <p id="pageSubtitle">Design & launch impactful educational experiences</p>
+        </div>
+    </div>
+
+    <!-- Basic Information -->
+    <div class="form-card">
+        <div class="card-title"><i class="fas fa-info-circle"></i><h3>Basic Information</h3></div>
+        <div class="form-group"><label>Title *</label><input type="text" id="Title" placeholder="e.g., Advanced AI Workshop"></div>
+        <div class="form-group"><label>Description *</label><textarea id="Description" rows="3" placeholder="Describe what students will learn..."></textarea></div>
+        <div class="row-2">
+            <div class="form-group"><label>Location</label><input type="text" id="Location" placeholder="Online / Campus Hall"></div>
+            <div class="form-group"><label>Workshop Type</label><select id="WorkshopType"><option value="Online">Online</option><option value="Offline">Offline</option><option value="Hybrid">Hybrid</option></select></div>
+        </div>
+        <div class="row-2">
+            <div class="form-group"><label>Start Date & Time</label><input type="datetime-local" id="StartDate"></div>
+            <div class="form-group"><label>End Date & Time</label><input type="datetime-local" id="EndDate"></div>
+        </div>
+        <div class="row-2">
+            <div class="form-group"><label>Max Capacity</label><input type="number" id="MaxCapacity" value="50"></div>
+            <div class="form-group"><label>Banner Image</label><div class="file-zone" onclick="document.getElementById('bannerInput').click()"><i class="fas fa-cloud-upload-alt"></i><p>Click to upload banner (max 5MB)</p></div><input type="file" id="bannerInput" accept="image/*" style="display: none;"><div id="bannerPreview"></div></div>
+        </div>
+    </div>
+
+    <!-- Requirements & Publishing -->
+    <div class="form-card">
+        <div class="card-title"><i class="fas fa-shield-alt"></i><h3>Requirements & Publishing</h3></div>
+        <div class="toggle-item"><div><strong>Require CV Upload</strong><br><small>Students must upload CV to enroll</small></div><label class="switch"><input type="checkbox" id="RequireCV"><span class="slider"></span></label></div>
+        <div class="toggle-item"><div><strong>Require Roadmap Completion</strong><br><small>Students must complete career roadmap</small></div><label class="switch"><input type="checkbox" id="RequireRoadmapCompletion"><span class="slider"></span></label></div>
+        <div class="toggle-item"><div><strong>Publish Immediately</strong><br><small>Make workshop visible to students</small></div><label class="switch"><input type="checkbox" id="IsPublished"><span class="slider"></span></label></div>
+    </div>
+
+    <!-- Materials -->
+    <div class="form-card">
+        <div class="card-title"><i class="fas fa-book-open"></i><h3>Materials (Videos & PDFs)</h3></div>
+        <div id="materialsContainer"></div>
+        <button type="button" class="btn-add" onclick="addMaterial()"><i class="fas fa-plus"></i> Add Material</button>
+    </div>
+
+    <!-- Activities -->
+    <div class="form-card">
+        <div class="card-title"><i class="fas fa-tasks"></i><h3>Activities</h3></div>
+        <div id="activitiesContainer"></div>
+        <button type="button" class="btn-add" onclick="addActivity()"><i class="fas fa-plus"></i> Add Activity</button>
+    </div>
+
+    <!-- Summary -->
+    <div class="form-card" style=" border: none;">
+        <div class="card-title"><i class="fas fa-chart-line"></i><h3 style="color: white;">Live Summary</h3></div>
+        <div class="summary-stats">
+            <div class="stat-box"><div class="stat-number" id="totalPoints">0</div><div style="color:#3498db;">Total Points</div></div>
+            <div class="stat-box"><div class="stat-number" id="totalMaterials">0</div><div style="color:#3498db;">Materials</div></div>
+            <div class="stat-box"><div class="stat-number" id="totalActivities">0</div><div style="color:#3498db;">Activities</div></div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn btn-secondary" onclick="confirmCancel()"><i class="fas fa-times"></i> Cancel</button>
+        <div style="display: flex; gap: 12px;"><button class="btn btn-secondary" onclick="saveWorkshop('draft')"><i class="fas fa-save"></i> Save Draft</button><button class="btn btn-primary" onclick="saveWorkshop('published')"><i class="fas fa-paper-plane"></i> Publish</button></div>
+    </div>
+</div>
+
+<!-- Modals -->
+<div id="validationModal" class="modal"><div class="modal-content"><div class="modal-icon" style="color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i></div><h3>Missing Information</h3><p id="validationMsg"></p><div class="modal-buttons"><button class="btn btn-primary" onclick="closeModal('validationModal')">OK</button></div></div></div>
+<div id="successModal" class="modal"><div class="modal-content"><div class="modal-icon" style="color: #10b981;"><i class="fas fa-check-circle"></i></div><h3 id="successTitle">Success!</h3><p id="successMsg"></p><div class="modal-buttons"><button class="btn btn-primary" onclick="redirectToList()">OK</button></div></div></div>
+<div id="cancelModal" class="modal"><div class="modal-content"><div class="modal-icon" style="color: #3498db;"><i class="fas fa-question-circle"></i></div><h3>Discard Changes?</h3><p>All unsaved changes will be lost.</p><div class="modal-buttons"><button class="btn btn-secondary" onclick="closeModal('cancelModal')">Stay</button><button class="btn btn-primary" onclick="redirectToList()">Leave</button></div></div></div>
+
+<script>
+    // ==================== CONFIG ====================
+    const API_BASE = "http://smartcareerhub.runasp.net/api";
+    const TOKEN = localStorage.getItem("authToken");
+    const urlParams = new URLSearchParams(window.location.search);
+    const WORKSHOP_ID = urlParams.get('id');
+    const IS_EDIT_MODE = !!WORKSHOP_ID;
+
+    let bannerFile = null;
+    let existingBannerUrl = '';
+    let materials = [];
+    let activities = [];
+
+    function showLoader(message = 'Processing...') {
+        document.getElementById('loaderMessage').textContent = message;
+        document.getElementById('loaderModal').classList.add('active');
+    }
+    function hideLoader() { document.getElementById('loaderModal').classList.remove('active'); }
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    function showValidation(msg) { document.getElementById('validationMsg').innerText = msg; openModal('validationModal'); }
+    function showSuccess(title, msg) { document.getElementById('successTitle').innerText = title; document.getElementById('successMsg').innerText = msg; openModal('successModal'); }
+    function confirmCancel() { openModal('cancelModal'); }
+    function redirectToList() { window.location.href = 'workshop-company.html'; }
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+
+    function updateSummary() {
+        let points = 0;
+        materials.forEach(m => points += (parseInt(m.Points) || 0));
+        activities.forEach(a => points += (parseInt(a.Points) || 0));
+        document.getElementById('totalPoints').innerText = points;
+        document.getElementById('totalMaterials').innerText = materials.length;
+        document.getElementById('totalActivities').innerText = activities.length;
+    }
+
+    // ==================== MATERIALS ====================
+    function addMaterial(data = {}) {
+        materials.push({
+            id: Date.now(),
+            Type: data.Type || 'Video',
+            TitleVideo: data.TitleVideo || '',
+            TitlePdf: data.TitlePdf || '',
+            Duration: data.Duration || '',
+            PageCount: data.PageCount || '',
+            Points: data.Points || 10,
+            FilePath: data.FilePath || null,
+            fileObj: null,
+            fileName: ''
+        });
+        renderMaterials();
+    }
+
+    function renderMaterials() {
+        const container = document.getElementById('materialsContainer');
+        if (materials.length === 0) { container.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 32px;">✨ No materials added yet. Click the button above to add.</p>'; updateSummary(); return; }
+        container.innerHTML = '';
+        materials.forEach((m, idx) => {
+            const div = document.createElement('div'); div.className = 'item-card';
+            div.innerHTML = `
+                <div class="item-header">
+                    <select class="type-select" onchange="updateMaterialType(${idx}, this.value)"><option value="Video" ${m.Type === 'Video' ? 'selected' : ''}>🎬 Video</option><option value="PDF" ${m.Type === 'PDF' ? 'selected' : ''}>📄 PDF Document</option></select>
+                    <button class="btn-remove" onclick="removeMaterial(${idx})"><i class="fas fa-trash"></i> Remove</button>
+                </div>
+                <div class="row-2">
+                    <div class="form-group"><label>Title *</label><input type="text" value="${escapeHtml(m.Type === 'Video' ? m.TitleVideo : m.TitlePdf)}" placeholder="Material title" onchange="updateMaterialTitle(${idx}, this.value)"></div>
+                    ${m.Type === 'Video' ? `<div class="form-group"><label>Duration (minutes)</label><input type="number" value="${m.Duration}" placeholder="30" onchange="updateMaterial(${idx}, 'Duration', this.value)"></div>` : `<div class="form-group"><label>Page Count</label><input type="number" value="${m.PageCount}" placeholder="15" onchange="updateMaterial(${idx}, 'PageCount', this.value)"></div>`}
+                    <div class="form-group"><label>Points</label><input type="number" value="${m.Points}" onchange="updateMaterial(${idx}, 'Points', parseInt(this.value) || 0)"></div>
+                    <div class="form-group">
+                        <label>Upload File</label>
+                        <div class="file-input-wrapper">
+                            <div class="file-input-label" onclick="document.getElementById('materialFile_${idx}').click()">
+                                <i class="fas fa-cloud-upload-alt"></i> Choose file
+                            </div>
+                            <input type="file" id="materialFile_${idx}" style="display: none;" accept="${m.Type === 'Video' ? 'video/*' : '.pdf'}" onchange="handleMaterialFile(${idx}, this)">
+                            <div id="materialFilePath_${idx}" class="file-path-display">${m.fileName ? `<i class="fas fa-check-circle"></i> ${escapeHtml(m.fileName)}` : (m.FilePath ? `<i class="fas fa-link"></i> ${escapeHtml(m.FilePath.split('/').pop())}` : 'No file selected')}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+        updateSummary();
+    }
+
+    function updateMaterialTitle(idx, value) {
+        if (materials[idx].Type === 'Video') materials[idx].TitleVideo = value;
+        else materials[idx].TitlePdf = value;
+        updateSummary();
+    }
+
+    function handleMaterialFile(idx, input) {
+        const file = input.files[0];
+        if (file) {
+            materials[idx].fileObj = file;
+            materials[idx].fileName = file.name;
+            document.getElementById(`materialFilePath_${idx}`).innerHTML = `<i class="fas fa-check-circle"></i> ${escapeHtml(file.name)}`;
+        }
+    }
+
+    function updateMaterialType(idx, type) { 
+        materials[idx].Type = type; 
+        renderMaterials(); 
+    }
+    function updateMaterial(idx, field, val) { materials[idx][field] = val; updateSummary(); }
+    function removeMaterial(idx) { materials.splice(idx, 1); renderMaterials(); }
+
+    // ==================== ACTIVITIES ====================
+    function addActivity(data = {}) { activities.push({ id: Date.now(), Name: data.Name || '', Description: data.Description || '', Difficulty: data.Difficulty || 'Easy', Points: data.Points || 10 }); renderActivities(); }
+    
+    function renderActivities() {
+        const container = document.getElementById('activitiesContainer');
+        if (activities.length === 0) { container.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 32px;">✨ No activities added yet. Click the button above to add.</p>'; updateSummary(); return; }
+        container.innerHTML = '';
+        activities.forEach((act, idx) => {
+            const div = document.createElement('div'); div.className = 'item-card';
+            div.innerHTML = `<div class="item-header"><span style="background:#e2e3e8; padding:6px 18px; border-radius:40px; font-size:0.8rem;">Activity</span><button class="btn-remove" onclick="removeActivity(${idx})"><i class="fas fa-trash"></i> Remove</button></div><div class="row-2"><div class="form-group"><label>Activity Name *</label><input type="text" value="${escapeHtml(act.Name)}" placeholder="Build a Portfolio" onchange="updateActivity(${idx}, 'Name', this.value)"></div><div class="form-group"><label>Difficulty</label><select class="type-select" onchange="updateActivity(${idx}, 'Difficulty', this.value)"><option ${act.Difficulty === 'Easy' ? 'selected' : ''}>Easy</option><option ${act.Difficulty === 'Medium' ? 'selected' : ''}>Medium</option><option ${act.Difficulty === 'Hard' ? 'selected' : ''}>Hard</option></select></div><div class="form-group"><label>Points</label><input type="number" value="${act.Points}" onchange="updateActivity(${idx}, 'Points', parseInt(this.value) || 0)"></div></div><div class="form-group"><label>Description</label><textarea rows="2" placeholder="Describe the activity..." onchange="updateActivity(${idx}, 'Description', this.value)">${escapeHtml(act.Description)}</textarea></div>`;
+            container.appendChild(div);
+        });
+        updateSummary();
+    }
+    function updateActivity(idx, field, val) { activities[idx][field] = val; updateSummary(); }
+    function removeActivity(idx) { activities.splice(idx, 1); renderActivities(); }
+
+    // ==================== LOAD WORKSHOP (GET BY ID) ====================
+    async function loadWorkshop() {
+        if (!IS_EDIT_MODE) {
+            addMaterial(); addActivity();
+            return;
+        }
+        document.getElementById('pageTitle').innerText = 'Edit Workshop';
+        document.getElementById('pageSubtitle').innerText = 'Update your workshop details';
+        showLoader('Loading workshop data...');
+        try {
+            const res = await fetch(`${API_BASE}/Workshops/${WORKSHOP_ID}`, { headers: { 'Authorization': `Bearer ${TOKEN}` } });
+            if (!res.ok) throw new Error('Failed to load');
+            const data = await res.json();
+            document.getElementById('Title').value = data.title || '';
+            document.getElementById('Description').value = data.description || '';
+            document.getElementById('Location').value = data.location || '';
+            document.getElementById('WorkshopType').value = data.workshopType || 'Online';
+            document.getElementById('MaxCapacity').value = data.maxCapacity || 50;
+            document.getElementById('RequireCV').checked = data.requireCV || false;
+            document.getElementById('RequireRoadmapCompletion').checked = data.requireRoadmapCompletion || false;
+            document.getElementById('IsPublished').checked = data.isPublished || false;
+            if (data.startDate) { const d = new Date(data.startDate); if (!isNaN(d.getTime())) document.getElementById('StartDate').value = d.toISOString().slice(0, 16); }
+            if (data.endDate) { const d = new Date(data.endDate); if (!isNaN(d.getTime())) document.getElementById('EndDate').value = d.toISOString().slice(0, 16); }
+            if (data.banner || data.imageUrl) { existingBannerUrl = data.banner || data.imageUrl; document.getElementById('bannerPreview').innerHTML = `<img src="${existingBannerUrl}" class="preview-image">`; }
+            
+            materials = (data.materials || []).map(m => {
+                const titleValue = m.title || m.titleVideo || m.titlePdf || '';
+                return {
+                    id: Date.now(),
+                    Type: m.type || 'Video',
+                    TitleVideo: m.type === 'Video' ? titleValue : '',
+                    TitlePdf: m.type === 'PDF' ? titleValue : '',
+                    Duration: m.duration || '',
+                    PageCount: m.pageCount || '',
+                    Points: m.points || 0,
+                    FilePath: m.filePath || null,
+                    fileObj: null,
+                    fileName: ''
+                };
+            });
+            if (materials.length === 0) addMaterial(); else renderMaterials();
+            
+            activities = (data.activities || []).map(a => ({ id: Date.now(), Name: a.name || '', Description: a.description || '', Difficulty: a.difficulty || 'Easy', Points: a.points || 0 }));
+            if (activities.length === 0) addActivity(); else renderActivities();
+        } catch (err) { console.error(err); showValidation('Could not load workshop data'); addMaterial(); addActivity(); }
+        finally { hideLoader(); }
+    }
+
+    // ==================== SAVE WORKSHOP ====================
+    async function saveWorkshop(status) {
+        const title = document.getElementById('Title').value.trim();
+        if (!title) { showValidation('Title is required'); return; }
+        
+        showLoader(status === 'published' ? 'Publishing workshop...' : 'Saving draft...');
+        
+        const formData = new FormData();
+        formData.append('Title', title);
+        formData.append('Description', document.getElementById('Description').value.trim());
+        formData.append('Location', document.getElementById('Location').value.trim());
+        formData.append('WorkshopType', document.getElementById('WorkshopType').value);
+        formData.append('MaxCapacity', parseInt(document.getElementById('MaxCapacity').value) || 0);
+        formData.append('RequireCV', document.getElementById('RequireCV').checked);
+        formData.append('RequireRoadmapCompletion', document.getElementById('RequireRoadmapCompletion').checked);
+        formData.append('IsPublished', status === 'published' ? 'true' : document.getElementById('IsPublished').checked);
+        formData.append('StartDate', document.getElementById('StartDate').value);
+        formData.append('EndDate', document.getElementById('EndDate').value);
+        
+        if (bannerFile) formData.append('Banner', bannerFile);
+        else if (existingBannerUrl && !bannerFile) formData.append('ExistingBannerUrl', existingBannerUrl);
+        
+        activities.forEach((act, idx) => {
+            formData.append(`Activities[${idx}].Name`, act.Name);
+            formData.append(`Activities[${idx}].Description`, act.Description);
+            formData.append(`Activities[${idx}].Difficulty`, act.Difficulty);
+            formData.append(`Activities[${idx}].Points`, act.Points);
+        });
+        
+        materials.forEach((mat, idx) => {
+            formData.append(`Materials[${idx}].Type`, mat.Type);
+            if (mat.Type === 'Video') {
+                formData.append(`Materials[${idx}].TitleVideo`, mat.TitleVideo);
+                formData.append(`Materials[${idx}].Duration`, mat.Duration);
+            } else {
+                formData.append(`Materials[${idx}].TitlePdf`, mat.TitlePdf);
+                formData.append(`Materials[${idx}].PageCount`, mat.PageCount);
+            }
+            formData.append(`Materials[${idx}].Points`, mat.Points);
+            if (mat.fileObj) formData.append(`Materials[${idx}].FilePath`, mat.fileObj);
+            else if (mat.FilePath && !mat.fileObj) formData.append(`Materials[${idx}].ExistingFilePath`, mat.FilePath);
+        });
+        
+        try {
+            let url = `${API_BASE}/workshops`;
+            let method = 'POST';
+            if (IS_EDIT_MODE) { url = `${API_BASE}/workshops/${WORKSHOP_ID}`; method = 'PUT'; }
+            const res = await fetch(url, { method, headers: { 'Authorization': `Bearer ${TOKEN}` }, body: formData });
+            if (!res.ok) throw new Error(await res.text());
+            hideLoader();
+            showSuccess('Success!', status === 'published' ? 'Workshop published successfully!' : 'Draft saved successfully!');
+        } catch (err) { 
+            hideLoader();
+            console.error(err); 
+            showValidation('Failed to save workshop: ' + err.message);
+        }
+    }
+
+    // Banner upload handler
+    document.getElementById('bannerInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) { showValidation('File too large. Max 5MB.'); return; }
+        bannerFile = file;
+        const reader = new FileReader();
+        reader.onload = (ev) => { document.getElementById('bannerPreview').innerHTML = `<img src="${ev.target.result}" class="preview-image">`; };
+        reader.readAsDataURL(file);
+    });
+
+    if (!TOKEN) { showValidation('Please login first'); }
+    else { loadWorkshop(); }
+</script>
+</body>
+</html>

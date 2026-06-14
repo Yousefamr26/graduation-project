@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, shrink-to-fit=no">
+  <title>Learning Roadmap | Smart Career Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .card {
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+    }
+    .btn-level {
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-weight: 500;
+    }
+    .progress {
+      height: 8px;
+      border-radius: 4px;
+    }
+    .material-item {
+      background: #f0f7ff;
+      border-radius: 8px;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .material-item:hover {
+      background: #e1efff;
+    }
+    .video-thumbnail {
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      background: #1e293b;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    .play-btn {
+      font-size: 3rem;
+      color: #0d6efd;
+      opacity: 0.9;
+      transition: 0.2s;
+    }
+    .play-btn:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    /* toast popup */
+    #toastContainer {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .toast-popup {
+      background: #1e293b;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      font-weight: 500;
+      max-width: 320px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideUp 0.25s ease;
+      font-size: 0.9rem;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+<div class="container py-5">
+  <div class="mb-4">
+    <h2 class="fw-bold mt-2" id="roadmapTitle">Loading roadmap...</h2>
+    <p class="text-secondary">Complete each level to progress through your learning roadmap</p>
+  </div>
+
+  <!-- Level buttons (dynamic) -->
+  <div class="d-flex gap-2 mb-4 overflow-auto pb-2" id="levelButtons">
+    <button class="btn btn-primary btn-level"><i class="bi bi-check-circle-fill me-1"></i> Level 1</button>
+  </div>
+
+  <!-- Current level progress card -->
+  <div class="card mb-4 shadow-sm" id="levelProgressCard">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h5 class="mb-1 fw-bold" id="currentLevelTitle">Level 1: Fundamentals</h5>
+          <span class="badge bg-success" id="completionBadge">Completed</span>
+        </div>
+        <div class="text-end">
+          <span class="text-muted">Progress</span>
+          <h3 class="mb-0 text-primary fw-bold" id="progressPercentage">0%</h3>
+        </div>
+      </div>
+      <div class="progress">
+        <div class="progress-bar bg-primary" id="progressBar" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Learning Materials (PDFs, docs) -->
+    <div class="col-lg-6">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-4"><i class="bi bi-file-earmark-text text-primary me-2"></i> Learning Materials</h6>
+          <div id="materialsList">
+            <p class="text-muted">No materials yet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Video Lectures -->
+    <div class="col-lg-6">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-4"><i class="bi bi-camera-video text-primary me-2"></i> Video Lectures</h6>
+          <div id="videosList">
+            <p class="text-muted">No videos available.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toastContainer"></div>
+
+<script>
+  (function() {
+    const API_BASE_URL = "http://smartcareerhub.runasp.net/api";
+    const TOKEN = localStorage.getItem("authToken") || "";
+    
+    // Get roadmap ID from URL (e.g., learning.html?id=23) or fallback
+    const urlParams = new URLSearchParams(window.location.search);
+    const ROADMAP_ID = urlParams.get('id') || '23'; 
+
+    // ----- Toast popup (replaces alerts) -----
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const colors = { error: '#e74a3b', success: '#1cc88a', info: '#1e293b' };
+      toast.className = 'toast-popup';
+      toast.style.background = colors[type] || colors.info;
+      toast.innerHTML = `<i class="bi ${type==='error'?'bi-exclamation-circle':(type==='success'?'bi-check-circle':'bi-info-circle')}"></i> ${message}`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.remove(); }, 4000);
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ----- Render UI with roadmap data -----
+    function renderRoadmap(roadmap) {
+      // Set title
+      document.getElementById('roadmapTitle').textContent = roadmap.title || 'Learning Roadmap';
+      
+      // Build levels based on skills (or default 5 levels)
+      const skills = roadmap.skills || [];
+      const levels = skills.length ? skills.map((s, i) => ({
+        name: s.skillName || s.name || `Skill ${i+1}`,
+        level: s.level || 'Beginner',
+        points: s.levelPoints || 0
+      })) : [
+        { name: 'Fundamentals', level: 'Beginner', points: 10 },
+        { name: 'Intermediate', level: 'Intermediate', points: 20 },
+        { name: 'Advanced', level: 'Advanced', points: 30 },
+        { name: 'Expert', level: 'Advanced', points: 40 },
+        { name: 'Mastery', level: 'Advanced', points: 50 }
+      ];
+
+      // Level buttons
+      const levelButtonsDiv = document.getElementById('levelButtons');
+      levelButtonsDiv.innerHTML = levels.map((lvl, idx) => {
+        const isActive = idx === 0; // first level active
+        const completed = idx === 0; // mock first level completed
+        let btnClass = 'btn-outline-secondary';
+        let icon = '';
+        if (completed) {
+          btnClass = 'btn-primary';
+          icon = '<i class="bi bi-check-circle-fill me-1"></i>';
+        } else if (idx > 1) {
+          btnClass = 'btn-outline-secondary disabled';
+          icon = '<i class="bi bi-lock-fill me-1"></i>';
+        }
+        return `<button class="btn ${btnClass} btn-level">${icon} Level ${idx+1}</button>`;
+      }).join('');
+
+      // Current level (mock: first level 100%)
+      const currentLevel = levels[0];
+      document.getElementById('currentLevelTitle').textContent = `Level 1: ${currentLevel.name}`;
+      document.getElementById('completionBadge').textContent = 'Completed';
+      document.getElementById('completionBadge').className = 'badge bg-success';
+      document.getElementById('progressPercentage').textContent = '100%';
+      document.getElementById('progressBar').style.width = '100%';
+
+      // Learning materials (from API: learningMaterials or videos)
+      const materials = roadmap.learningMaterials || [];
+      const pdfMaterials = materials.filter(m => (m.type || '').toLowerCase() === 'pdf' || (m.titlePdf));
+      const videoMaterials = materials.filter(m => (m.type || '').toLowerCase() === 'video' || (m.titleVideos));
+
+      // Render PDF materials
+      const materialsList = document.getElementById('materialsList');
+      if (pdfMaterials.length > 0) {
+        materialsList.innerHTML = pdfMaterials.map(m => `
+          <div class="material-item p-3 mb-3 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-file-earmark-pdf text-primary fs-5 me-3"></i>
+              <span>${escapeHTML(m.titlePdf || m.title || 'PDF Document')}</span>
+            </div>
+            <i class="bi bi-download text-primary"></i>
+          </div>
+        `).join('');
+      } else {
+        materialsList.innerHTML = '<p class="text-muted">No reading materials for this level.</p>';
+      }
+
+      // Render videos
+      const videosList = document.getElementById('videosList');
+      if (videoMaterials.length > 0) {
+        videosList.innerHTML = videoMaterials.map(v => `
+          <div class="mb-4">
+            <div class="video-thumbnail mb-2">
+              <div class="play-btn"><i class="bi bi-play-circle-fill"></i></div>
+              <span class="badge bg-dark position-absolute bottom-0 end-0 m-2">${v.duration || '10:00'}</span>
+            </div>
+            <p class="mb-0">${escapeHTML(v.titleVideos || v.title || 'Video Lecture')}</p>
+          </div>
+        `).join('');
+      } else {
+        videosList.innerHTML = '<p class="text-muted">No video lectures yet.</p>';
+      }
+    }
+
+    // ----- Fetch roadmap by ID -----
+    async function loadRoadmap() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/Roadmaps/${ROADMAP_ID}`, {
+          headers: { 'Authorization': `Bearer ${TOKEN}` }
+        });
+        if (!res.ok) throw new Error('Roadmap not found');
+        const data = await res.json();
+        renderRoadmap(data);
+      } catch (err) {
+        console.warn('API error, using fallback', err);
+        showToast('Could not load roadmap. Showing demo.', 'error');
+        // Fallback demo data
+        renderRoadmap({
+          title: 'Full Stack Web Development',
+          skills: [
+            { skillName: 'HTML & CSS', level: 'Beginner', levelPoints: 10 },
+            { skillName: 'JavaScript', level: 'Intermediate', levelPoints: 20 },
+            { skillName: 'React', level: 'Advanced', levelPoints: 30 }
+          ],
+          learningMaterials: [
+            { type: 'pdf', titlePdf: 'Introduction to Concepts', points: 10 },
+            { type: 'pdf', titlePdf: 'Getting Started Guide', points: 10 },
+            { type: 'video', titleVideos: 'Overview and Introduction', duration: '15:30', points: 20 }
+          ]
+        });
+      }
+    }
+
+    loadRoadmap();
+  })();
+</script>
+</body>
+</html>

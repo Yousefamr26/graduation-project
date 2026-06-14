@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AI Quiz Generator | Smart Career Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+    font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+    background: #f4f8fc;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+}
+
+.glass-card {
+    background: white;
+    border-radius: 40px;
+    border: 1px solid #e6eef5;
+    box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+    padding: 40px 36px;
+    max-width: 620px;
+    width: 100%;
+    transition: all 0.35s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+}
+
+        /* Gemini Header */
+        .gemini-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .gemini-icon {
+            font-size: 3.2rem;
+            font-weight: 400;
+            color: white;
+            background: linear-gradient(135deg, #155fc4, #3498DB);
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 8px 20px rgba(30, 136, 229, 0.4);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #155fc4;
+            letter-spacing: -0.3px;
+            text-align: center;
+        }
+
+        .ai-badge {
+            background: #E1F5FE;
+            border-radius: 100px;
+            padding: 6px 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #3498DB;
+            margin-top: 8px;
+            justify-content: center;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: #155fc4;
+            font-size: 0.95rem;
+        }
+
+        .label-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Roadmap ID Display */
+        .id-display {
+            background: #F0F9FF;
+            border: 2px solid #7CB9E8;
+            border-radius: 28px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .id-label {
+            font-weight: 700;
+            color: #155fc4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 6px 16px;
+            border-radius: 40px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        .id-value {
+            font-family: monospace;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(145deg, #155fc4, #3498DB);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .info-note {
+            font-size: 0.75rem;
+            color: #3498DB;
+            background: #E6F4FF;
+            padding: 5px 12px;
+            border-radius: 30px;
+        }
+
+        /* Quiz Type options */
+        .quiz-type-group {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .quiz-type-option {
+            flex: 1;
+            position: relative;
+            cursor: pointer;
+            min-width: 130px;
+        }
+
+        .quiz-type-option input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .quiz-type-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 14px 8px;
+            border: 2px solid #BBE0FA;
+            border-radius: 44px;
+            transition: all 0.25s ease;
+            background: white;
+            font-weight: 600;
+            color: #1E4A76;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .quiz-type-option input:checked + .quiz-type-label {
+            border-color: #3498DB;
+            background: linear-gradient(105deg, #D4EEFF 0%, #B0E0FF 100%);
+            color: #014175;
+            box-shadow: 0 8px 18px -8px #155fc4;
+            transform: scale(1.01);
+        }
+
+        /* Slider */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 7px;
+            -webkit-appearance: none;
+            background: linear-gradient(90deg, #AFDBF5, #3498DB);
+            border-radius: 12px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #FFFFFF;
+            border: 3px solid #3498DB;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,100,200,0.3);
+            transition: 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #B9E6FF;
+        }
+
+        .question-count-value {
+            background: linear-gradient(135deg, #155fc4, #3498DB);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-weight: 800;
+            font-size: 1.4rem;
+            min-width: 75px;
+            text-align: center;
+            box-shadow: 0 5px 12px #7CB9E855;
+        }
+
+        /* Generate Button */
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(115deg, #155fc4, #3498DB);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 12px;
+            box-shadow: 0 12px 24px -8px #155fc4;
+        }
+
+        .generate-btn:hover {
+            background: linear-gradient(115deg, #155fc4, #0F7BC2);
+            transform: scale(1.01);
+            gap: 16px;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 28px;
+            background: #E6F7FF;
+            padding: 18px;
+            border-radius: 56px;
+            border-left: 5px solid #3498DB;
+        }
+
+        .loading.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 46px;
+            height: 46px;
+            border: 4px solid #CAECFF;
+            border-top: 4px solid #3498DB;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Timer Display */
+        .timer-container {
+            display: none;
+            margin-top: 20px;
+            padding: 16px;
+            background: linear-gradient(135deg, #f5ffe1, #FFE082);
+            border-radius: 60px;
+            text-align: center;
+            border: 2px solid #FFC107;
+        }
+
+        .timer-container.active {
+            display: block;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .timer-label {
+            font-weight: bold;
+            color: #E65100;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .timer-value {
+            font-size: 2rem;
+            font-weight: 800;
+            font-family: monospace;
+            color: #BF360C;
+            background: white;
+            display: inline-block;
+            padding: 5px 20px;
+            border-radius: 50px;
+            letter-spacing: 3px;
+        }
+
+        .redirect-note {
+            font-size: 0.75rem;
+            color: #F57C00;
+            margin-top: 8px;
+        }
+
+        /* Result box */
+        .result {
+            margin-top: 28px;
+            padding: 18px 22px;
+            border-radius: 32px;
+            display: none;
+            font-weight: 500;
+            line-height: 1.45;
+            background: white;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+            border: 1px solid #CFE9FF;
+        }
+
+        .result.success {
+            display: block;
+            background: #EFFAFE;
+            border-right: 6px solid #3498DB;
+            color: #155fc4;
+        }
+
+        .result.error {
+            display: block;
+            background: #FFECEE;
+            border-right: 6px solid #E15554;
+            color: #A1220F;
+        }
+
+        /* Token status */
+        .token-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 40px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .token-status.valid {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .token-status.invalid {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 28px;
+            color: #3498DB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #EBF5FF;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 8px 20px;
+            border-radius: 40px;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="glass-card">
+    <!-- Gemini Star Symbol -->
+    <div class="gemini-header">
+        <div class="gemini-icon">✨</div>
+    </div>
+    
+    <h1>AI Quiz Generator</h1>
+    
+    <!-- Token Status -->
+    <div id="tokenStatus" class="token-status"></div>
+    
+    <form id="quizForm">
+        <!-- Roadmap ID from URL -->
+        <div class="form-group">
+            <label>
+                <span class="label-icon">
+    <i class="fa-solid fa-map"></i>
+</span> Roadmap ID
+            </label>
+            <div class="id-display">
+                <div class="id-label">
+                    <span><i class="fa-solid fa-location-dot"></i></span> <span>ID</span>
+                </div>
+                <div class="id-value" id="displayRoadmapId">—</div>
+                <div class="info-note">
+                    from URL (?id=XXX)
+                </div>
+            </div>
+            <input type="hidden" id="roadmapIdHidden" value="">
+        </div>
+
+        <!-- Quiz Type -->
+        <div class="form-group">
+            <label>
+                <span class="label-icon">
+    <i class="fa-solid fa-bullseye"></i>
+</span> Quiz Type
+            </label>
+            <div class="quiz-type-group">
+                <label class="quiz-type-option">
+                    <input type="radio" name="quizType" value="MCQ" checked>
+                    <span class="quiz-type-label">Multiple Choice</span>
+                </label>
+                <label class="quiz-type-option">
+                    <input type="radio" name="quizType" value="TrueFalse">
+                    <span class="quiz-type-label">True / False</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Number of Questions -->
+        <div class="form-group">
+            <label>
+                <span class="label-icon">
+    <i class="fa-solid fa-hashtag"></i>
+</span> Number of Questions (Max 5)
+            </label>
+            <div class="slider-container">
+                <input type="range" id="numQuestions" min="1" max="20" value="5" step="1">
+                <span class="question-count-value" id="questionCountValue">5</span>
+            </div>
+        </div>
+
+        <button type="submit" class="generate-btn" id="generateBtn">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+Generate Quiz
+        </button>
+    </form>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div><div>
+    <i class="fa-solid fa-robot"></i>
+    Generating your quiz with Gemini AI
+</div></div>
+    </div>
+
+    <!-- Timer Container -->
+    <div class="timer-container" id="timerContainer">
+        <div class="timer-label">
+    <i class="fa-solid fa-clock"></i>
+    Redirecting in...
+</div>
+        <div class="timer-value" id="timerValue">01:00</div>
+        <div class="redirect-note">Returning to quizzes page automatically</div>
+    </div>
+
+    <div class="result" id="result"></div>
+    
+    <div class="footer-note">
+        ✨ AI-powered questions based on your roadmap ✨
+    </div>
+</div>
+
+<script>
+    // Auth Token from localStorage
+    const GRAD_TOKEN = localStorage.getItem("authToken") || "";
+    let redirectTimer = null;
+    let timerInterval = null;
+    
+    // Update token status display
+    function updateTokenStatus() {
+        const tokenStatusDiv = document.getElementById('tokenStatus');
+        if (GRAD_TOKEN && GRAD_TOKEN.length > 0) {
+            tokenStatusDiv.innerHTML = `✓ Authentication Active `;
+            tokenStatusDiv.className = 'token-status valid';
+        } else {
+            tokenStatusDiv.innerHTML = `✗ No authentication token found `;
+            tokenStatusDiv.className = 'token-status invalid';
+        }
+    }
+    
+    // Get roadmap ID from URL parameter 'id'
+    function getRoadmapIdFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        if (id && !isNaN(id) && Number.isInteger(parseFloat(id)) && parseInt(id) > 0) {
+            return parseInt(id);
+        }
+        return null;
+    }
+
+    // DOM elements
+    const displayIdSpan = document.getElementById('displayRoadmapId');
+    const hiddenIdInput = document.getElementById('roadmapIdHidden');
+    const slider = document.getElementById('numQuestions');
+    const questionCountSpan = document.getElementById('questionCountValue');
+    const form = document.getElementById('quizForm');
+    const loadingDiv = document.getElementById('loading');
+    const resultDiv = document.getElementById('result');
+    const generateBtn = document.getElementById('generateBtn');
+    const timerContainer = document.getElementById('timerContainer');
+    const timerValueSpan = document.getElementById('timerValue');
+
+    // Set roadmap ID from URL
+    let roadmapIdValue = getRoadmapIdFromUrl();
+    if (roadmapIdValue) {
+        displayIdSpan.textContent = roadmapIdValue;
+        hiddenIdInput.value = roadmapIdValue;
+    } else {
+        displayIdSpan.textContent = 'Missing';
+        displayIdSpan.style.color = '#e15554';
+        hiddenIdInput.value = '';
+    }
+
+    // Update slider value display
+    slider.addEventListener('input', function() {
+        questionCountSpan.textContent = this.value;
+    });
+
+    // Start timer function
+    function startRedirectTimer(seconds = 60) {
+        let timeLeft = seconds;
+        
+        // Update timer display
+        const updateTimerDisplay = () => {
+            const minutes = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            timerValueSpan.textContent = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        };
+        
+        updateTimerDisplay();
+        timerContainer.classList.add('active');
+        
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                // Redirect to quizzes page
+                const quizzesPageUrl = `generatedaiquizez.html?id=${roadmapIdValue}`;
+                window.location.href = quizzesPageUrl;
+            }
+        }, 1000);
+    }
+
+    // Stop timer
+    function stopRedirectTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        timerContainer.classList.remove('active');
+    }
+
+    // Show result function
+    function showResult(message, isSuccess, apiData = null) {
+        resultDiv.className = `result ${isSuccess ? 'success' : 'error'}`;
+        if (isSuccess && apiData) {
+            let prettyResponse = '';
+            if (typeof apiData === 'object') {
+                if (apiData.quiz || apiData.questions) {
+                    const questionsList = apiData.questions || apiData.quiz || [];
+                    if (Array.isArray(questionsList) && questionsList.length > 0) {
+                        prettyResponse = `<div style="margin-top: 12px;"><strong>✨ Quiz Preview ✨</strong><ul style="margin-top: 12px; list-style-type: none; padding-left: 0;">`;
+                        questionsList.slice(0, 8).forEach((q, idx) => {
+                            let qText = q.question || q.text || 'Question';
+                            prettyResponse += `<li style="margin-bottom: 12px; background: #E1F3FE; padding: 8px 12px; border-radius: 28px;">✨ ${idx+1}. ${qText}</li>`;
+                        });
+                        if (questionsList.length > 8) prettyResponse += `<li>✨ + ${questionsList.length-8} more questions...</li>`;
+                        prettyResponse += `</ul></div>`;
+                    } else {
+                        prettyResponse = `<pre style="white-space: pre-wrap; margin-top: 12px;">${JSON.stringify(apiData, null, 2)}</pre>`;
+                    }
+                } else {
+                    prettyResponse = `<pre style="white-space: pre-wrap; margin-top: 12px;">${JSON.stringify(apiData, null, 2)}</pre>`;
+                }
+            } else {
+                prettyResponse = `<div>✨ ${apiData}</div>`;
+            }
+            resultDiv.innerHTML = `<strong>✨ Quiz generated successfully! ✨</strong><br><br>${prettyResponse}<br><br><strong>⏰ Redirecting in 60 seconds...</strong>`;
+        } else {
+            resultDiv.innerHTML = message;
+        }
+        resultDiv.style.display = 'block';
+        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Handle form submission
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const roadmapId = hiddenIdInput.value;
+        if (!roadmapId || roadmapId <= 0) {
+            showResult('✨ Invalid Roadmap ID. Please provide ?id=NUMBER in URL ✨', false);
+            return;
+        }
+        
+        if (!GRAD_TOKEN || GRAD_TOKEN.length === 0) {
+            showResult('✨ Authentication required. Please login to get your auth token. ✨', false);
+            return;
+        }
+        
+        const quizType = document.querySelector('input[name="quizType"]:checked').value;
+        const numQuestions = slider.value;
+        
+        if (numQuestions < 1 || numQuestions > 20) {
+            showResult('✨ Number of questions must be between 1 and 20. ✨', false);
+            return;
+        }
+        
+        // Clear any existing timer
+        stopRedirectTimer();
+        
+        resultDiv.className = 'result';
+        resultDiv.style.display = 'none';
+        loadingDiv.classList.add('active');
+        generateBtn.disabled = true;
+        
+        try {
+            const apiEndpoint = `http://smartcareerhub.runasp.net/api/Roadmaps/${roadmapId}/generate-quiz?quizType=${quizType}&numQuestions=${numQuestions}`;
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000);
+            
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'accept': '*/*',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${GRAD_TOKEN}`
+                },
+                body: '',
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                let errorText = `Server error: ${response.status}`;
+                if (response.status === 401) {
+                    errorText = '✨ Unauthorized: Invalid or expired token. Please login again. ✨';
+                } else if (response.status === 403) {
+                    errorText = '✨ Forbidden: You don\'t have permission for this roadmap. ✨';
+                } else {
+                    try {
+                        const errorJson = await response.json();
+                        errorText = errorJson.message || errorJson.title || errorText;
+                    } catch(e) {
+                        errorText = await response.text() || errorText;
+                    }
+                }
+                throw new Error(errorText);
+            }
+            
+            let responseData;
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                responseData = await response.json();
+            } else {
+                const rawText = await response.text();
+                responseData = { raw: rawText };
+            }
+            
+            
+            // Start the 60-second timer
+            startRedirectTimer(60);
+            
+        } catch (error) {
+            console.error('Error:', error);
+            let userMessage = error.message;
+            if (error.name === 'AbortError') {
+                userMessage = '✨ Request timeout. Please try again. ✨';
+            } else if (userMessage.includes('Failed to fetch')) {
+                userMessage = '✨ Network error: Cannot connect to server. ✨';
+            }
+            showResult(`✨ Error: ${userMessage} ✨`, false);
+            generateBtn.disabled = false;
+        } finally {
+            loadingDiv.classList.remove('active');
+        }
+    });
+    
+    // Show warning if no ID in URL
+    if (!roadmapIdValue) {
+        const idDisplayDiv = document.querySelector('.id-display');
+        if (idDisplayDiv) {
+            const infoDiv = idDisplayDiv.querySelector('.info-note');
+            if (infoDiv) infoDiv.innerHTML = '✨ Add ?id=NUMBER to URL ✨';
+        }
+        displayIdSpan.textContent = 'Missing';
+        displayIdSpan.style.background = '#FFE6E6';
+        displayIdSpan.style.padding = '4px 8px';
+        displayIdSpan.style.borderRadius = '40px';
+        displayIdSpan.style.color = '#b91c1c';
+    }
+    
+    // Initialize
+    updateTokenStatus();
+</script>
+</body>
+</html>

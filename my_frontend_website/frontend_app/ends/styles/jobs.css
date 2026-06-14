@@ -1,0 +1,137 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+/* Main Content Stats */
+.stat-card {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 20px 10px; 
+    border-radius: 12px;
+    text-align: center; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    min-height: 100px; 
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem; 
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #888;
+    white-space: nowrap; 
+}
+
+.text-orange { color: #fd7e14; }
+.bg-orange { background-color: #fd7e14; }
+
+.job-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.job-card:hover {
+    transform: translateY(-5px);
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge.interview { background-color: #fff4e6; color: #fd7e14; }
+.status-badge.review { background-color: #fff9db; color: #d28b26; }
+.status-badge.applied { background-color: #e7f5ff; color: #228be6; }
+.status-badge.Offer { background-color: #dcf6e1; color: #3bc854; }
+.status-badge.Rejected { background-color: #f1dedb; color: #c22f1c; }
+
+/* Progress Bars */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.progress-bar-dark {
+    background-color: #212529 !important; 
+}
+
+
+.btn-apply {
+    background-color: #3498db !important;
+    border: none;
+    font-weight: bold;
+    padding: 8px 20px;
+    border-radius: 10px;
+}
+
+.btn-view {
+    border: 1px solid #dee2e6 !important;
+    color: #333 !important;
+    padding: 8px 15px;
+    border-radius: 10px;
+    background: white;
+}
+
+.pts-label {
+    font-size: 10px;
+    margin-top: -5px;
+    padding-left: 22px; /* لمحاذاة كلمة pts تحت الرقم */
+}
+
+/* ألوان Pipeline المخصصة بناءً على الصورة */
+.bg-primary { background-color: #0d6efd !important; } 
+.bg-warning { background-color: #ddb244 !important; } 
+.bg-orange { background-color: #eb8f3f !important; } 
+.bg-success { background-color: #39bc6f !important; } 
+
+
+.progress {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    border-radius: 15px;
+    font-size: 0.85rem;
+}
+
+
+.pipeline-item span {
+    white-space: nowrap;
+}
+
+.card-footer-custom {
+    border-top: 1px solid #f0f0f0; 
+    padding-top: 15px;
+}
+
+
+.status-badge.Offer { background-color: #dcf6e1; color: #3bc854; }
+.status-badge.Rejected { background-color: #f1dedb; color: #c22f1c; }
+.status-badge.Interview { background-color: #fff4e6; color: #fd7e14; }  
+.status-badge.Review { background-color: #fff9db; color: #d28b26; } 
+.status-badge.Applied { background-color: #e7f5ff; color: #228be6; }
+#page-content-wrapper {
+    width: 100%;
+}

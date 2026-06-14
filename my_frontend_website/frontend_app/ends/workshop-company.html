@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Workshop Manager | Smart Career Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    }
+
+    body {
+      background: #f0f2f8;
+      padding: 20px 24px 48px;
+    }
+
+    .dashboard-container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* header & top bar */
+    .header-section {
+      background: white;
+      border-radius: 28px;
+      padding: 20px 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s;
+    }
+
+    .brand-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .title-icon {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .title-icon h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3498db);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .title-icon i {
+      font-size: 2.2rem;
+      color: #3498db;
+    }
+
+    .subhead {
+      color: #4a627a;
+      font-size: 0.9rem;
+      margin-top: 6px;
+      border-left: 3px solid #3498db;
+      padding-left: 14px;
+    }
+
+    /* controls row */
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      flex: 2;
+    }
+
+    .search-wrapper {
+      position: relative;
+      flex: 2;
+      min-width: 220px;
+    }
+
+    .search-wrapper i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8ba0bc;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 12px 12px 12px 42px;
+      border-radius: 60px;
+      border: 1px solid #dce3ec;
+      background: white;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+
+    #searchInput:focus {
+      border-color: #2c7da0;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.2);
+    }
+
+    #filterSelect {
+      padding: 0 20px;
+      border-radius: 40px;
+      border: 1px solid #dce3ec;
+      background: white;
+      font-weight: 500;
+      cursor: pointer;
+      min-width: 140px;
+    }
+
+    .create-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .create-btn:hover {
+      background: #3498db;
+      transform: scale(0.97);
+    }
+
+    /* cards grid - responsive */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 26px;
+      margin-top: 8px;
+    }
+
+    .workshop-card {
+      background: white;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 12px 26px -8px rgba(0, 0, 0, 0.08);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .workshop-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-banner {
+      height: 170px;
+      background-size: cover;
+      background-position: center;
+      background-color: #d9e2ef;
+      position: relative;
+    }
+
+    .status-chip {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      padding: 6px 14px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.65);
+      color: white;
+    }
+
+    .status-published {
+      background: #2b9348;
+      box-shadow: 0 2px 6px rgba(43, 147, 72, 0.3);
+    }
+
+    .status-draft {
+      background: #e67e22;
+    }
+
+    .card-body {
+      padding: 20px 20px 18px;
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #1e2f3e;
+    }
+
+    .university-text {
+      font-size: 0.8rem;
+      color: #5e7c97;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .description-preview {
+      font-size: 0.85rem;
+      color: #4b5e77;
+      line-height: 1.4;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .points-summary {
+      background: #ecf7fa;
+      padding: 10px 12px;
+      border-radius: 18px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #3498db;
+      margin-bottom: 20px;
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 9px 0;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-details {
+      background: #eef2ff;
+      color: #1e3a8a;
+    }
+
+    .btn-edit {
+      background: #e6f7ec;
+      color: #2d6a4f;
+    }
+
+    .btn-delete {
+      background: #ffe6e6;
+      color: #b91c1c;
+    }
+
+    .action-btn:hover {
+      filter: brightness(0.94);
+      transform: translateY(-1px);
+    }
+
+    .empty-state {
+      background: white;
+      border-radius: 40px;
+      text-align: center;
+      padding: 70px 20px;
+      color: #6c86a3;
+      font-size: 1rem;
+    }
+
+    /* ----- MODAL (beautiful popup) ----- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-card {
+      background: white;
+      max-width: 700px;
+      width: 100%;
+      max-height: 85vh;
+      border-radius: 32px;
+      overflow-y: auto;
+      box-shadow: 0 30px 40px rgba(0, 0, 0, 0.3);
+      animation: fadeSlide 0.2s ease;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: flex-end;
+      padding: 16px 20px 0;
+    }
+
+    .close-modal-btn {
+      background: #f1f3f7;
+      border: none;
+      border-radius: 40px;
+      padding: 8px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .modal-body {
+      padding: 10px 28px 32px;
+    }
+
+    .modal-banner {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 24px;
+      margin-bottom: 20px;
+    }
+
+    .detail-row {
+      margin-bottom: 16px;
+    }
+
+    .detail-label {
+      font-weight: 700;
+      color: #2c3e50;
+      font-size: 0.85rem;
+    }
+
+    .material-list, .activity-list {
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 12px 20px;
+      margin-top: 8px;
+    }
+
+    /* Toast / popup notification */
+    .toast-notify {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      background: #1e293b;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 60px;
+      font-weight: 500;
+      z-index: 1100;
+      opacity: 0;
+      transition: 0.2s;
+      pointer-events: none;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 16px; }
+      .header-section { padding: 16px; }
+      .controls-row { flex-direction: column; align-items: stretch; }
+      .filters { flex-direction: column; }
+      .create-btn { justify-content: center; }
+      .cards-grid { gap: 18px; }
+      .modal-body { padding: 12px 20px 28px; }
+    }
+  </style>
+</head>
+<body>
+<div class="dashboard-container">
+  <div class="header-section">
+    <div class="brand-area">
+      <div class="title-icon">
+        <i class="fa-solid fa-chalkboard-user"></i>
+        <h1>Workshop Management</h1>
+      </div>
+      <div class="subhead">
+        <i class="fa-regular fa-calendar-check"></i> Manage workshops · publish & track
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="filters">
+        <div class="search-wrapper">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Search by title or university..." autocomplete="off">
+        </div>
+        <select id="filterSelect">
+          <option value="all"> All workshops</option>
+          <option value="published"> Published</option>
+          <option value="draft"> Draft</option>
+        </select>
+      </div>
+      <button class="create-btn" id="createWorkshopBtn"><i class="fa-solid fa-plus-circle"></i> Create New Workshop</button>
+    </div>
+  </div>
+
+  <div id="workshopsGrid" class="cards-grid"></div>
+  <div id="emptyPlaceholder" class="empty-state" style="display: none;">
+    <i class="fa-regular fa-folder-open" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+    No workshops found. Create your first workshop!
+  </div>
+</div>
+
+<!-- Detailed Modal Popup -->
+<div id="detailModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <button class="close-modal-btn" id="closeModalBtn"><i class="fa-regular fa-circle-xmark"></i> Close</button>
+    </div>
+    <div id="modalDynamicContent" class="modal-body">
+      <!-- dynamic content -->
+    </div>
+  </div>
+</div>
+
+<div id="toastMsg" class="toast-notify">✨ Action completed</div>
+
+<script>
+  // ----------------------------- API & GLOBALS -----------------------------
+  const API_BASE_URL = "http://smartcareerhub.runasp.net/api";
+  const TOKEN = localStorage.getItem("authToken");
+  let workshopsCache = [];
+
+  // Helper: show custom popup (toast)
+  function showToast(message, isError = false) {
+    const toast = document.getElementById("toastMsg");
+    toast.textContent = message;
+    toast.style.backgroundColor = isError ? "#b91c1c" : "#1e293b";
+    toast.style.opacity = "1";
+    toast.style.transform = "translateX(-50%) scale(1)";
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transform = "translateX(-50%) scale(0.9)";
+      setTimeout(() => {
+        toast.style.backgroundColor = "#1e293b";
+      }, 300);
+    }, 2600);
+  }
+
+  // fetch workshops from API
+  async function fetchWorkshopsFromAPI() {
+    if (!TOKEN) {
+      showToast("⚠️ Missing auth token. Please login first.", true);
+      return [];
+    }
+    try {
+      const response = await fetch(`${API_BASE_URL}/Workshops`, {
+        headers: { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" }
+      });
+      if (!response.ok) {
+        if (response.status === 401) showToast("Unauthorized: please re-login", true);
+        throw new Error(`API error ${response.status}`);
+      }
+      const data = await response.json();
+      if (!Array.isArray(data)) return [];
+      // normalize fields to match UI structure
+      return data.map(workshop => ({
+        id: workshop.id || workshop.workshopId,
+        title: workshop.title || "Untitled",
+        description: workshop.description || "",
+        university: workshop.universityName || workshop.university || "University",
+        location: workshop.location || "TBD",
+        status: (workshop.isPublished === true || workshop.status === "published" || workshop.isPublished === "true") ? "published" : "draft",
+        bannerDataURL: "http://smartcareerhub.runasp.net"+ workshop.bannerUrl ,
+        materials: Array.isArray(workshop.materials) ? workshop.materials : [],
+        activities: Array.isArray(workshop.activities) ? workshop.activities : [],
+        startDate: workshop.startDate ? workshop.startDate.split('T')[0] : "TBD",
+        endDate: workshop.endDate ? workshop.endDate.split('T')[0] : "TBD",
+        maxCapacity: workshop.maxCapacity ?? workshop.capacity ?? "N/A",
+        workshopType: workshop.workshopType || workshop.type || "Online",
+        requireCV: workshop.requireCV ?? false,
+        requireRoadmapCompletion: workshop.requireRoadmapCompletion ?? false,
+        totalPointsCache: null
+      }));
+    } catch (err) {
+      console.error("fetch workshops error", err);
+      showToast("Could not load workshops from server", true);
+      return [];
+    }
+  }
+
+  // Delete workshop API
+  async function deleteWorkshopAPI(workshopId) {
+    if (!TOKEN) return false;
+    try {
+      const res = await fetch(`${API_BASE_URL}/Workshops/${workshopId}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${TOKEN}` }
+      });
+      if (res.ok || res.status === 204) return true;
+      const errorText = await res.text();
+      showToast(`Delete failed: ${errorText.substring(0, 80)}`, true);
+      return false;
+    } catch (err) {
+      showToast("Network error while deleting", true);
+      return false;
+    }
+  }
+
+  // toggle published status PATCH (individual)
+  async function togglePublishStatus(workshopId, currentStatus) {
+    if (!TOKEN) return false;
+    const newPublishedState = currentStatus !== "published";
+    try {
+      const res = await fetch(`${API_BASE_URL}/Workshops/toggle/${workshopId}`, {
+        method: "PATCH",
+        headers: { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" }
+      });
+      if (res.ok) return true;
+      // fallback to bulk logic if needed but just toast error
+      showToast("Status toggle failed", true);
+      return false;
+    } catch (err) {
+      showToast("Toggle error", true);
+      return false;
+    }
+  }
+
+  // Helper: compute total points from materials+activities
+  function computeTotalPoints(workshop) {
+    const materialsSum = (workshop.materials || []).reduce((acc, m) => acc + (Number(m.points) || 0), 0);
+    const activitiesSum = (workshop.activities || []).reduce((acc, a) => acc + (Number(a.points) || 0), 0);
+    return materialsSum + activitiesSum;
+  }
+
+  // render workshop cards
+  function renderWorkshops() {
+    const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+    const filterValue = document.getElementById("filterSelect").value;
+    let filtered = [...workshopsCache];
+
+    if (filterValue !== "all") {
+      filtered = filtered.filter(w => w.status === filterValue);
+    }
+    if (searchTerm) {
+      filtered = filtered.filter(w =>
+        (w.title?.toLowerCase().includes(searchTerm)) ||
+        (w.university?.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    const grid = document.getElementById("workshopsGrid");
+    const emptyDiv = document.getElementById("emptyPlaceholder");
+
+    if (filtered.length === 0) {
+      grid.innerHTML = "";
+      emptyDiv.style.display = "block";
+      return;
+    }
+    emptyDiv.style.display = "none";
+    grid.innerHTML = "";
+
+    filtered.forEach(ws => {
+      const points = computeTotalPoints(ws);
+      const card = document.createElement("div");
+      card.className = "workshop-card";
+      const bannerImg = ws.bannerDataURL && ws.bannerDataURL.startsWith("http") ? ws.bannerDataURL : "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600";
+      const statusClass = ws.status === "published" ? "status-published" : "status-draft";
+      const statusLabel = ws.status === "published" ? "PUBLISHED" : "DRAFT";
+
+      card.innerHTML = `
+        <div class="card-banner" style="background-image: url('${bannerImg}'); background-size: cover;">
+          <div class="status-chip ${statusClass}">${statusLabel}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">${escapeHtml(ws.title)}</div>
+          <div class="university-text"><i class="fa-solid fa-building-columns"></i> ${escapeHtml(ws.university)}</div>
+          <div class="description-preview">${escapeHtml(ws.description?.slice(0, 100) || 'No description')}${ws.description?.length > 100 ? '...' : ''}</div>
+          <div class="points-summary"><i class="fa-regular fa-star"></i> Total points: ${points}</div>
+          <div class="action-buttons">
+            <button class="action-btn btn-details" data-id="${ws.id}"><i class="fa-regular fa-eye"></i> Details</button>
+            <button class="action-btn btn-edit" data-id="${ws.id}"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+            <button class="action-btn btn-delete" data-id="${ws.id}"><i class="fa-regular fa-trash-can"></i> Delete</button>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    // attach dynamic listeners
+    document.querySelectorAll(".btn-details").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = parseInt(btn.getAttribute("data-id"));
+        openDetailsModal(id);
+      });
+    });
+    document.querySelectorAll(".btn-edit").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = parseInt(btn.getAttribute("data-id"));
+        window.location.href = `create-workshop.html?id=${id}`;
+      });
+    });
+    document.querySelectorAll(".btn-delete").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const id = parseInt(btn.getAttribute("data-id"));
+        if (confirm("⚠️ Permanently delete this workshop? This action is irreversible.")) {
+          const success = await deleteWorkshopAPI(id);
+          if (success) {
+            workshopsCache = workshopsCache.filter(w => w.id !== id);
+            renderWorkshops();
+            showToast("Workshop deleted successfully");
+          } else {
+            showToast("Failed to delete workshop. Check console.", true);
+          }
+        }
+      });
+    });
+  }
+
+  function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m;}); }
+
+  // MODAL: detailed view (popup)
+  async function openDetailsModal(id) {
+    const workshop = workshopsCache.find(w => w.id === id);
+    if (!workshop) return;
+    const points = computeTotalPoints(workshop);
+    const bannerImg = workshop.bannerDataURL?.startsWith("http") ? workshop.bannerDataURL : "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=600";
+    const materialsHTML = (workshop.materials || []).map(m => `
+      <li><i class="fa-regular fa-file-lines"></i> <strong>${escapeHtml(m.title || m.titleVideo || 'Material')}</strong> (${escapeHtml(m.type || 'Resource')}) — ${m.points || 0} pts</li>
+    `).join('');
+    const activitiesHTML = (workshop.activities || []).map(a => `
+      <li><i class="fa-regular fa-rocket"></i> ${escapeHtml(a.name)} · ${escapeHtml(a.difficulty || 'Any level')} · ${a.points || 0} pts<br/>
+      <small>${escapeHtml(a.description || '')}</small></li>
+    `).join('');
+
+    const content = `
+      <img class="modal-banner" src="${bannerImg}" alt="banner">
+      <h2 style="margin-bottom: 8px;">${escapeHtml(workshop.title)}</h2>
+      <div class="detail-row"><span class="detail-label">🏛 University:</span> ${escapeHtml(workshop.university)}</div>
+      <div class="detail-row"><span class="detail-label">📝 Description:</span><br/> ${escapeHtml(workshop.description || '—')}</div>
+      <div class="detail-row"><span class="detail-label">📍 Location:</span> ${escapeHtml(workshop.location)}</div>
+      <div class="detail-row"><span class="detail-label">📅 Dates:</span> ${workshop.startDate} → ${workshop.endDate}</div>
+      <div class="detail-row"><span class="detail-label">🎟 Capacity:</span> ${workshop.maxCapacity} / ${workshop.workshopType}</div>
+      <div class="detail-row"><span class="detail-label">📋 Requirements:</span> ${workshop.requireCV ? 'CV required' : 'No CV'} · ${workshop.requireRoadmapCompletion ? 'Roadmap completion needed' : 'No roadmap requirement'}</div>
+      <div class="detail-row"><span class="detail-label">⭐ Total Points:</span> ${points} pts</div>
+      
+      <div style="margin-top: 20px;"><span class="detail-label">📚 Materials</span>
+        <ul class="material-list">${materialsHTML || '<li>No materials added</li>'}</ul>
+      </div>
+      <div style="margin-top: 16px;"><span class="detail-label">🏋️ Activities</span>
+        <ul class="activity-list">${activitiesHTML || '<li>No activities defined</li>'}</ul>
+      </div>
+      <div style="margin: 24px 0 8px; display: flex; gap: 12px; justify-content: flex-end;">
+        <button id="toggleStatusFromModal" class="action-btn btn-edit" style="background:#e9ecef;">${workshop.status === 'published' ? 'Unpublish' : 'Publish'}</button>
+      </div>
+    `;
+    const modalContentDiv = document.getElementById("modalDynamicContent");
+    modalContentDiv.innerHTML = content;
+    const modal = document.getElementById("detailModal");
+    modal.style.display = "flex";
+
+    // binding toggle via modal
+    const toggleBtn = document.getElementById("toggleStatusFromModal");
+    if (toggleBtn) {
+      toggleBtn.addEventListener("click", async () => {
+        const success = await togglePublishStatus(workshop.id, workshop.status);
+        if (success) {
+          const newStatus = workshop.status === 'published' ? 'draft' : 'published';
+          workshop.status = newStatus;
+          renderWorkshops();
+          showToast(`Workshop ${newStatus === 'published' ? 'published' : 'moved to draft'}`);
+          openDetailsModal(workshop.id); // refresh modal content
+        } else {
+          showToast("Failed to update status", true);
+        }
+      });
+    }
+  }
+
+  // load initial data from server + sync
+  async function loadAllWorkshops() {
+    const apiWorkshops = await fetchWorkshopsFromAPI();
+    if (apiWorkshops.length > 0) {
+      workshopsCache = apiWorkshops;
+    } else {
+      workshopsCache = [];
+    }
+    renderWorkshops();
+  }
+
+  // Event listeners
+  document.getElementById("searchInput").addEventListener("input", () => renderWorkshops());
+  document.getElementById("filterSelect").addEventListener("change", () => renderWorkshops());
+  document.getElementById("createWorkshopBtn").addEventListener("click", () => {
+    window.location.href = "create-workshop.html";
+  });
+  const closeModalBtn = document.getElementById("closeModalBtn");
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener("click", () => {
+      document.getElementById("detailModal").style.display = "none";
+    });
+  }
+  window.addEventListener("click", (e) => {
+    const modal = document.getElementById("detailModal");
+    if (e.target === modal) modal.style.display = "none";
+  });
+
+  // initial load
+  loadAllWorkshops();
+</script>
+</body>
+</html>

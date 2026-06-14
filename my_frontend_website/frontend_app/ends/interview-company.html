@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, shrink-to-fit=no">
+  <title>SmartCareerHub · Interview Scheduling</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      background: #f4f6fb;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+    }
+
+    .container-custom {
+      max-width: 1300px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 1.8rem;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.04);
+    }
+
+    .header-section {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.8rem;
+      gap: 1rem;
+    }
+
+    .btn-primary-custom {
+      background: #3498db;
+      border: none;
+      border-radius: 18px;
+      padding: 0.6rem 1.8rem;
+      font-weight: 600;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: 0.2s;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+    }
+
+    .btn-primary-custom:hover {
+      background: #3498db;
+      color: white;
+    }
+
+    .btn-outline-muted {
+      border: 1px solid #e2e8f0;
+      background: white;
+      border-radius: 2rem;
+      padding: 0.4rem 1.2rem;
+      color: #334155;
+    }
+
+    .search-box {
+      border-radius: 2.5rem;
+      border: 1px solid #e2e8f0;
+      background: #f9fafb;
+      padding: 0.5rem 1.2rem;
+    }
+
+    .table-responsive {
+      border-radius: 1.2rem;
+      background: white;
+      margin-top: 0.5rem;
+    }
+
+    .table {
+      margin-bottom: 0;
+      font-size: 0.9rem;
+    }
+
+    .table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+      border-bottom: 2px solid #e9eef3;
+      white-space: nowrap;
+    }
+
+    .badge-status {
+      padding: 0.3rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .status-scheduled { background: #e0f2fe; color: #3498db; }
+    .status-completed { background: #dcfce7; color: #15803d; }
+    .status-cancelled { background: #fee2e2; color: #b91c1c; }
+    .status-pending { background: #fef9c3; color: #854d0e; }
+
+    .action-icon {
+      color: #64748b;
+      margin: 0 0.3rem;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.2s;
+    }
+
+    .action-icon:hover {
+      color: #3498db;
+    }
+
+    .delete-icon:hover {
+      color: #dc2626;
+    }
+
+    /* modal polish */
+    .modal-content {
+      border: none;
+      border-radius: 1.8rem;
+    }
+
+    /* toast popup */
+    .custom-toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #1e293b;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 3rem;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      z-index: 9999;
+      transform: translateY(120px);
+      opacity: 0;
+      transition: 0.3s;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .custom-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .custom-toast.error {
+      background: #b91c1c;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 0.8rem; }
+      .container-custom { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container-custom">
+    <div class="header-section">
+      <div>
+        <h2 class="fw-bold mb-1"><i class="fas fa-calendar-check" style="color: #3498db;"></i>  Interview Scheduling</h2>
+        <p class="text-muted ms-4 ps-1">Manage and schedule interviews with AI‑matched candidates</p>
+      </div>
+      <button class="btn btn-primary-custom" id="scheduleNewBtn">
+        <i class="fas fa-plus-circle"></i> Schedule Interview
+      </button>
+    </div>
+
+    <!-- Search & Filter toolbar -->
+    <div class="row g-3 align-items-center mb-3">
+      <div class="col-md-5">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0 rounded-pill"><i class="fa fa-search"></i></span>
+          <input type="text" id="searchInput" class="form-control border-start-0 rounded-pill" placeholder="Search student or interviewer...">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <select id="typeFilter" class="form-select rounded-pill">
+          <option value="">All Types</option>
+          <option value="Online">Online</option>
+          <option value="Onsite">Onsite</option>
+          <option value="Technical">Technical</option>
+          <option value="HR">HR</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select id="statusFilter" class="form-select rounded-pill">
+          <option value="">All Status</option>
+          <option value="Scheduled">Scheduled</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-outline-muted w-100" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Interviewer</th>
+            <th>Type</th>
+            <th>Date & Time</th>
+            <th>Status</th>
+            <th>Roadmap</th>
+            <th style="width: 120px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="interviewsTableBody">
+          <tr><td colspan="7" class="text-center text-muted py-4">Loading interviews...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create/Edit Modal -->
+  <div class="modal fade" id="interviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius:1.8rem;">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="modalTitle">Schedule Interview</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="interviewForm">
+            <input type="hidden" id="interviewId">
+            <div class="mb-3">
+              <label class="form-label">Student User ID</label>
+              <input type="text" class="form-control rounded-pill" id="studentUserId" placeholder="GUID" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Student Name</label>
+              <input type="text" class="form-control rounded-pill" id="studentName" required>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Interview Type</label>
+                <select class="form-select rounded-pill" id="interviewType">
+                  <option value="Online">Online</option>
+                  <option value="Onsite">Onsite</option>
+                  <option value="Technical">Technical</option>
+                  <option value="HR">HR</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Interviewer Name</label>
+                <input type="text" class="form-control rounded-pill" id="interviewerName" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Scheduled Date</label>
+              <input type="datetime-local" class="form-control rounded-pill" id="scheduledDate" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Roadmap ID</label>
+              <input type="number" class="form-control rounded-pill" id="roadmapId" value="1">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Notes</label>
+              <textarea class="form-control" id="additionalNotes" rows="2" style="border-radius:1rem;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary-custom w-100 justify-content-center">Save Interview</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius:1.8rem;">
+        <div class="modal-header border-0">
+          <h5 class="fw-bold">Interview Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="detailContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast popup -->
+  <div id="liveToast" class="custom-toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function() {
+      const API_BASE_URL = "http://smartcareerhub.runasp.net/api";
+      const TOKEN = localStorage.getItem("authToken") || "";
+
+      let interviews = [];
+      const tableBody = document.getElementById("interviewsTableBody");
+      const searchInput = document.getElementById("searchInput");
+      const typeFilter = document.getElementById("typeFilter");
+      const statusFilter = document.getElementById("statusFilter");
+      const toastEl = document.getElementById("liveToast");
+
+      function showToast(msg, isError = false) {
+        toastEl.textContent = msg;
+        toastEl.className = `custom-toast ${isError ? 'error' : ''} show`;
+        setTimeout(() => toastEl.classList.remove("show"), 3500);
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return "—";
+        return new Date(dateStr).toLocaleString("en-US", { dateStyle:"medium", timeStyle:"short" });
+      }
+
+      function mapStatus(interview) {
+        switch (interview.status) {
+          case 0: return 'Pending';
+          case 1: return 'Scheduled';
+          case 2: return 'Completed';
+          case 3: return 'Cancelled';
+          default:
+            // fallback لو مفيش status
+            if (interview.scheduledDate && new Date(interview.scheduledDate) > new Date()) {
+              return 'Scheduled';
+            }
+            return 'Completed';
+        }
+      }
+
+      // Render table
+      function renderTable(data) {
+        if (!data.length) {
+          tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">No interviews found</td></tr>`;
+          return;
+        }
+        tableBody.innerHTML = data.map(i => {
+          const status = mapStatus(i);
+          return `
+            <tr>
+              <td><strong>${escapeHtml(i.studentName || '—')}</strong><br><small class="text-muted">${escapeHtml(i.studentUserId || '')}</small></td>
+              <td>${escapeHtml(i.interviewerName || '—')}</td>
+              <td><span class="badge bg-light text-dark">${escapeHtml(i.interviewType || 'Online')}</span></td>
+              <td>${formatDate(i.scheduledDate || i.date)}</td>
+              <td><span class="badge-status status-${status.toLowerCase()}">${status}</span></td>
+              <td>${i.roadmapId || '—'}</td>
+              <td>
+                <i class="fas fa-eye action-icon" data-id="${i.id}" title="View"></i>
+                <i class="fas fa-edit action-icon" data-id="${i.id}" title="Edit"></i>
+                <i class="fas fa-trash-alt action-icon delete-icon" data-id="${i.id}" title="Delete"></i>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        // Attach events
+        document.querySelectorAll('.fa-eye').forEach(icon => {
+          icon.addEventListener('click', () => viewInterview(icon.dataset.id));
+        });
+        document.querySelectorAll('.fa-edit').forEach(icon => {
+          icon.addEventListener('click', () => editInterview(icon.dataset.id));
+        });
+        document.querySelectorAll('.fa-trash-alt').forEach(icon => {
+          icon.addEventListener('click', () => deleteInterview(icon.dataset.id));
+        });
+      }
+
+      function escapeHtml(text) {
+        return String(text).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
+      }
+
+      // Filter
+      function filterInterviews() {
+        const search = searchInput.value.toLowerCase();
+        const type = typeFilter.value;
+        const status = statusFilter.value;
+        const filtered = interviews.filter(i => {
+          const nameMatch = (i.studentName||'').toLowerCase().includes(search) || (i.interviewerName||'').toLowerCase().includes(search);
+          const typeMatch = !type || i.interviewType === type;
+          const statusMatch = !status || mapStatus(i) === status;
+          return nameMatch && typeMatch && statusMatch;
+        });
+        renderTable(filtered);
+      }
+
+      searchInput.addEventListener("input", filterInterviews);
+      typeFilter.addEventListener("change", filterInterviews);
+      statusFilter.addEventListener("change", filterInterviews);
+
+      // Fetch interviews
+      async function fetchInterviews() {
+        try {
+          const res = await fetch(`${API_BASE_URL}/Interviews`, {
+            headers: { "Authorization": `Bearer ${TOKEN}` }
+          });
+          if (!res.ok) throw new Error("Fetch failed");
+          var data = await res.json();
+          interviews = Array.isArray(data) ? data : (data.data || []);
+          renderTable(interviews);
+        } catch (err) {
+          showToast("Failed to load interviews", true);
+          tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error loading data</td></tr>`;
+        }
+      }
+
+      // View detail
+      function viewInterview(id) {
+        const i = interviews.find(x => x.id == id);
+        if (!i) return;
+        document.getElementById("detailContent").innerHTML = `
+          <p><strong>Student:</strong> ${escapeHtml(i.studentName)} (${escapeHtml(i.studentUserId)})</p>
+          <p><strong>Interviewer:</strong> ${escapeHtml(i.interviewerName)}</p>
+          <p><strong>Type:</strong> ${escapeHtml(i.interviewType)}</p>
+          <p><strong>Date:</strong> ${formatDate(i.scheduledDate || i.date)}</p>
+          <p><strong>Roadmap ID:</strong> ${i.roadmapId || '—'}</p>
+          <p><strong>Notes:</strong> ${escapeHtml(i.additionalNotes || i.notes || 'None')}</p>
+        `;
+        new bootstrap.Modal(document.getElementById("detailModal")).show();
+      }
+
+      // Edit
+      function editInterview(id) {
+        const i = interviews.find(x => x.id == id);
+        if (!i) return;
+        document.getElementById("modalTitle").textContent = "Edit Interview";
+        document.getElementById("interviewId").value = i.id;
+        document.getElementById("studentUserId").value = i.studentUserId || '';
+        document.getElementById("studentName").value = i.studentName || '';
+        document.getElementById("interviewType").value = i.interviewType || 'Online';
+        document.getElementById("interviewerName").value = i.interviewerName || '';
+        document.getElementById("roadmapId").value = i.roadmapId || 1;
+        document.getElementById("additionalNotes").value = i.additionalNotes || i.notes || '';
+        if (i.scheduledDate || i.date) {
+          const dateVal = new Date(i.scheduledDate || i.date).toISOString().slice(0,16);
+          document.getElementById("scheduledDate").value = dateVal;
+        }
+        new bootstrap.Modal(document.getElementById("interviewModal")).show();
+      }
+
+      // Delete
+      async function deleteInterview(id) {
+        if (!confirm("Delete this interview?")) return;
+        try {
+          const res = await fetch(`${API_BASE_URL}/Interviews/${id}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${TOKEN}` }
+          });
+          if (!res.ok) throw new Error("Delete failed");
+          showToast("Interview deleted");
+          fetchInterviews();
+        } catch (err) {
+          showToast("Could not delete interview", true);
+        }
+      }
+
+      // Create/Update form submit
+      document.getElementById("interviewForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const id = document.getElementById("interviewId").value;
+        const payload = {
+          studentUserId: document.getElementById("studentUserId").value.trim(),
+          studentName: document.getElementById("studentName").value.trim(),
+          scheduledDate: new Date(document.getElementById("scheduledDate").value).toISOString(),
+          interviewType: document.getElementById("interviewType").value,
+          interviewerName: document.getElementById("interviewerName").value.trim(),
+          roadmapId: parseInt(document.getElementById("roadmapId").value) || 1,
+          additionalNotes: document.getElementById("additionalNotes").value.trim()
+        };
+
+        const method = id ? "PUT" : "POST";
+        const url = id ? `${API_BASE_URL}/Interviews/${id}` : `${API_BASE_URL}/Interviews`;
+
+        try {
+          const res = await fetch(url, {
+            method,
+            headers: { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error("Save failed");
+          showToast(id ? "Interview updated!" : "Interview scheduled!");
+          bootstrap.Modal.getInstance(document.getElementById("interviewModal")).hide();
+          fetchInterviews();
+        } catch (err) {
+          showToast("Error saving interview", true);
+        }
+      });
+
+      // New button
+      document.getElementById("scheduleNewBtn").addEventListener("click", () => {
+        document.getElementById("modalTitle").textContent = "Schedule Interview";
+        document.getElementById("interviewForm").reset();
+        document.getElementById("interviewId").value = "";
+        new bootstrap.Modal(document.getElementById("interviewModal")).show();
+      });
+
+      document.getElementById("refreshBtn").addEventListener("click", fetchInterviews);
+
+      if (!TOKEN) showToast("Missing auth token", true);
+      else fetchInterviews();
+    })();
+  </script>
+</body>
+</html>

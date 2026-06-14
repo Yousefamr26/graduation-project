@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+  <title>Graduate Notifications </title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background:  #ffffff;
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      color: #3498DB;
+    }
+
+    .notifications-wrapper {
+      max-width: 950px;
+      margin: 0 auto;
+    }
+
+    /* header */
+    .grad-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 1.8rem;
+      gap: 1rem;
+    }
+
+    .title-section h1 {
+      font-weight: 700;
+      font-size: 2.3rem;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #155fc4, #3498DB);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .title-section h1 i {
+      background: none;
+      -webkit-text-fill-color: #3498DB;
+      font-size: 2rem;
+    }
+
+    .alumni-sub {
+      color: #3498DB;
+      font-weight: 500;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .grad-badge {
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(12px);
+      background: #e3f1ff;
+      padding: 0.5rem 1.4rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #155fc4;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 8px 14px rgba(0,99,188,0.12);
+      border: 1px solid #b6d6ff;
+    }
+
+    /* cards grid */
+    .notifications-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .graduate-card {
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 1.3rem 1.6rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(138, 180, 248, 0.5);
+      box-shadow: 0 15px 25px -12px rgba(0, 105, 184, 0.14);
+      transition: all 0.25s ease-in-out;
+      position: relative;
+    }
+
+    .graduate-card:hover {
+      transform: translateY(-3px);
+      border-color: #3498DB;;
+      box-shadow: 0 25px 30px -15px rgba(16, 95, 181, 0.2);
+      background: #ffffff;
+    }
+
+    /* icon block */
+    .grad-icon-circle {
+      width: 52px;
+      height: 52px;
+      background: #d9ecfe;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #3498DB;;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #e3f0ff, #c5deff);
+      box-shadow: 0 8px 14px rgba(4, 112, 217, 0.18);
+    }
+
+    .content-block {
+      flex: 1;
+    }
+
+    .notif-title {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: #155fc4;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.35rem;
+    }
+
+    .new-chip {
+      background: #3498DB;;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.9rem;
+      border-radius: 30px;
+      letter-spacing: 0.4px;
+      background: linear-gradient(145deg, #3498DB, #155fc4);
+      box-shadow: 0 5px 12px rgba(13, 110, 253, 0.3);
+    }
+
+    .message-body {
+      color: #243e5a;
+      font-weight: 500;
+      margin: 0.35rem 0 0.7rem;
+      line-height: 1.5;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: #3498DB;
+    }
+
+    .meta-row i {
+      color: #3498DB;
+      margin-right: 0.2rem;
+    }
+
+    .alumni-tag {
+      background: #e7f1ff;
+      padding: 0.2rem 0.9rem;
+      border-radius: 20px;
+      font-weight: 600;
+      color: #155fc4;
+      font-size: 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    hr {
+      margin: 0.5rem 0 0.3rem;
+      border-color: #d1e2fc;
+      opacity: 0.7;
+    }
+
+    .footer-note {
+      margin-top: 2.5rem;
+      text-align: center;
+      color: #155fc4;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(6px);
+      padding: 0.5rem 1.8rem;
+      border-radius: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      border: 1px solid #bcd5f5;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    @media (max-width: 600px) {
+      .graduate-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="notifications-wrapper">
+  
+  <div class="grad-header">
+    <div class="title-section">
+      <h1>
+        <i class="fa-solid fa-graduation-cap"></i> Notifications
+      </h1>
+      <div class="alumni-sub">
+        <i class="fa-solid fa-user-graduate"></i> Stay updated with your latest activities
+      </div>
+    </div>
+    <div class="grad-badge">
+      <i class="fa-solid fa-bell"></i> <span id="newCountDisplay">4 new</span>
+    </div>
+  </div>
+
+  <!-- Notifications will be rendered here dynamically with static graduate data -->
+  <div class="notifications-grid" id="graduateNotificationsContainer">
+    <!-- JS fills this -->
+  </div>
+
+  <div class="footer-note">
+    <i class="fa-solid fa-briefcase"></i> Exclusive updates for graduates
+  </div>
+</div>
+
+<!-- Bootstrap JS (optional for interactions) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  (function() {
+    // ---------- STATIC GRADUATE NOTIFICATIONS (English, career-focused) ----------
+    const graduateNotifications = [
+      {
+        id: 101,
+        title: "Job Application Update",
+        message: "Your application for Junior Software Engineer at TechVista was viewed by the recruiter.",
+        icon: "fa-briefcase",
+        category: "Job Alert",
+        timestamp: "8 minutes ago",
+        isNew: true
+      },
+      {
+        id: 102,
+        title: "Alumni Networking Event",
+        message: "You're invited: 'Graduate Career Summit 2026' – connect with alumni and industry leaders.",
+        icon: "fa-calendar-check",
+        category: "Event",
+        timestamp: "1 hour ago",
+        isNew: true
+      },
+      {
+        id: 103,
+        title: "Skill Badge Unlocked",
+        message: "Congratulations! You earned the 'Data Analysis with Python' graduate badge.",
+        icon: "fa-medal",
+        category: "Achievement",
+        timestamp: "3 hours ago",
+        isNew: true
+      },
+      {
+        id: 104,
+        title: "Resume Feedback Ready",
+        message: "Career advisor left feedback on your updated resume. Check suggestions now.",
+        icon: "fa-file-pen",
+        category: "Career Service",
+        timestamp: "Yesterday",
+        isNew: false
+      },
+      {
+        id: 105,
+        title: "Interview Scheduled",
+        message: "Reminder: Mock interview with career coach (AI/ML track) on May 9, 2026.",
+        icon: "fa-comments",
+        category: "Interview Prep",
+        timestamp: "Yesterday",
+        isNew: false
+      },
+      {
+        id: 106,
+        title: "New Job Match",
+        message: "Based on your profile: 'UX Designer' at BrightPath Technologies (Remote).",
+        icon: "fa-rocket",
+        category: "Job Match",
+        timestamp: "2 days ago",
+        isNew: false
+      }
+    ];
+
+    const container = document.getElementById("graduateNotificationsContainer");
+    const newCountSpan = document.getElementById("newCountDisplay");
+
+    function renderGraduateNotifications(notificationsList) {
+      if (!container) return;
+      
+      // count new items (first 3 are marked new in static data)
+      const newItemsCount = notificationsList.filter(item => item.isNew).length;
+      if (newCountSpan) {
+        newCountSpan.textContent = `${newItemsCount} new`;
+      }
+
+      let htmlOutput = "";
+      
+      notificationsList.forEach((notif, index) => {
+        // Determine icon, fallback
+        let iconClass = notif.icon || "fa-graduation-cap";
+        const showNewBadge = notif.isNew === true;
+        
+        htmlOutput += `
+          <div class="graduate-card">
+            <div class="grad-icon-circle">
+              <i class="fa-solid ${iconClass}"></i>
+            </div>
+            <div class="content-block">
+              <div class="notif-title">
+                ${notif.title || "Graduate Update"}
+                ${showNewBadge ? '<span class="new-chip">NEW</span>' : ''}
+              </div>
+              <div class="message-body">
+                ${notif.message || ""}
+              </div>
+              <div class="meta-row">
+                <span><i class="fa-regular fa-clock"></i> ${notif.timestamp || "Recently"}</span>
+                <span class="alumni-tag">
+                  <i class="fa-solid fa-user-graduate"></i> ${notif.category || "Alumni"}
+                </span>
+                <span><i class="fa-solid fa-arrow-trend-up"></i> graduate</span>
+              </div>
+              <hr>
+              <div style="font-size:0.7rem; color:#36658a; display:flex; gap:1.2rem; margin-top:0.3rem;">
+                <span><i class="fa-regular fa-building"></i> Career Hub</span>
+                <span><i class="fa-solid fa-check-circle"></i> verified</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = htmlOutput;
+    }
+
+    // Initial render with static graduate data
+    renderGraduateNotifications(graduateNotifications);
+
+  })();
+</script>
+
+</body>
+</html>
