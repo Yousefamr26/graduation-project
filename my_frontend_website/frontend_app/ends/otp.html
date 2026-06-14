@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>Verify OTP - Smart Career Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: #f4f7fc;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 25px;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #2c3e50;
+      background: white;
+      padding: 10px 18px;
+      border-radius: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+      border: none;
+      font-weight: 500;
+      z-index: 10;
+    }
+
+    .back-btn:hover {
+      background: #f0f4fa;
+      color: #005bbb;
+    }
+
+    .card {
+      text-align: center;
+      max-width: 440px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 35px 30px;
+      border-radius: 24px;
+      background: #ffffff;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+    }
+
+    .logo img {
+      max-width: 180px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #0b1e33;
+      margin: 12px 0 6px;
+    }
+
+    .card p {
+      color: #4f5b68;
+      font-size: 0.95rem;
+      margin: 6px 0;
+    }
+
+    #displayEmail {
+      font-weight: 600;
+      color: #1e90ff;
+      word-break: break-all;
+      font-size: 1rem;
+    }
+
+    .otp-box {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 25px 0 18px;
+      flex-wrap: wrap;
+    }
+
+    .otp-input {
+      width: 50px;
+      height: 55px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 600;
+      border: 1.5px solid #dce3e9;
+      border-radius: 12px;
+      background: #f9fbfd;
+      transition: 0.2s;
+      outline: none;
+    }
+
+    .otp-input:focus {
+      border-color: #1e90ff;
+      box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.12);
+      background: #ffffff;
+    }
+
+    .invalid {
+      border: 1.5px solid #ef4444 !important;
+      background-color: #fff5f5;
+    }
+
+    .error {
+      color: #b91c1c;
+      font-size: 0.9rem;
+      margin: 5px 0 10px;
+      display: none;
+      background: #fee9e9;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #f4b6b6;
+    }
+
+    #verifyBtn {
+      width: 100%;
+      padding: 14px;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-top: 8px;
+      transition: background 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    #verifyBtn:disabled {
+      background: #b1cce6;
+      cursor: not-allowed;
+    }
+
+    .link {
+      color: #1e90ff;
+      cursor: pointer;
+      text-decoration: underline;
+      font-weight: 500;
+    }
+
+    .disabled-link {
+      color: #94a3b8;
+      cursor: not-allowed;
+      text-decoration: none;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 0.75rem;
+      color: #8b9aab;
+    }
+
+    .success-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .success-message {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .success-message i {
+      font-size: 3rem;
+      color: #10b981;
+      margin-bottom: 15px;
+    }
+
+    @media screen and (max-width: 500px) {
+      body {
+        padding: 70px 15px 25px;
+        align-items: flex-start;
+      }
+
+      .back-btn {
+        top: 12px;
+        left: 12px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+
+      .card {
+        padding: 28px 18px;
+        border-radius: 22px;
+      }
+
+      h2 {
+        font-size: 1.6rem;
+      }
+
+      .otp-input {
+        width: 44px;
+        height: 50px;
+        font-size: 1.2rem;
+      }
+
+      .otp-box {
+        gap: 7px;
+      }
+
+      #verifyBtn {
+        padding: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="back-btn" onclick="goBack()">
+    <i class="fa-solid fa-arrow-left"></i> Back
+  </div>
+
+  <div class="card">
+    <div class="logo">
+      <img src="images/verify-otp.png" alt="verify otp illustration" style="width:180px; height:auto;" />
+    </div>
+
+    <h2>Verify Your Email</h2>
+    <p>We've sent a 6-digit code to your email.</p>
+    <p id="displayEmail" style="font-weight: bold; color: #1e90ff;"></p>
+
+    <div class="otp-box">
+      <input class="otp-input" maxlength="1" id="d1" type="text" inputmode="numeric" pattern="[0-9]" />
+      <input class="otp-input" maxlength="1" id="d2" type="text" inputmode="numeric" pattern="[0-9]" />
+      <input class="otp-input" maxlength="1" id="d3" type="text" inputmode="numeric" pattern="[0-9]" />
+      <input class="otp-input" maxlength="1" id="d4" type="text" inputmode="numeric" pattern="[0-9]" />
+      <input class="otp-input" maxlength="1" id="d5" type="text" inputmode="numeric" pattern="[0-9]" />
+      <input class="otp-input" maxlength="1" id="d6" type="text" inputmode="numeric" pattern="[0-9]" />
+    </div>
+
+    <p id="otpError" class="error"></p>
+
+    <button id="verifyBtn" onclick="verifyOTP()">Verify OTP</button>
+
+    <p style="margin-top: 22px; font-size: 0.9rem;">
+      Didn't receive code? <span id="resendBtn" class="link" onclick="resendOTP()">Resend OTP</span>
+    </p>
+
+    <div class="footer">© 2025 Smart Career Hub</div>
+  </div>
+
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-message">
+      <i class="fa-solid fa-circle-check"></i>
+      <h3>Email Verified!</h3>
+      <p>Redirecting to dashboard...</p>
+    </div>
+  </div>
+
+  <script>
+    // ============ CONFIGURATION ============
+    const API_BASE_URL = "http://smartcareerhub.runasp.net/api";
+    
+    // Dashboard mapping
+    const dashboardMap = {
+      "Company": "Company-Dashboard.html",
+      "Student": "Student-Dashboard.html",
+      "Graduate": "Graduate-Dashboard.html",
+      "University": "University-Dashboard.html",
+      "Training-Center": "Training-center-Dashboard.html"
+    };
+
+    // Role endpoints mapping
+    const roleEndpoints = {
+      "student": "StudentAuth",
+      "graduate": "GraduateAuth",
+      "company": "CompanyAuth",
+      "university": "UniversityAuth",
+      "training": "TrainingCenterAuth"
+    };
+
+    // ============ AUTH GUARD ============
+    (function authGuard() {
+      const authToken = localStorage.getItem("authToken");
+      const needOtp = localStorage.getItem("needotp");
+      const userEmail = localStorage.getItem("registeredEmail");
+      const userRole = localStorage.getItem("userRole");
+
+      // If user has token and doesn't need OTP, redirect to dashboard
+      if (authToken && needOtp !== "true") {
+        const dashboard = dashboardMap[userRole] || "login.html";
+        window.location.href = dashboard;
+        return;
+      }
+
+      // If no token and no email stored, redirect to login
+      if (!authToken && !userEmail) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Display the email
+      if (userEmail) {
+        document.getElementById("displayEmail").textContent = userEmail;
+      }
+    })();
+
+    // ============ OTP INPUT HANDLING ============
+    const inputs = document.querySelectorAll('.otp-input');
+    
+    // Allow only numbers
+    inputs.forEach(input => {
+      input.addEventListener('input', (e) => {
+        // Remove non-numeric characters
+        input.value = input.value.replace(/[^0-9]/g, '');
+        
+        // Auto-advance to next input
+        if (input.value && input.nextElementSibling) {
+          input.nextElementSibling.focus();
+        }
+      });
+
+      // Handle paste event
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+        const numbers = pastedData.replace(/[^0-9]/g, '').split('');
+        
+        inputs.forEach((inp, index) => {
+          if (numbers[index]) {
+            inp.value = numbers[index];
+          }
+        });
+        
+        // Focus on last filled or next empty
+        const lastFilledIndex = Math.min(numbers.length, inputs.length) - 1;
+        if (lastFilledIndex >= 0 && lastFilledIndex < inputs.length - 1) {
+          inputs[lastFilledIndex + 1].focus();
+        }
+      });
+
+      // Handle backspace
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !input.value && input.previousElementSibling) {
+          input.previousElementSibling.focus();
+        }
+        
+        // Allow left/right arrow keys
+        if (e.key === 'ArrowLeft' && input.previousElementSibling) {
+          e.preventDefault();
+          input.previousElementSibling.focus();
+        }
+        if (e.key === 'ArrowRight' && input.nextElementSibling) {
+          e.preventDefault();
+          input.nextElementSibling.focus();
+        }
+      });
+    });
+
+    // ============ VERIFY OTP ============
+    async function verifyOTP() {
+      const otpError = document.getElementById("otpError");
+      const verifyBtn = document.getElementById("verifyBtn");
+      const userEmail = localStorage.getItem("registeredEmail");
+      const userRole = (localStorage.getItem("userRole") || "student").toLowerCase();
+      
+      let otp = "";
+      let isValid = true;
+
+      // Reset errors
+      otpError.style.display = "none";
+      inputs.forEach(input => input.classList.remove("invalid"));
+
+      // Collect OTP
+      inputs.forEach(input => {
+        if (!input.value.trim()) {
+          isValid = false;
+          input.classList.add("invalid");
+        }
+        otp += input.value;
+      });
+
+      // Validate
+      if (!isValid || otp.length !== 6) {
+        otpError.textContent = "Please enter the full 6-digit code.";
+        otpError.style.display = "block";
+        return;
+      }
+
+      // Get correct endpoint
+      const endpoint = roleEndpoints[userRole] || "StudentAuth";
+
+      try {
+        verifyBtn.disabled = true;
+        verifyBtn.innerText = "Verifying...";
+
+        const response = await fetch(`${API_BASE_URL}/${endpoint}/verify-email`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("authToken") || ""}`
+          },
+          body: JSON.stringify({ 
+            email: userEmail, 
+            otp: otp 
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.isSuccess) {
+          // SUCCESS - Clear OTP flag and store new token if provided
+          localStorage.removeItem("needotp");
+          
+          if (result.data && result.data.token) {
+            localStorage.setItem("authToken", result.data.token);
+          }
+
+          // Show success overlay
+          const overlay = document.getElementById("successOverlay");
+          overlay.style.display = "flex";
+          
+          // Redirect to dashboard after delay
+          setTimeout(() => {
+            const currentRole = localStorage.getItem("userRole");
+            const dashboard = dashboardMap[currentRole] || "login.html";
+            window.location.href = dashboard;
+          }, 1500);
+          
+        } else {
+          // ERROR - Show error message
+          otpError.textContent = result.description || "Invalid OTP code. Please try again.";
+          otpError.style.display = "block";
+          
+          // Clear OTP inputs on error
+          inputs.forEach(input => input.value = "");
+          inputs[0].focus();
+        }
+      } catch (error) {
+        console.error("Verify OTP error:", error);
+        otpError.textContent = "Connection error. Please check your internet and try again.";
+        otpError.style.display = "block";
+      } finally {
+        verifyBtn.disabled = false;
+        verifyBtn.innerText = "Verify OTP";
+      }
+    }
+
+    // ============ RESEND OTP ============
+    async function resendOTP() {
+      const resendBtn = document.getElementById("resendBtn");
+      const otpError = document.getElementById("otpError");
+      const userEmail = localStorage.getItem("registeredEmail");
+      const userRole = (localStorage.getItem("userRole") || "student").toLowerCase();
+      const endpoint = roleEndpoints[userRole] || "StudentAuth";
+
+      // Check if already sending
+      if (resendBtn.classList.contains("disabled-link")) return;
+
+      try {
+        resendBtn.classList.add("disabled-link");
+        resendBtn.innerText = "Sending...";
+        
+        const response = await fetch(`${API_BASE_URL}/${endpoint}/resend-otp`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("authToken") || ""}`
+          },
+          body: JSON.stringify({ email: userEmail })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          // Success - show temporary message
+          otpError.textContent = "✅ New OTP sent successfully!";
+          otpError.style.display = "block";
+          otpError.style.background = "#d1fae5";
+          otpError.style.border = "1px solid #6ee7b7";
+          otpError.style.color = "#065f46";
+          
+          // Clear inputs
+          inputs.forEach(input => input.value = "");
+          inputs[0].focus();
+          
+          // Reset error style after 3 seconds
+          setTimeout(() => {
+            otpError.style.display = "none";
+            otpError.style.background = "#fee9e9";
+            otpError.style.border = "1px solid #f4b6b6";
+            otpError.style.color = "#b91c1c";
+          }, 3000);
+          
+          // Disable resend for 60 seconds
+          startResendCooldown();
+        } else {
+          otpError.textContent = result.description || "Failed to resend OTP. Please try again.";
+          otpError.style.display = "block";
+        }
+      } catch (error) {
+        console.error("Resend OTP error:", error);
+        otpError.textContent = "Network error. Could not resend OTP.";
+        otpError.style.display = "block";
+      } finally {
+        resendBtn.classList.remove("disabled-link");
+        resendBtn.innerText = "Resend OTP";
+      }
+    }
+
+    // ============ RESEND COOLDOWN ============
+    function startResendCooldown() {
+      const resendBtn = document.getElementById("resendBtn");
+      let seconds = 60;
+      
+      resendBtn.classList.add("disabled-link");
+      resendBtn.innerText = `Resend in ${seconds}s`;
+      
+      const interval = setInterval(() => {
+        seconds--;
+        resendBtn.innerText = `Resend in ${seconds}s`;
+        
+        if (seconds <= 0) {
+          clearInterval(interval);
+          resendBtn.classList.remove("disabled-link");
+          resendBtn.innerText = "Resend OTP";
+        }
+      }, 1000);
+    }
+
+    // ============ BACK BUTTON ============
+    function goBack() {
+      const otpIntent = localStorage.getItem("otpIntent");
+      
+      if (otpIntent === "forgot") {
+        window.location.href = "forget-password.html";
+      } else {
+        // Clear partial auth data
+        localStorage.removeItem("needotp");
+        localStorage.removeItem("registeredEmail");
+        window.location.href = "login.html";
+      }
+    }
+
+    // ============ ENTER KEY SUPPORT ============
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const allFilled = Array.from(inputs).every(input => input.value.trim());
+        if (allFilled) {
+          verifyOTP();
+        }
+      }
+    });
+
+    // Focus on first input on load
+    window.addEventListener('load', () => {
+      inputs[0].focus();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>Smart Career Hub - Login</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: #f5f7fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1100px;
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      min-height: 620px;
+    }
+
+    /* LEFT SECTION */
+    .left-section {
+      width: 48%;
+      background: linear-gradient(145deg, #155fc4, #3498DB);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      padding: 40px 30px;
+      overflow: hidden;
+    }
+
+    .left-section .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 30, 70, 0.25);
+      backdrop-filter: blur(2px);
+    }
+
+    .left-section .content {
+      position: relative;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .left-section .logo img {
+      width: 80px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
+    }
+
+    .left-section h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      letter-spacing: -0.3px;
+    }
+
+    .left-section p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    /* RIGHT SECTION */
+    .right-section {
+      width: 52%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 30px;
+      background: #ffffff;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-card h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0b1e33;
+      margin-bottom: 6px;
+    }
+
+    .sub {
+      color: #5f6b7a;
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+    }
+
+    /* Server error */
+    #serverError {
+      background-color: #fee9e9;
+      color: #b91c1c;
+      padding: 12px 15px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      font-size: 0.9rem;
+      display: none;
+      border: 1px solid #f4b6b6;
+      line-height: 1.4;
+    }
+
+    /* Custom dropdown */
+    .custom-select {
+      position: relative;
+      width: 100%;
+      margin-bottom: 18px;
+    }
+
+    .select-box {
+      background: #f4f6fa;
+      border: 1px solid #dce3e9;
+      padding: 13px 15px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: 0.2s;
+    }
+
+    .select-box span {
+      flex: 1;
+      margin-left: 12px;
+      color: #444;
+      font-size: 0.95rem;
+    }
+
+    .select-box i:first-child {
+      margin-right: 6px;
+      color: #44566c;
+    }
+
+    .options-container {
+      position: absolute;
+      width: 100%;
+      background: #fff;
+      border-radius: 14px;
+      margin-top: 6px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 1000;
+      border: 1px solid #edf0f5;
+      overflow: hidden;
+    }
+
+    .option {
+      padding: 14px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background 0.15s;
+      color: #1f2a3a;
+      font-size: 0.9rem;
+    }
+
+    .option i {
+      margin-right: 12px;
+      color: #1e90ff;
+      width: 20px;
+      text-align: center;
+    }
+
+    .option:hover {
+      background: #f1f6fd;
+    }
+
+    /* Inputs */
+    .input {
+      width: 100%;
+      padding: 14px 16px;
+      margin: 10px 0;
+      border: 1px solid #dce3e9;
+      border-radius: 12px;
+      background: #f9fbfd;
+      font-size: 0.95rem;
+      transition: 0.2s;
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: #1e90ff;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(30,144,255,0.08);
+    }
+
+    .error-border {
+      border: 1px solid #e11d48 !important;
+      background: #fff9f9;
+    }
+
+    .error {
+      color: #b91c1c;
+      font-size: 0.8rem;
+      margin: -4px 0 8px 4px;
+      display: none;
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 14px 0 20px;
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .options label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #2c3a4b;
+    }
+
+    .forgot {
+      color: #1e90ff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 15px;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .login-btn:disabled {
+      background: #a0c4e6;
+      cursor: not-allowed;
+    }
+
+    .register {
+      text-align: center;
+      margin-top: 32px;
+      color: #3e4b5c;
+      font-size: 0.9rem;
+    }
+
+    .register a {
+      color: #1e90ff;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #8b9aab;
+      margin-top: 20px;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media screen and (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        max-width: 550px;
+        border-radius: 24px;
+      }
+      .left-section {
+        width: 100%;
+        padding: 35px 25px;
+        border-radius: 24px 24px 0 0;
+      }
+      .right-section {
+        width: 100%;
+        padding: 30px 25px 40px;
+      }
+      .left-section h2 {
+        font-size: 1.8rem;
+      }
+    }
+
+    @media screen and (max-width: 500px) {
+      body {
+        padding: 10px;
+        align-items: flex-start;
+      }
+      .container {
+        margin: 10px 0;
+      }
+      .left-section {
+        padding: 25px 20px;
+      }
+      .left-section .logo img {
+        width: 60px;
+      }
+      .left-section h2 {
+        font-size: 1.5rem;
+      }
+      .right-section {
+        padding: 20px 18px 30px;
+      }
+      .login-card h2 {
+        font-size: 1.7rem;
+      }
+      .select-box, .input {
+        padding: 13px 14px;
+      }
+      .login-btn {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Left decorative side -->
+    <div class="left-section">
+      <div class="overlay"></div>
+      <div class="content">
+        <div class="logo">
+          <img src="https://img.icons8.com/ios-filled/100/ffffff/brain.png" alt="brain icon" width="90" />
+        </div>
+        <h2>Welcome to Smart Career Hub</h2>
+        <p>Connect students and graduates with companies and training centers through the power of AI</p>
+      </div>
+    </div>
+
+    <!-- Right form side -->
+    <div class="right-section">
+      <div class="login-card">
+        <h2>Welcome Back 👋</h2>
+        <p class="sub">Log in to continue your journey toward your dream career.</p>
+
+        <div class="card">
+          <div id="serverError"></div>
+
+          <!-- Account type dropdown -->
+          <div class="custom-select">
+            <div class="select-box" id="selectBox">
+              <i class="fa-solid fa-user"></i>
+              <span>Select Account Type</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="options-container" id="optionsContainer">
+              <div class="option" data-value="Student">
+                <i class="fa-solid fa-user-graduate"></i> Under Graduate
+              </div>
+              <div class="option" data-value="Graduate">
+                <i class="fa-solid fa-user-graduate"></i> Graduate
+              </div>
+              <div class="option" data-value="Company">
+                <i class="fa-solid fa-building"></i> Company
+              </div>
+              <div class="option" data-value="University">
+                <i class="fa-solid fa-school"></i> University
+              </div>
+              <div class="option" data-value="Training-Center">
+                <i class="fa-solid fa-book-open"></i> Training Center
+              </div>
+            </div>
+          </div>
+
+          <input type="hidden" id="userType" />
+
+          <input type="text" id="email" class="input" placeholder="Email / Username" required />
+          <div id="emailError" class="error">Please enter a valid email.</div>
+
+          <input type="password" id="password" class="input" placeholder="Password" required />
+          <div id="passwordError" class="error">Password must be at least 8 characters.</div>
+
+          <div class="options">
+            <label><input type="checkbox" id="rememberMe" /> Remember me</label>
+            <a href="#" class="forgot" onclick="goToForgot()">Forgot Password?</a>
+          </div>
+
+          <button class="login-btn" id="login-btn">Login</button>
+
+          <p class="register">
+            Don't have an account? <a href="#" onclick="goRegister()">Register now</a>
+          </p>
+          <p class="footer">© 2025 Smart Career Hub</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE_URL = "http://smartcareerhub.runasp.net/api";
+
+    /* ===== Dropdown Logic ===== */
+    const selectBox = document.getElementById("selectBox");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const options = document.querySelectorAll(".option");
+    const hiddenInput = document.getElementById("userType");
+
+    selectBox.addEventListener("click", () => {
+      optionsContainer.style.display =
+        optionsContainer.style.display === "block" ? "none" : "block";
+    });
+
+    options.forEach(option => {
+      option.addEventListener("click", () => {
+        const iconClass = option.querySelector("i").className;
+        const text = option.innerText.trim();
+        selectBox.innerHTML = `
+          <i class="${iconClass}"></i>
+          <span>${text}</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        `;
+        hiddenInput.value = option.getAttribute("data-value");
+        optionsContainer.style.display = "none";
+      });
+    });
+
+    document.addEventListener("click", function(e) {
+      if (!selectBox.contains(e.target) && !optionsContainer.contains(e.target)) {
+        optionsContainer.style.display = "none";
+      }
+    });
+
+    /* ===== Login Logic ===== */
+    document.getElementById("login-btn").addEventListener("click", async function(e) {
+      e.preventDefault();
+
+      const userType = document.getElementById("userType").value;
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const loginBtn = document.getElementById("login-btn");
+      const serverErrorDiv = document.getElementById("serverError");
+
+      serverErrorDiv.style.display = "none";
+      let isValid = true;
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (emailInput.value === "" || !emailRegex.test(emailInput.value)) {
+        document.getElementById("emailError").style.display = "block";
+        emailInput.classList.add("error-border");
+        isValid = false;
+      } else {
+        document.getElementById("emailError").style.display = "none";
+        emailInput.classList.remove("error-border");
+      }
+
+      if (passwordInput.value.length < 8) {
+        document.getElementById("passwordError").style.display = "block";
+        passwordInput.classList.add("error-border");
+        isValid = false;
+      } else {
+        document.getElementById("passwordError").style.display = "none";
+        passwordInput.classList.remove("error-border");
+      }
+
+      if (userType === "") {
+        alert("Please select account type.");
+        isValid = false;
+      }
+
+      if (isValid) {
+        loginBtn.disabled = true;
+        loginBtn.innerText = "Logging in...";
+
+        const accountTypeMap = {
+          "Student": "StudentAuth",
+          "Graduate": "GraduateAuth",
+          "Company": "CompanyAuth",
+          "University": "UniversityAuth",
+          "Training-Center": "TrainingCenterAuth"
+        };
+
+        const endpoint = accountTypeMap[userType];
+        const loginData = {
+          email: emailInput.value,
+          password: passwordInput.value,
+          accountType: userType.replace("-", "")
+        };
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/${endpoint}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(loginData)
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            console.log("Login Successful! Token:", result.data);
+            localStorage.setItem("authToken", result.data.token);
+            localStorage.setItem("universityId", result.data.userProfile.id);
+            localStorage.setItem("companyId", result.data.userProfile.id);            
+            localStorage.setItem("userRole", userType);
+            localStorage.setItem("user", JSON.stringify(result.data.userProfile));
+            console.log(result.data.userProfile);
+            alert("Login successful! Welcome to your dashboard.");
+
+            const dashboardMap = {
+              "Company": "Company-Dashboard.html",
+              "Student": "Under Graduate-Dashboard.html",
+              "Graduate": "Graduate-Dashboard.html",
+              "University": "University-Dashboard.html",
+              "Training-Center": "Training-center-Dashboard.html"
+            };
+            window.location.href = dashboardMap[userType];
+          } else {
+            serverErrorDiv.innerText = result.description || "Invalid email or password.";
+            serverErrorDiv.style.display = "block";
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          serverErrorDiv.innerText = "Connection error. Please check your internet or the API server.";
+          serverErrorDiv.style.display = "block";
+        } finally {
+          loginBtn.disabled = false;
+          loginBtn.innerText = "Login";
+        }
+      }
+    });
+
+    function goRegister() {
+      window.location.href = "register.html";
+    }
+
+    function goToForgot() {
+      window.location.href = "forget-password.html";
+    }
+  </script>
+</body>
+</html>

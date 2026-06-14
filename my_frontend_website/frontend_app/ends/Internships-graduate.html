@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, shrink-to-fit=no, viewport-fit=cover">
+  <title>Internships</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <style>
+    :root {
+      --primary: #3498DB;
+      --surface: #ffffff;
+      --bg: #f8f9fc;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --border: #e8edf5;
+      --shadow-sm: 0 8px 20px rgba(0,0,0,0.04);
+      --shadow-md: 0 20px 35px rgba(0,0,0,0.08);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+      --transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    body {
+      background-color: var(--bg);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    #page-content-wrapper {
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* Stats Overview */
+    .stats-overview {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 24px 32px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      background: linear-gradient(135deg, #3498DB, #3498DB);
+      box-shadow: 0 10px 20px rgba(79,70,229,0.25);
+    }
+    .stat-info small {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+    .stat-info h5 {
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    /* Cards */
+    .job-card {
+      border: none;
+      border-radius: 1.5rem;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.04);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      height: 100%;
+      background: white;
+      overflow: hidden;
+      position: relative;
+      border: 1.5px solid transparent;
+    }
+    .job-card:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 24px 38px rgba(0, 0, 0, 0.08);
+      border-color: rgba(79,70,229,0.2);
+    }
+    .job-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #3498DB, #3498DB);
+    }
+
+    .card-company-logo {
+      width: 52px;
+      height: 52px;
+      background: #f1f3f5;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: #1e293b;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+    }
+
+    .status-badge {
+      padding: 0.35rem 1.1rem;
+      border-radius: 2rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      text-transform: capitalize;
+    }
+    .status-Open, .status-Active { background: #e3f0ff; color: #3498DB; }
+    .status-Completed, .status-Closed { background: #dff3e3; color: #1a6e32; }
+    .status-Rejected { background: #ffe8e5; color: #b3261e; }
+
+    .form-select, .form-control {
+      border-radius: 2.5rem;
+      border: 1px solid #e0e4ea;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #3498DB;
+      box-shadow: 0 0 0 0.2rem rgba(79,70,229,0.12);
+    }
+
+    .btn-primary-gradient {
+      background: linear-gradient(135deg, #3498DB, #3498DB);
+      border: none;
+      color: white;
+      border-radius: 2.5rem;
+      padding: 0.6rem 1.8rem;
+      font-weight: 600;
+      transition: 0.2s;
+      box-shadow: 0 6px 16px rgba(79,70,229,0.25);
+    }
+    .btn-primary-gradient:hover {
+      box-shadow: 0 10px 22px rgba(79,70,229,0.35);
+      color: white;
+    }
+
+    .btn-outline-muted {
+      border: 1px solid #d1d7e0;
+      color: #334155;
+      border-radius: 2rem;
+      padding: 0.4rem 1.2rem;
+      background: white;
+      font-weight: 500;
+      transition: 0.15s;
+    }
+    .btn-outline-muted:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+    .btn-apply-action {
+      background: white;
+      border: 1px solid #3498DB;
+      color: #3498DB;
+      border-radius: 2rem;
+      font-weight: 600;
+      padding: 0.4rem 1.6rem;
+      transition: all 0.2s;
+    }
+    .btn-apply-action:hover {
+      background: #3498DB;
+      color: white;
+    }
+    .btn-withdraw {
+      background: white;
+      border: 1px solid #dc3545;
+      color: #dc3545;
+      border-radius: 2rem;
+      font-weight: 600;
+      padding: 0.4rem 1.4rem;
+    }
+    .btn-withdraw:hover {
+      background: #dc3545;
+      color: white;
+    }
+
+    .detail-badge {
+      background: #f1f4f9;
+      padding: 0.2rem 0.9rem;
+      border-radius: 1.2rem;
+      font-size: 0.7rem;
+      display: inline-block;
+      color: #1e293b;
+      font-weight: 500;
+    }
+
+    /* Pagination */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+    .pagination-container .btn {
+      border-radius: 14px;
+      font-weight: 600;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      transition: var(--transition);
+    }
+    .pagination-container .btn:hover:not(:disabled) {
+      background: #f8fafc;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .pagination-container .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .pagination-container .btn.active-page {
+      background: linear-gradient(135deg, #3498DB, #3498DB);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 6px 16px rgba(79,70,229,0.3);
+      pointer-events: none;
+    }
+    .pagination-container .page-info {
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      padding: 0 8px;
+    }
+
+    /* Toast */
+    .custom-toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #0f172a;
+      color: white;
+      padding: 0.9rem 2rem;
+      border-radius: 3rem;
+      box-shadow: 0 18px 30px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 9999;
+      transform: translateY(130px);
+      opacity: 0;
+      transition: 0.3s ease;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .custom-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .custom-toast.error { background: #b91c1c; }
+
+    .modal-content {
+      border: none;
+      border-radius: 1.5rem;
+    }
+
+    /* Skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, #e9edf5 25%, #f0f4fa 50%, #e9edf5 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 24px;
+      height: 280px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @media (max-width: 576px) {
+      h2 { font-size: 1.6rem; }
+      .card-company-logo { width: 45px; height: 45px; font-size: 1.2rem; }
+      .stat-info h5 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="d-flex" id="wrapper">
+  <div id="page-content-wrapper">
+    <div class="container-fluid px-3 px-md-4 py-4">
+      <!-- Header -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+        <div>
+          <h2 class="fw-bold mb-1"><i class="fas fa-briefcase me-2 text-primary"></i>Internships</h2>
+          <p class="text-muted mb-0">Discover and apply to internships that match your skills and career goals</p>
+        </div>
+        <button class="btn btn-primary-gradient mt-2 mt-sm-0" id="refreshBtn"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+      </div>
+
+      <!-- Stats Overview -->
+      <div class="stats-overview">
+        <div class="stat-item">
+          <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
+          <div class="stat-info">
+            <small>Total Internships</small>
+            <h5 id="totalCount">0</h5>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706);"><i class="fas fa-file-alt"></i></div>
+          <div class="stat-info">
+            <small>Current Page</small>
+            <h5 id="currentPageDisplay">1</h5>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#10b981,#059669);"><i class="fas fa-list"></i></div>
+          <div class="stat-info">
+            <small>Page Size</small>
+            <h5 id="pageSizeDisplay">10</h5>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="container mb-4 px-0">
+        <div class="p-3 p-md-4 border rounded-4 bg-white shadow-sm">
+          <div class="row g-3 align-items-center">
+            <div class="col-md-7">
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 rounded-pill-start ps-3"><i class="fa fa-search text-muted"></i></span>
+                <input type="text" id="searchInput" class="form-control border-start-0 rounded-pill-end" placeholder="Search title, company, location...">
+              </div>
+            </div>
+            <div class="col-md-2 col-6">
+              <select id="typeFilter" class="form-select">
+                <option value="All">All Types</option>
+                <option value="Remote">Remote</option>
+                <option value="Onsite">Onsite</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+            <div class="col-md-2 col-6">
+              <select id="statusFilter" class="form-select">
+                <option value="All">All Status</option>
+                <option value="Open">Open</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Internships Grid -->
+      <div class="row px-1 px-md-2" id="jobsContainer"></div>
+
+      <!-- Pagination -->
+      <div class="pagination-container" id="paginationContainer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header border-0 pb-0 pe-3 pt-3">
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body pt-0 px-4 pb-4">
+        <h4 class="fw-bold mb-1" id="mTitle"></h4>
+        <p class="text-muted small mb-3"><span id="mCompany"></span></p>
+        <div id="mDetails" class="small text-secondary"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Toast -->
+<div id="liveToast" class="custom-toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  (function() {
+    const API_BASE_URL = "http://smartcareerhub.runasp.net/api";
+    const TOKEN = localStorage.getItem("authToken") || "";
+
+    let internships = [];
+    let currentPage = 1;
+    let pageSize = 10;
+    let totalPages = 1;
+    let totalCount = 0;
+    let isLoading = false;
+
+    const jobsContainer = document.getElementById("jobsContainer");
+    const searchInput = document.getElementById("searchInput");
+    const typeFilter = document.getElementById("typeFilter");
+    const statusFilter = document.getElementById("statusFilter");
+    const toastEl = document.getElementById("liveToast");
+    const paginationContainer = document.getElementById("paginationContainer");
+
+    function showToast(message, isError = false) {
+      toastEl.textContent = message;
+      toastEl.className = `custom-toast ${isError ? 'error' : ''} show`;
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3800);
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function mapType(val) {
+      if (val === 0 || val === "Onsite") return "Onsite";
+      if (val === 1 || val === "Remote") return "Remote";
+      if (val === 2 || val === "Hybrid") return "Hybrid";
+      return val || "Onsite";
+    }
+
+    function getStatusText(intern) {
+      if (intern.status === 0 || intern.status === "Open" || intern.isOpen === true) return "Open";
+      return "Closed";
+    }
+
+    function getCompanyInitials(name) {
+      if (!name) return "C";
+      return name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+    }
+
+    // ----- RENDER CARDS -----
+    function displayInternships(list) {
+      jobsContainer.innerHTML = "";
+      if (!list.length) {
+        jobsContainer.innerHTML = `<div class="col-12 text-center py-5 text-muted"><i class="fas fa-folder-open fa-3x mb-3 d-block"></i><p class="fs-5">No internships found</p></div>`;
+        return;
+      }
+
+      list.forEach(intern => {
+        const statusText = getStatusText(intern);
+        const typeText = mapType(intern.type);
+        const title = intern.title || "Internship";
+        const company = intern.companyName || "Company";
+        const location = intern.location || "Remote";
+        const isPaid = intern.isPaid;
+        const duration = intern.durationInMonths ? intern.durationInMonths + ' months' : 'N/A';
+        const applied = intern.isApplied;
+        const id = intern.id || intern.internshipId;
+
+        const col = document.createElement("div");
+        col.className = "col-lg-4 col-md-6 col-sm-12 mb-4";
+        col.innerHTML = `
+          <div class="card job-card h-100">
+            <div class="card-body d-flex flex-column p-3 pt-4">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="card-company-logo">${escapeHtml(getCompanyInitials(company))}</div>
+                <div>
+                  <h5 class="fw-bold mb-0 fs-6">${escapeHtml(title)}</h5>
+                  <p class="text-muted mb-0 small">${escapeHtml(company)}</p>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small"><i class="fas fa-map-marker-alt me-1"></i>${escapeHtml(location)}</span>
+                <span class="status-badge status-${statusText}">${statusText}</span>
+              </div>
+              <div class="d-flex flex-wrap gap-2 mb-2 small">
+                <span><i class="fas fa-laptop me-1"></i> ${typeText}</span>
+                <span><i class="far fa-clock me-1"></i> ${duration}</span>
+                <span><i class="fas fa-dollar-sign me-1"></i> ${isPaid ? 'Paid' : 'Unpaid'}</span>
+              </div>
+              <div class="mt-2 d-flex gap-2 flex-wrap">
+                <button class="btn btn-sm btn-outline-muted view-detail-btn" data-id="${id}"><i class="far fa-eye me-1"></i> Details</button>
+                ${applied ? 
+                  `<button class="btn btn-sm btn-withdraw withdraw-btn" data-id="${id}"><i class="fas fa-times me-1"></i> Withdraw</button>` : 
+                  `<button class="btn btn-sm btn-apply-action apply-btn" data-id="${id}"><i class="fas fa-paper-plane me-1"></i> Apply</button>`
+                }
+              </div>
+            </div>
+          </div>
+        `;
+        jobsContainer.appendChild(col);
+      });
+
+      document.querySelectorAll('.view-detail-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.getAttribute('data-id');
+          const intern = internships.find(j => (j.id == id || j.internshipId == id));
+          if (intern) openDetailModal(intern);
+        });
+      });
+
+      document.querySelectorAll('.apply-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.getAttribute('data-id');
+          applyToInternship(id);
+        });
+      });
+
+      document.querySelectorAll('.withdraw-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.getAttribute('data-id');
+          withdrawApplication(id);
+        });
+      });
+    }
+
+    // ----- MODAL -----
+    function openDetailModal(intern) {
+      document.getElementById("mTitle").textContent = intern.title || "Internship";
+      document.getElementById("mCompany").textContent = intern.companyName || "";
+      const status = getStatusText(intern);
+      document.getElementById("mDetails").innerHTML = `
+        <div class="bg-light p-3 rounded-3">
+          <p><strong>Status:</strong> <span class="badge status-${status}">${status}</span></p>
+          <p><strong>Type:</strong> ${mapType(intern.type)}</p>
+          <p><strong>Location:</strong> ${escapeHtml(intern.location || 'N/A')}</p>
+          <p><strong>Duration:</strong> ${intern.durationInMonths ? intern.durationInMonths+' months' : 'N/A'}</p>
+          <p><strong>Paid:</strong> ${intern.isPaid ? 'Yes' : 'No'}</p>
+          <p><strong>Applied:</strong> ${intern.isApplied ? 'Yes' : 'No'}</p>
+        </div>
+      `;
+      new bootstrap.Modal(document.getElementById("viewDetailsModal")).show();
+    }
+
+    // ----- PAGINATION RENDER -----
+    function renderPagination() {
+      const maxButtons = 5;
+      let pages = [];
+      
+      if (totalPages <= maxButtons) {
+        for (let i = 1; i <= totalPages; i++) pages.push(i);
+      } else {
+        let start = Math.max(1, currentPage - 2);
+        let end = Math.min(totalPages, currentPage + 2);
+        if (currentPage <= 3) { start = 1; end = maxButtons; }
+        else if (currentPage >= totalPages - 2) { start = totalPages - maxButtons + 1; end = totalPages; }
+        for (let i = start; i <= end; i++) pages.push(i);
+      }
+
+      let html = `
+        <button class="btn" onclick="window.goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>
+          <i class="fas fa-angle-double-left"></i>
+        </button>
+        <button class="btn" onclick="window.goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+          <i class="fas fa-angle-left"></i> Prev
+        </button>
+      `;
+
+      if (pages[0] > 1) {
+        html += `<button class="btn" onclick="window.goToPage(1)">1</button>`;
+        if (pages[0] > 2) html += `<span class="page-info">...</span>`;
+      }
+
+      pages.forEach(p => {
+        html += `<button class="btn ${p === currentPage ? 'active-page' : ''}" onclick="window.goToPage(${p})">${p}</button>`;
+      });
+
+      if (pages[pages.length - 1] < totalPages) {
+        if (pages[pages.length - 1] < totalPages - 1) html += `<span class="page-info">...</span>`;
+        html += `<button class="btn" onclick="window.goToPage(${totalPages})">${totalPages}</button>`;
+      }
+
+      html += `
+        <button class="btn" onclick="window.goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+          Next <i class="fas fa-angle-right"></i>
+        </button>
+        <button class="btn" onclick="window.goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>
+          <i class="fas fa-angle-double-right"></i>
+        </button>
+        <span class="page-info">Page ${currentPage} of ${totalPages} (${totalCount} total)</span>
+      `;
+
+      paginationContainer.innerHTML = html;
+    }
+
+    // ----- NAVIGATION -----
+    window.goToPage = function(page) {
+      if (page < 1 || page > totalPages || page === currentPage || isLoading) return;
+      currentPage = page;
+      loadInternships();
+    };
+
+    // ----- SKELETONS -----
+    function showSkeletons(count = 6) {
+      jobsContainer.innerHTML = Array(count).fill(0).map(() => 
+        `<div class="col-lg-4 col-md-6 col-sm-12 mb-4"><div class="skeleton"></div></div>`
+      ).join('');
+      paginationContainer.innerHTML = '';
+    }
+
+    // ----- FILTERS (reset to page 1) -----
+    searchInput.addEventListener("input", () => { currentPage = 1; loadInternships(); });
+    typeFilter.addEventListener("change", () => { currentPage = 1; loadInternships(); });
+    statusFilter.addEventListener("change", () => { currentPage = 1; loadInternships(); });
+
+    // ----- API: Apply -----
+    async function applyToInternship(internshipId) {
+      if (!TOKEN) { showToast("Please log in first.", true); return; }
+      try {
+        const res = await fetch(`${API_BASE_URL}/internships/${internshipId}/apply`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" }
+        });
+        let data = await res.json();
+        showToast(data.message);
+        await loadInternships();
+      } catch (err) {
+        console.error(err);
+        showToast("Application failed. Try again.", true);
+      }
+    }
+
+    // ----- API: Withdraw -----
+    async function withdrawApplication(internshipId) {
+      if (!TOKEN) { showToast("Please log in.", true); return; }
+      try {
+        const res = await fetch(`${API_BASE_URL}/internships/${internshipId}/apply`, {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${TOKEN}` }
+        });
+        if (!res.ok) throw new Error("Withdraw failed");
+        showToast("Application withdrawn.");
+        await loadInternships();
+      } catch (err) {
+        console.error(err);
+        showToast("Could not withdraw. Try again.", true);
+      }
+    }
+
+    // ----- LOAD INTERNSHIPS -----
+    async function loadInternships() {
+      if (!TOKEN) {
+        showToast("Authentication token missing.", true);
+        internships = [];
+        displayInternships([]);
+        return;
+      }
+
+      isLoading = true;
+      showSkeletons(pageSize);
+
+      try {
+        const search = searchInput.value.trim();
+        const type = typeFilter.value;
+        const status = statusFilter.value;
+        
+        let url = `${API_BASE_URL}/internships?page=${currentPage}&pageSize=${pageSize}&sortBy=createdAt&sortDirection=desc`;
+        if (search) url += `&search=${encodeURIComponent(search)}`;
+        if (type !== 'All') url += `&type=${encodeURIComponent(type)}`;
+        if (status !== 'All') url += `&status=${encodeURIComponent(status)}`;
+
+        const response = await fetch(url, {
+          headers: { "Authorization": `Bearer ${TOKEN}` }
+        });
+
+        if (!response.ok) throw new Error("Fetch failed");
+        
+        let data = await response.json();
+        
+        // Handle paginated response
+        if (data && data.data && Array.isArray(data.data)) {
+          internships = data.data;
+          totalCount = data.totalCount || data.data.length;
+          totalPages = data.totalPages || Math.ceil(totalCount / pageSize);
+          currentPage = data.page || currentPage;
+        } else if (Array.isArray(data)) {
+          internships = data;
+          totalCount = data.length;
+          totalPages = Math.ceil(totalCount / pageSize);
+        } else {
+          internships = [];
+          totalCount = 0;
+          totalPages = 1;
+        }
+
+        // Normalize data
+        internships = internships.map(item => ({
+          ...item,
+          id: item.id || item.internshipId,
+          title: item.title || "Internship",
+          companyName: item.companyName || "Company",
+          type: item.type ?? 0,
+          status: item.status !== undefined ? item.status : (item.isOpen ? 0 : 1),
+          isApplied: item.isApplied || false,
+        }));
+
+        document.getElementById("totalCount").textContent = totalCount;
+        document.getElementById("currentPageDisplay").textContent = currentPage;
+        document.getElementById("pageSizeDisplay").textContent = pageSize;
+
+        displayInternships(internships);
+        renderPagination();
+        //showToast(`📄 Page ${currentPage} · ${internships.length} internships`);
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to load internships.", true);
+        internships = [];
+        displayInternships([]);
+      } finally {
+        isLoading = false;
+      }
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      currentPage = 1;
+      loadInternships();
+    });
+
+    if (!TOKEN) {
+      showToast("Please log in to continue.", true);
+    } else {
+      loadInternships();
+    }
+  })();
+</script>
+</body>
+</html>

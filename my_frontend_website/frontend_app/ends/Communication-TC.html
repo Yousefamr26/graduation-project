@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Trainee Communication </title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #3498DB;
+      --primary-light: #dbeafe;
+      --primary-dark: #155fc4;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+      --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -3px rgba(0,0,0,0.05);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1350px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .page-header h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #0f172a;
+    }
+
+    .page-header h2 i {
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 0.7rem;
+      border-radius: 14px;
+      font-size: 1.5rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    .card-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    select, textarea {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #f9fafb;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      outline: none;
+    }
+
+    select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: 0.2s;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      width: auto;
+      border-radius: 10px;
+    }
+
+    .btn-success {
+      background: var(--success);
+    }
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .message-item {
+      background: #f9fafb;
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 0.8rem;
+      border-left: 4px solid var(--primary);
+    }
+
+    .enrollment-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 0.8rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 24px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+      body { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="page-header">
+    <h2><i class="fas fa-user-graduate"></i> Trainee Communication</h2>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Send Notification Card -->
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-bullhorn"></i> New announcement</h3>
+      </div>
+      <select id="courseSelect">
+        <option value="">📘 Select a course</option>
+        <option value="1">Frontend Development Bootcamp</option>
+        <option value="2">Data Science with Python</option>
+        <option value="3">Digital Marketing Pro</option>
+      </select>
+      <textarea id="notificationText" placeholder="Write your message to all enrolled trainees..."></textarea>
+      <button class="btn" id="sendNotificationBtn"><i class="fas fa-paper-plane"></i> Send announcement</button>
+      <div id="notifyStatus" style="margin-top: 0.75rem; font-size:0.9rem;"></div>
+    </div>
+
+    <!-- Recent Messages Card -->
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-envelope"></i> Recent messages</h3>
+      </div>
+      <div id="messagesContainer"></div>
+    </div>
+
+    <!-- Pending Enrollment Card -->
+    <div class="card full-width">
+      <div class="card-header">
+        <h3><i class="fas fa-user-clock"></i> Pending enrollment requests</h3>
+      </div>
+      <div id="statusMsg" style="margin-bottom: 1rem; display: none;"></div>
+      <div id="enrollmentContainer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <i class="fas fa-question-circle" style="font-size: 2.5rem; color: var(--primary);"></i>
+    <h3 id="confirmTitle">Confirm action</h3>
+    <p id="confirmMessage" style="margin: 1rem 0;"></p>
+    <div style="display: flex; gap: 0.8rem; justify-content: center;">
+      <button class="btn btn-sm" id="cancelConfirmBtn" style="background:#e2e8f0; color:#1e293b;">Cancel</button>
+      <button class="btn btn-sm" id="proceedConfirmBtn">Yes, proceed</button>
+    </div>
+  </div>
+</div>
+
+<!-- Result Modal -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal-box">
+    <i id="resultIcon" class="fas fa-check-circle" style="font-size: 2.5rem;"></i>
+    <h3 id="resultTitle">Success</h3>
+    <p id="resultMessage" style="margin: 1rem 0;"></p>
+    <button class="btn btn-sm" id="closeResultModal">OK</button>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ---------- LOCAL STORAGE KEYS ----------
+    const STORAGE_KEYS = {
+      MESSAGES: 'trainee_comm_messages',
+      ENROLLMENTS: 'trainee_comm_enrollments'
+    };
+
+    // ---------- DEFAULT DATA ----------
+    const defaultMessages = [
+      { id: 'm1', traineeName: "Sarah Chen", content: "I have a question about the React module.", sentAt: new Date(Date.now() - 7200000).toISOString() },
+      { id: 'm2', traineeName: "Marcus Diaz", content: "Will the project deadline be extended?", sentAt: new Date(Date.now() - 86400000).toISOString() },
+      { id: 'm3', traineeName: "Lina Johansson", content: "Thanks for the feedback!", sentAt: new Date(Date.now() - 172800000).toISOString() }
+    ];
+
+    const defaultEnrollments = [
+      { id: 101, studentName: "Omar Al-Rashid", courseTitle: "Frontend Development Bootcamp" },
+      { id: 102, studentName: "Emily Johnson", courseTitle: "Data Science with Python" }
+    ];
+
+    // ---------- STATE ----------
+    let messages = [];
+    let enrollments = [];
+
+    // DOM elements
+    const courseSelect = document.getElementById('courseSelect');
+    const notificationText = document.getElementById('notificationText');
+    const sendBtn = document.getElementById('sendNotificationBtn');
+    const notifyStatus = document.getElementById('notifyStatus');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const enrollmentContainer = document.getElementById('enrollmentContainer');
+    const statusMsgDiv = document.getElementById('statusMsg');
+    
+    // Modals
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmTitle = document.getElementById('confirmTitle');
+    const confirmMessage = document.getElementById('confirmMessage');
+    const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
+    const proceedConfirmBtn = document.getElementById('proceedConfirmBtn');
+    const resultModal = document.getElementById('resultModal');
+    const resultIcon = document.getElementById('resultIcon');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultMessage = document.getElementById('resultMessage');
+    const closeResultBtn = document.getElementById('closeResultModal');
+
+    let pendingConfirmCallback = null;
+
+    // ---------- LOCAL STORAGE HELPERS ----------
+    function loadFromStorage(key, defaultValue) {
+      try {
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch (e) {
+        console.warn('Error reading localStorage', e);
+      }
+      return defaultValue;
+    }
+
+    function saveToStorage(key, data) {
+      try {
+        localStorage.setItem(key, JSON.stringify(data));
+      } catch (e) {
+        console.warn('Error saving to localStorage', e);
+      }
+    }
+
+    function initializeData() {
+      messages = loadFromStorage(STORAGE_KEYS.MESSAGES, defaultMessages);
+      enrollments = loadFromStorage(STORAGE_KEYS.ENROLLMENTS, defaultEnrollments);
+      
+      // Ensure we save defaults if storage was empty
+      if (!localStorage.getItem(STORAGE_KEYS.MESSAGES)) {
+        saveToStorage(STORAGE_KEYS.MESSAGES, messages);
+      }
+      if (!localStorage.getItem(STORAGE_KEYS.ENROLLMENTS)) {
+        saveToStorage(STORAGE_KEYS.ENROLLMENTS, enrollments);
+      }
+    }
+
+    // ---------- RENDER FUNCTIONS ----------
+    function renderMessages() {
+      if (!messagesContainer) return;
+      if (!messages || messages.length === 0) {
+        messagesContainer.innerHTML = `<div class="empty-state" style="text-align:center;padding:2rem;color:#94a3b8;"><i class="fas fa-inbox"></i><p>No messages yet</p></div>`;
+        return;
+      }
+      messagesContainer.innerHTML = messages.map(msg => {
+        const timeStr = msg.sentAt ? new Date(msg.sentAt).toLocaleString() : '';
+        return `
+          <div class="message-item">
+            <b>${escapeHtml(msg.traineeName || 'Trainee')}</b>
+            <p>${escapeHtml(msg.content || '')}</p>
+            <small><i class="far fa-clock"></i> ${timeStr || 'Just now'}</small>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderEnrollments() {
+      if (!enrollmentContainer) return;
+      if (!enrollments || enrollments.length === 0) {
+        enrollmentContainer.innerHTML = `<div class="empty-state" style="text-align:center;padding:2rem;color:#94a3b8;"><i class="fas fa-user-check"></i><p>No pending requests</p></div>`;
+        return;
+      }
+      enrollmentContainer.innerHTML = enrollments.map(req => `
+        <div class="enrollment-row" data-request-id="${req.id}">
+          <div class="enrollment-info" style="display:flex;align-items:center;gap:0.8rem;">
+            <i class="fas fa-user-circle"></i> <strong>${escapeHtml(req.studentName)}</strong> wants to join 
+            <span style="color:var(--primary);">${escapeHtml(req.courseTitle)}</span>
+          </div>
+          <div class="action-group" style="display:flex;gap:0.5rem;">
+            <button class="btn btn-sm btn-success accept-btn" data-id="${req.id}" data-student="${escapeHtml(req.studentName)}" data-course="${escapeHtml(req.courseTitle)}">
+              <i class="fas fa-check"></i> Accept
+            </button>
+            <button class="btn btn-sm btn-danger reject-btn" data-id="${req.id}" data-student="${escapeHtml(req.studentName)}" data-course="${escapeHtml(req.courseTitle)}">
+              <i class="fas fa-times"></i> Reject
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      // Attach event listeners
+      document.querySelectorAll('.accept-btn').forEach(btn => {
+        btn.addEventListener('click', handleAccept);
+      });
+      document.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', handleReject);
+      });
+    }
+
+    function handleAccept(e) {
+      const btn = e.currentTarget;
+      const id = parseInt(btn.getAttribute('data-id'));
+      const student = btn.getAttribute('data-student');
+      const course = btn.getAttribute('data-course');
+      openConfirm('Accept Enrollment', `Accept <strong>${student}</strong> into <strong>${course}</strong>?`, () => {
+        processEnrollment(id, 'Accepted', student);
+      });
+    }
+
+    function handleReject(e) {
+      const btn = e.currentTarget;
+      const id = parseInt(btn.getAttribute('data-id'));
+      const student = btn.getAttribute('data-student');
+      const course = btn.getAttribute('data-course');
+      openConfirm('Reject Enrollment', `Reject <strong>${student}</strong> from <strong>${course}</strong>?`, () => {
+        processEnrollment(id, 'Rejected', student);
+      });
+    }
+
+    function processEnrollment(requestId, status, studentName) {
+      enrollments = enrollments.filter(req => req.id !== requestId);
+      saveToStorage(STORAGE_KEYS.ENROLLMENTS, enrollments);
+      renderEnrollments();
+      showStatusMessage(`✅ Request for ${studentName} has been ${status.toLowerCase()}.`, 'success');
+    }
+
+    function showStatusMessage(text, type = 'success') {
+      if (!statusMsgDiv) return;
+      statusMsgDiv.style.display = 'block';
+      statusMsgDiv.innerHTML = text;
+      statusMsgDiv.style.color = type === 'success' ? '#10b981' : '#ef4444';
+      statusMsgDiv.style.background = type === 'success' ? '#d1fae5' : '#fee2e2';
+      statusMsgDiv.style.padding = '0.7rem 1rem';
+      statusMsgDiv.style.borderRadius = '10px';
+      setTimeout(() => {
+        if (statusMsgDiv) statusMsgDiv.style.display = 'none';
+      }, 3500);
+    }
+
+    // ---------- SEND NOTIFICATION (WITH LOCAL STORAGE) ----------
+    function sendNotificationHandler() {
+      const course = courseSelect.value;
+      const message = notificationText.value.trim();
+      
+      if (!course || !message) {
+        showNotificationStatus('⚠️ Please select a course and write a message.', 'error');
+        return;
+      }
+
+      const courseName = courseSelect.options[courseSelect.selectedIndex].text;
+      
+      // Create new announcement message
+      const newMsg = {
+        id: 'msg_' + Date.now(),
+        traineeName: "You (Admin)",
+        content: `📢 [${courseName}] ${message}`,
+        sentAt: new Date().toISOString()
+      };
+
+      // Add to beginning of messages array
+      messages.unshift(newMsg);
+      
+      // Save to localStorage
+      saveToStorage(STORAGE_KEYS.MESSAGES, messages);
+      
+      // Update UI
+      renderMessages();
+      notificationText.value = '';
+      showNotificationStatus('✅ Announcement sent and saved locally!', 'success');
+      
+      console.log('[LOCAL STORAGE] Announcement saved:', newMsg);
+    }
+
+    function showNotificationStatus(text, type) {
+      if (!notifyStatus) return;
+      notifyStatus.innerHTML = text;
+      notifyStatus.style.color = type === 'success' ? '#10b981' : '#ef4444';
+    }
+
+    // ---------- MODAL LOGIC ----------
+    function openConfirm(title, message, callback) {
+      if (!confirmModal) return;
+      confirmTitle.innerHTML = title;
+      confirmMessage.innerHTML = message;
+      pendingConfirmCallback = callback;
+      confirmModal.classList.add('active');
+    }
+
+    function closeConfirm() {
+      if (confirmModal) confirmModal.classList.remove('active');
+      pendingConfirmCallback = null;
+    }
+
+    function showResultModal(iconClass, title, message, isSuccess = true) {
+      if (!resultModal) return;
+      resultIcon.className = `fas ${iconClass}`;
+      resultIcon.style.color = isSuccess ? 'var(--success)' : 'var(--danger)';
+      resultTitle.textContent = title;
+      resultMessage.textContent = message;
+      resultModal.classList.add('active');
+    }
+
+    function closeResultModal() {
+      if (resultModal) resultModal.classList.remove('active');
+    }
+
+    // ---------- EVENT LISTENERS ----------
+    sendBtn.addEventListener('click', sendNotificationHandler);
+
+    cancelConfirmBtn.addEventListener('click', closeConfirm);
+    proceedConfirmBtn.addEventListener('click', () => {
+      if (pendingConfirmCallback) {
+        pendingConfirmCallback();
+        pendingConfirmCallback = null;
+      }
+      closeConfirm();
+    });
+
+    closeResultBtn.addEventListener('click', closeResultModal);
+    
+    window.addEventListener('click', (e) => {
+      if (e.target === confirmModal) closeConfirm();
+      if (e.target === resultModal) closeResultModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeConfirm();
+        closeResultModal();
+      }
+    });
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // ---------- RESET DEMO DATA (Optional helper exposed to console) ----------
+    window.resetDemoData = function() {
+      localStorage.removeItem(STORAGE_KEYS.MESSAGES);
+      localStorage.removeItem(STORAGE_KEYS.ENROLLMENTS);
+      messages = [...defaultMessages];
+      enrollments = [...defaultEnrollments];
+      saveToStorage(STORAGE_KEYS.MESSAGES, messages);
+      saveToStorage(STORAGE_KEYS.ENROLLMENTS, enrollments);
+      renderMessages();
+      renderEnrollments();
+      console.log('Demo data reset to defaults.');
+    };
+
+    // ---------- INITIALIZE ----------
+    initializeData();
+    renderMessages();
+    renderEnrollments();
+
+    console.log('📦 Trainee Communication ready. Announcements saved in localStorage.');
+    console.log('🔑 Keys:', STORAGE_KEYS);
+    console.log('💡 Tip: Use resetDemoData() in console to restore default data.');
+  })();
+</script>
+</body>
+</html>

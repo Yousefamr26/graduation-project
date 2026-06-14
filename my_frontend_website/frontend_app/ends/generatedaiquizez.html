@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Quizzes | AI Exams</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%);
+            padding: 40px 20px;
+            color: #3498DB;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            color: #3498DB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .latest-badge {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #3498DB;
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: bold;
+            margin-left: 12px;
+        }
+
+        .loading,
+        .error {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+
+        .error {
+            color: #e74c3c;
+            border-left: 6px solid #e74c3c;
+        }
+
+        /* Quiz Card */
+        .quiz-card {
+            background: white;
+            border-radius: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 2px solid #00ff04;
+        }
+
+        .quiz-header {
+            background: linear-gradient(135deg, #3498DB, #155fc4);
+            color: white;
+            padding: 20px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .quiz-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .quiz-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 40px;
+        }
+
+        .chevron {
+            font-size: 1.6rem;
+            transition: transform 0.3s;
+        }
+
+        .quiz-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            background: #fefefe;
+        }
+
+        .quiz-body.open {
+            max-height: 2000px;
+            transition: max-height 0.6s ease-in;
+        }
+
+        .questions-area {
+            padding: 20px 25px 30px;
+        }
+
+        /* Single Question */
+        .question-item {
+            background: #f8fafc;
+            margin-bottom: 28px;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            transition: box-shadow 0.2s;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #3498DB;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #cbd5e1;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .question-number {
+            background: #3498DB;
+            color: white;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Options list */
+        .options-list {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        .option-item {
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.1s;
+        }
+
+        .correct-option {
+            background: #e0f7e8;
+            border-color: #2e7d32;
+            box-shadow: 0 1px 3px rgba(46,125,50,0.2);
+            position: relative;
+        }
+
+        .correct-badge {
+            background: #2e7d32;
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 40px;
+            padding: 3px 10px;
+            margin-left: auto;
+            font-weight: bold;
+        }
+
+        .option-text {
+            flex: 1;
+        }
+
+        .user-answer-info {
+            margin-top: 12px;
+            background: #edf2f7;
+            padding: 8px 15px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            color: #3498DB;
+            border-left: 4px solid #3498DB;
+        }
+
+        .no-answers {
+            color: #a0aec0;
+            font-style: italic;
+            margin-top: 8px;
+            font-size: 0.8rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #5a6e7c;
+            font-size: 0.8rem;
+        }
+
+        /* Generate New Button */
+        .generate-btn-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .generate-new-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+        }
+
+        .generate-new-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40,167,69,0.4);
+        }
+
+        @media (max-width: 700px) {
+            .quiz-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .quiz-stats {
+                align-self: flex-start;
+            }
+            .question-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+   <h1>
+    <i class="fa-solid fa-file-lines"></i>
+    AI Generated Quizzes
+    <span style="font-size: 0.9rem; background: #e2e8f0; padding: 5px 12px; border-radius: 30px;">
+        Roadmap Exams
+    </span>
+</h1>   
+    <div id="quizzesContainer">
+        <div class="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    Loading quizzes ...
+</div>
+</div>
+    
+    <footer>
+        <i class="fa-solid fa-circle-check" style="color: #09760b;"></i>
+        Showing <strong>latest quiz only</strong> (sorted by ID descending)
+    </footer>
+</div>
+
+<script>
+    // 1. Extract ID from URL (e.g., ?id=52)
+    function getQuizIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        return id ? id : null;
+    }
+
+    // 2. Get token from localStorage
+    const TOKEN = localStorage.getItem("authToken") || "";
+
+    // 3. Container element
+    const container = document.getElementById("quizzesContainer");
+
+    // 4. Main function to fetch and display data
+    async function fetchAndDisplayQuizzes() {
+        const roadmapId = getQuizIdFromUrl();
+        if (!roadmapId) {
+           container.innerHTML = `
+<div class="error">
+    <i class="fa-solid fa-circle-xmark"></i>
+    Error: No ID found in URL.
+    Make sure the URL contains ?id=number
+</div>`;
+            return;
+        }
+
+        const apiUrl = `http://smartcareerhub.runasp.net/api/Roadmaps/${roadmapId}/generated-quiz`;
+
+        try {
+            container.innerHTML = `
+<div class="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    Fetching data from server ...
+</div>`;
+
+            const response = await fetch(apiUrl, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${TOKEN}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+            }
+
+            const result = await response.json();
+
+            // Validate response structure based on provided example
+            if (result.status !== "COMPLETED" || !result.data || !Array.isArray(result.data)) {
+                console.warn("Unexpected response:", result);
+                throw new Error("Returned data does not contain quizzes in expected format");
+            }
+
+            let quizzes = result.data;
+
+            if (quizzes.length === 0) {
+                container.innerHTML = `
+<div class="loading">
+    <i class="fa-solid fa-inbox"></i>
+    No quizzes available for this Roadmap
+</div>`;
+                return;
+            }
+
+            // 🔥 IMPORTANT: Sort quizzes by ID descending and get the latest one
+            quizzes.sort((a, b) => (b.id || 0) - (a.id || 0));
+            const latestQuiz = quizzes[0]; // Take only the first (highest ID)
+            
+            console.log("Latest Quiz (ID:", latestQuiz.id, "):", latestQuiz);
+
+            renderSingleQuiz(latestQuiz);
+
+        } catch (error) {
+            console.error("Error fetching quizzes:", error);
+            container.innerHTML = `
+<div class="error">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    Error loading data: ${error.message}
+    <br><br>
+    Make sure your token is valid, the URL is correct, and the server is running.
+</div>`;
+        }
+    }
+
+    // Helper: parse optionsJson string to array
+    function parseOptionsJson(optionsJson) {
+        if (!optionsJson) return [];
+        try {
+            let parsed = JSON.parse(optionsJson);
+            if (Array.isArray(parsed)) return parsed;
+            return [];
+        } catch (e) {
+            console.warn("Failed to parse optionsJson:", optionsJson, e);
+            return [];
+        }
+    }
+
+    // Extract the letter (e.g., "B" from "B) Adobe Acrobat Reader")
+    function getOptionLetter(optionStr) {
+        if (!optionStr) return '';
+        const match = optionStr.match(/^([A-Z])\)/);
+        if (match) return match[1];
+        // Fallback: first character
+        if (optionStr.length > 0) return optionStr[0];
+        return '';
+    }
+
+    // Toggle function for dropdown
+    window.toggleQuizBody = function(quizId) {
+        const bodyDiv = document.getElementById(`quiz-body-${quizId}`);
+        const chevron = document.getElementById(`chevron-${quizId}`);
+        if (bodyDiv) {
+            bodyDiv.classList.toggle('open');
+            if (chevron) {
+                chevron.style.transform = bodyDiv.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+            }
+        }
+    };
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // Render ONLY the latest quiz (single quiz)
+    function renderSingleQuiz(quiz) {
+        const quizId = quiz.id || 0;
+        const title = quiz.title || `Quiz #${quizId}`;
+        const points = quiz.points || 0;
+        const questionCount = quiz.questions?.length || 0;
+
+        let html = `
+            <div class="quiz-card" data-quiz-id="${quizId}">
+                <div class="quiz-header" onclick="toggleQuizBody(${quizId})">
+                    <div class="quiz-title">
+                       <span>
+    <i class="fa-solid fa-thumbtack"> </i>
+      ${escapeHtml(title)}
+</span>
+                        <span class="latest-badge">
+    <i class="fa-solid fa-fire"></i>
+    LATEST QUIZ
+    <i class="fa-solid fa-fire"></i>
+</span>
+                    </div>
+                    <div class="quiz-stats">
+                        <span><i class="fa-solid fa-star"></i> Points: ${points}</span>
+<span><i class="fa-solid fa-pen-to-square"></i> Questions: ${questionCount}</span>
+<span><i class="fa-solid fa-id-card"></i> ID: ${quizId}</span>
+<span class="chevron" id="chevron-${quizId}">
+    <i class="fa-solid fa-chevron-down"></i>
+</span>
+                    </div>
+                </div>
+                <div class="quiz-body" id="quiz-body-${quizId}">
+                    <div class="questions-area">
+        `;
+
+        if (quiz.questions && quiz.questions.length > 0) {
+            quiz.questions.forEach((question, qIdx) => {
+                const questionText = question.text || "Question without text";
+                const optionsArray = parseOptionsJson(question.optionsJson);
+                const correctAnswerLetter = question.correctAnswer;
+                const userAnswers = question.answers || [];
+
+                html += `
+                    <div class="question-item">
+                        <div class="question-text">
+                            <span class="question-number">${qIdx + 1}</span>
+                            <span>${escapeHtml(questionText)}</span>
+                        </div>
+                        <ul class="options-list">
+                `;
+
+                optionsArray.forEach((option) => {
+                    let optionLetter = getOptionLetter(option);
+                    const isCorrect = (optionLetter === correctAnswerLetter);
+
+                    html += `
+                        <li class="option-item ${isCorrect ? 'correct-option' : ''}">
+                            <span class="option-text">${escapeHtml(option)}</span>
+                            ${isCorrect ? '<span class="correct-badge">✓ Correct Answer</span>' : ''}
+                        </li>
+                    `;
+                });
+
+                html += `</ul>`;
+
+                // Show user answers if available
+                
+
+                html += `</div>`; // close question-item
+            });
+        } else {
+            html += `<div style="padding:20px; text-align:center;">⚠️ No questions available for this quiz.</div>`;
+        }
+
+        html += `
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+        
+        // Auto-open the latest quiz by default for better UX
+        setTimeout(() => {
+            const bodyDiv = document.getElementById(`quiz-body-${quizId}`);
+            const chevron = document.getElementById(`chevron-${quizId}`);
+            if (bodyDiv && !bodyDiv.classList.contains('open')) {
+                bodyDiv.classList.add('open');
+                if (chevron) {
+                    chevron.style.transform = 'rotate(180deg)';
+                }
+            }
+        }, 100);
+    }
+
+    // Start loading data
+    fetchAndDisplayQuizzes();
+</script>
+</body>
+</html>

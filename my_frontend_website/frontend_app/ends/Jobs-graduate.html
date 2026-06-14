@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Jobs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f4f6fc;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1a1f36;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .dashboard-container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 3rem;
+    }
+    .page-header h2 {
+      font-weight: 700;
+      font-size: 2rem;
+      letter-spacing: -0.3px;
+      color: #0b1b32;
+    }
+    .page-header p {
+      color: #5b6b8c;
+      font-weight: 500;
+    }
+    .stat-card-modern {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 1.5rem 1.2rem;
+      box-shadow: 0 10px 25px -8px rgba(0,0,0,0.04);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border: 1px solid rgba(0,0,0,0.02);
+      backdrop-filter: blur(2px);
+      height: 100%;
+    }
+    .stat-card-modern:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+      border-color: rgba(0,0,0,0.05);
+    }
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+    }
+    .stat-icon.blue { background: #e9f0ff; color: #155fc4; }
+    .stat-icon.amber { background: #fef3c7; color: #d97706; }
+    .stat-icon.emerald { background: #d1fae5; color: #059669; }
+    .stat-icon.rose { background: #ffe4e6; color: #e11d48; }
+    .stat-content .stat-number {
+      font-weight: 700;
+      font-size: 2rem;
+      line-height: 1.2;
+      color: #0f172a;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #5b6b8c;
+    }
+    .filter-select {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 0.6rem 2rem 0.6rem 1.2rem;
+      font-weight: 500;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .filter-select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+      outline: none;
+    }
+    .btn-modern-outline {
+      border: 1px solid #d1d5db;
+      background: white;
+      border-radius: 30px;
+      padding: 0.6rem 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+    }
+    .btn-modern-outline:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+    .job-card-modern {
+      background: #ffffff;
+      border-radius: 24px;
+      border: 1px solid #f1f5f9;
+      overflow: hidden;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+    }
+    .job-card-modern:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 25px 35px -15px rgba(0,0,0,0.12);
+      border-color: #dbeafe;
+    }
+    .card-img-wrapper {
+      height: 150px;
+      background: #f9fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #edf2f7;
+      padding: 0.8rem;
+    }
+    .card-img-wrapper img {
+      max-height: 110px;
+      object-fit: contain;
+      transition: 0.3s;
+    }
+    .status-pill {
+      padding: 0.25rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    .status-applied { background: #e0f2fe; color: #0369a1; }
+    .status-review { background: #fef9c3; color: #854d0e; }
+    .status-interview { background: #ffedd5; color: #c2410c; }
+    .status-offer { background: #dcfce7; color: #15803d; }
+    .status-rejected { background: #fee2e2; color: #b91c1c; }
+    .status-available { background: #f1f5f9; color: #475569; }
+    .btn-apply-primary {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 0.5rem 1.2rem;
+      font-weight: 600;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .btn-apply-primary:hover {
+      background: #1d4ed8;
+    }
+    .btn-view-light {
+      border: 1px solid #e2e8f0;
+      background: white;
+      border-radius: 30px;
+      padding: 0.5rem 1.2rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-view-light:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    .pipeline-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.8rem;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.03);
+      border: 1px solid #f0f4fe;
+    }
+    .progress {
+      height: 22px;
+      border-radius: 30px;
+      background: #f1f5f9;
+    }
+    .progress-bar {
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      transition: width 0.5s ease;
+    }
+    .pipeline-label {
+      min-width: 110px;
+      font-weight: 600;
+      color: #334155;
+      font-size: 0.9rem;
+    }
+    .pagination .page-link {
+      border-radius: 12px;
+      margin: 0 4px;
+      border: none;
+      color: #1e293b;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pagination .page-link:hover {
+      background: #e2e8f0;
+    }
+    .pagination .active .page-link {
+      background: #2563eb;
+      color: white;
+      box-shadow: 0 4px 10px rgba(37,99,235,0.3);
+    }
+    .toast-modern {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      padding: 14px 22px;
+      border-radius: 16px;
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideInRight 0.3s ease;
+      max-width: 380px;
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(120%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .bg-toast-success { background: #059669; }
+    .bg-toast-error { background: #b91c1c; }
+    .bg-toast-info { background: #2563eb; }
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      padding: 3rem;
+    }
+    @media (max-width: 768px) {
+      .dashboard-container { padding: 1rem; }
+      .stat-card-modern { padding: 1rem; }
+      .pipeline-label { min-width: 80px; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="page-header d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold"><i class="fas fa-briefcase me-2" style="color:#2563eb;"></i>Job Applications</h2>
+      <p class="mb-0">Track your applications and their progress</p>
+    </div>
+    <div class="d-flex gap-2 mt-2 mt-md-0">
+      <select id="statusFilter" class="filter-select">
+        <option value="All">📋 All Applications</option>
+        <option value="Active">⚡ Active</option>
+        <option value="Offer">🏆 Offer</option>
+        <option value="Rejected">❌ Rejected</option>
+      </select>
+      <button class="btn-modern-outline" onclick="exportReport()"><i class="fas fa-download"></i> Export</button>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="row g-3 mb-4" id="statsRow">
+    <div class="col-6 col-md-3">
+      <div class="stat-card-modern">
+        <div class="stat-icon blue"><i class="fas fa-suitcase"></i></div>
+        <div class="stat-content">
+          <span class="stat-number" id="totalJobs">0</span>
+          <span class="stat-label">Total Jobs</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card-modern">
+        <div class="stat-icon amber"><i class="fas fa-spinner"></i></div>
+        <div class="stat-content">
+          <span class="stat-number" id="activeApps">0</span>
+          <span class="stat-label">Active</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card-modern">
+        <div class="stat-icon emerald"><i class="fas fa-trophy"></i></div>
+        <div class="stat-content">
+          <span class="stat-number" id="offerCount">0</span>
+          <span class="stat-label">Offers</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card-modern">
+        <div class="stat-icon rose"><i class="fas fa-times-circle"></i></div>
+        <div class="stat-content">
+          <span class="stat-number" id="rejectedCount">0</span>
+          <span class="stat-label">Rejected</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jobs Grid -->
+  <div id="jobsGridContainer">
+    <div class="row" id="jobsGrid"></div>
+  </div>
+  
+  <!-- Loading -->
+  <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="d-flex justify-content-center mt-4" id="paginationContainer"></div>
+
+  <!-- Pipeline Card -->
+  <div class="pipeline-card mt-4">
+    <h6 class="fw-bold mb-4"><i class="fas fa-chart-pie me-2"></i>Application Pipeline</h6>
+    <div class="mb-3 d-flex align-items-center flex-wrap">
+      <span class="pipeline-label">Applied</span>
+      <div class="progress flex-grow-1 mx-3">
+        <div class="progress-bar bg-primary" id="appliedBar" style="width: 0%">0</div>
+      </div>
+      <span class="fw-bold" id="appliedCount">0</span>
+    </div>
+    <div class="mb-3 d-flex align-items-center flex-wrap">
+      <span class="pipeline-label">Under Review</span>
+      <div class="progress flex-grow-1 mx-3">
+        <div class="progress-bar bg-warning text-dark" id="reviewBar" style="width: 0%">0</div>
+      </div>
+      <span class="fw-bold" id="reviewCount">0</span>
+    </div>
+    <div class="mb-3 d-flex align-items-center flex-wrap">
+      <span class="pipeline-label">Interview</span>
+      <div class="progress flex-grow-1 mx-3">
+        <div class="progress-bar" id="interviewBar" style="width: 0%; background-color: #f97316;">0</div>
+      </div>
+      <span class="fw-bold" id="interviewCount">0</span>
+    </div>
+    <div class="d-flex align-items-center flex-wrap">
+      <span class="pipeline-label">Offer</span>
+      <div class="progress flex-grow-1 mx-3">
+        <div class="progress-bar bg-success" id="offerBar" style="width: 0%">0</div>
+      </div>
+      <span class="fw-bold" id="offerPipelineCount">0</span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Details -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 p-2" id="modalContent"></div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  (function() {
+    const API_BASE = "http://smartcareerhub.runasp.net/api";
+    const TOKEN = localStorage.getItem("authToken");
+    
+    function headers() {
+      const h = { 'Content-Type': 'application/json' };
+      if (TOKEN) h['Authorization'] = `Bearer ${TOKEN}`;
+      return h;
+    }
+
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      const iconMap = { success: 'check-circle', error: 'exclamation-circle', info: 'info-circle' };
+      el.className = `toast-modern bg-toast-${type}`;
+      el.innerHTML = `<i class="fas fa-${iconMap[type] || 'info-circle'}"></i> ${msg}`;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.3s';
+        setTimeout(() => el.remove(), 300);
+      }, 3500);
+    }
+
+    function formatDate(str) {
+      if (!str) return 'N/A';
+      return new Date(str).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function getStatusClass(status) {
+      if (!status) return 'status-available';
+      const s = status.toLowerCase();
+      if (s.includes('applied')) return 'status-applied';
+      if (s.includes('review')) return 'status-review';
+      if (s.includes('interview')) return 'status-interview';
+      if (s.includes('offer') || s.includes('completed')) return 'status-offer';
+      if (s.includes('reject')) return 'status-rejected';
+      return 'status-available';
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    // State
+    let currentPage = 1;
+    let currentFilter = 'All';
+    let totalJobsCount = 0;
+    let totalPagesCount = 1;
+    let applicationsMap = new Map(); // jobId -> {status, date, appId}
+    let allCurrentJobs = []; // jobs currently displayed
+
+    // Fetch available jobs with pagination
+    async function fetchAvailableJobs(page = 1) {
+      try {
+        const res = await fetch(`${API_BASE}/Jobs/available?page=${page}&pageSize=6`, { headers: headers() });
+        if (!res.ok) throw new Error('Failed to fetch jobs');
+        const data = await res.json();
+        return {
+          jobs: data.data || [],
+          totalPages: data.totalPages || 1,
+          totalCount: data.totalCount || 0
+        };
+      } catch (e) {
+        console.error('fetchAvailableJobs error:', e);
+        showToast('Error loading jobs', 'error');
+        return { jobs: [], totalPages: 1, totalCount: 0 };
+      }
+    }
+
+    // Fetch my applications
+    async function fetchMyApplications() {
+      try {
+        const res = await fetch(`${API_BASE}/graduate/jobs/applications`, { headers: headers() });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.data || data.applications || []);
+      } catch (e) {
+        console.error('fetchMyApplications error:', e);
+        return [];
+      }
+    }
+
+    // Fetch stats
+    async function fetchStats() {
+      try {
+        const res = await fetch(`${API_BASE}/graduate/jobs/applications/stats`, { headers: headers() });
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (e) {
+        console.error('fetchStats error:', e);
+        return null;
+      }
+    }
+
+    // Build applications map
+    function buildApplicationsMap(applications) {
+      applicationsMap.clear();
+      applications.forEach(app => {
+        const jobId = app.jobId || (app.job && app.job.id);
+        if (jobId) {
+          applicationsMap.set(jobId, {
+            status: app.status || 'Applied',
+            date: app.appliedDate || app.createdAt,
+            appId: app.id
+          });
+        }
+      });
+    }
+
+    // Apply filters to jobs
+    function filterJobs(jobs, filter) {
+      if (filter === 'All') return jobs;
+      
+      return jobs.filter(job => {
+        const appInfo = applicationsMap.get(job.id);
+        if (!appInfo) return false;
+        
+        switch (filter) {
+          case 'Active':
+            return ['Applied', 'Under Review', 'Review', 'Interview'].includes(appInfo.status);
+          case 'Offer':
+            return appInfo.status === 'Offer' || appInfo.status === 'Completed';
+          case 'Rejected':
+            return appInfo.status === 'Rejected';
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Render job card
+    function renderJobCard(job) {
+      const appInfo = applicationsMap.get(job.id);
+      const status = appInfo ? appInfo.status : 'Available';
+      const appliedDate = appInfo ? appInfo.date : null;
+      
+      let logo = 'https://via.placeholder.com/300x150?text=No+Logo';
+      if (job.companyLogo) {
+        logo = job.companyLogo.startsWith('http') 
+          ? job.companyLogo 
+          : `http://smartcareerhub.runasp.net${job.companyLogo}`;
+      }
+
+      return `
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="job-card-modern p-3">
+            <div class="card-img-wrapper rounded-3 mb-3">
+              <img src="${logo}" alt="Company Logo" onerror="this.src='https://via.placeholder.com/300x150?text=No+Logo'">
+            </div>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="fw-bold mb-0" style="font-size:1.1rem;">${escapeHtml(job.title)}</h5>
+              <span class="status-pill ${getStatusClass(status)}">${status}</span>
+            </div>
+            <p class="text-muted mb-1"><i class="fas fa-building me-2"></i>${escapeHtml(job.companyName || 'Company')}</p>
+            <p class="text-muted mb-1"><i class="fas fa-map-marker-alt me-2"></i>${escapeHtml(job.location || 'Remote')}</p>
+            <p class="text-muted mb-1"><i class="fas fa-briefcase me-2"></i>${escapeHtml(job.jobType || 'Full-time')}</p>
+            <p class="text-muted mb-2">
+              <i class="fas fa-clock me-2"></i>
+              ${appliedDate ? 'Applied ' + formatDate(appliedDate) : 'Posted ' + formatDate(job.createdAt)}
+            </p>
+            ${job.salaryRange ? `<p class="text-muted mb-2"><i class="fas fa-money-bill me-2"></i>${escapeHtml(job.salaryRange)}</p>` : ''}
+            <div class="mt-auto d-flex gap-2 flex-wrap">
+              ${!appInfo ? 
+                `<button class="btn-apply-primary btn-sm flex-grow-1" onclick="window.applyJob(${job.id})">
+                  <i class="fas fa-paper-plane me-1"></i>Apply Now
+                </button>` : 
+                ''
+              }
+              <button class="btn-view-light btn-sm flex-grow-1" onclick="window.viewDetails(${job.id})">
+                <i class="fas fa-eye me-1"></i>Details
+              </button>
+              ${appInfo && appInfo.status !== 'Offer' && appInfo.status !== 'Rejected' ? 
+                `<button class="btn btn-outline-danger btn-sm rounded-pill" onclick="window.withdrawApp(${appInfo.appId})" title="Withdraw">
+                  <i class="fas fa-times"></i>
+                </button>` : 
+                ''
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render pagination
+    function renderPagination() {
+      const container = document.getElementById('paginationContainer');
+      if (totalPagesCount <= 1) {
+        container.innerHTML = '';
+        return;
+      }
+      
+      let html = '<nav><ul class="pagination justify-content-center">';
+      
+      // Previous button
+      html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="window.goToPage(${currentPage - 1})">«</a>
+      </li>`;
+      
+      // Page numbers
+      const maxVisible = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+      let endPage = Math.min(totalPagesCount, startPage + maxVisible - 1);
+      
+      if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+      }
+      
+      if (startPage > 1) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="window.goToPage(1)">1</a></li>`;
+        if (startPage > 2) html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" onclick="window.goToPage(${i})">${i}</a>
+        </li>`;
+      }
+      
+      if (endPage < totalPagesCount) {
+        if (endPage < totalPagesCount - 1) html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="window.goToPage(${totalPagesCount})">${totalPagesCount}</a></li>`;
+      }
+      
+      // Next button
+      html += `<li class="page-item ${currentPage === totalPagesCount ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="window.goToPage(${currentPage + 1})">»</a>
+      </li>`;
+      
+      html += '</ul></nav>';
+      container.innerHTML = html;
+    }
+
+    // Update pipeline
+    function updatePipeline() {
+      let counts = { Applied: 0, Review: 0, Interview: 0, Offer: 0 };
+      
+      applicationsMap.forEach((value) => {
+        const s = value.status;
+        if (s === 'Applied') counts.Applied++;
+        else if (s === 'Under Review' || s === 'Review') counts.Review++;
+        else if (s === 'Interview') counts.Interview++;
+        else if (s === 'Offer' || s === 'Completed') counts.Offer++;
+      });
+      
+      const total = Math.max(1, applicationsMap.size);
+      
+      document.getElementById('appliedBar').style.width = (counts.Applied / total * 100) + '%';
+      document.getElementById('appliedBar').textContent = counts.Applied;
+      document.getElementById('appliedCount').textContent = counts.Applied;
+      
+      document.getElementById('reviewBar').style.width = (counts.Review / total * 100) + '%';
+      document.getElementById('reviewBar').textContent = counts.Review;
+      document.getElementById('reviewCount').textContent = counts.Review;
+      
+      document.getElementById('interviewBar').style.width = (counts.Interview / total * 100) + '%';
+      document.getElementById('interviewBar').textContent = counts.Interview;
+      document.getElementById('interviewCount').textContent = counts.Interview;
+      
+      document.getElementById('offerBar').style.width = (counts.Offer / total * 100) + '%';
+      document.getElementById('offerBar').textContent = counts.Offer;
+      document.getElementById('offerPipelineCount').textContent = counts.Offer;
+    }
+
+    // Update stats display
+    function updateStats(statsData) {
+      if (statsData) {
+        document.getElementById('totalJobs').textContent = statsData.totalJobs || statsData.total || totalJobsCount;
+        document.getElementById('activeApps').textContent = statsData.active || statsData.activeApplications || 0;
+        document.getElementById('offerCount').textContent = statsData.offers || statsData.offerCount || 0;
+        document.getElementById('rejectedCount').textContent = statsData.rejected || statsData.rejectedCount || 0;
+      } else {
+        document.getElementById('totalJobs').textContent = totalJobsCount;
+        // Calculate from applications map
+        let active = 0, offers = 0, rejected = 0;
+        applicationsMap.forEach(v => {
+          if (['Applied', 'Under Review', 'Review', 'Interview'].includes(v.status)) active++;
+          if (v.status === 'Offer' || v.status === 'Completed') offers++;
+          if (v.status === 'Rejected') rejected++;
+        });
+        document.getElementById('activeApps').textContent = active;
+        document.getElementById('offerCount').textContent = offers;
+        document.getElementById('rejectedCount').textContent = rejected;
+      }
+    }
+
+    // Main render function
+    async function renderPage(page, filter = 'All') {
+      currentPage = page;
+      currentFilter = filter;
+      
+      document.getElementById('loadingSpinner').style.display = 'flex';
+      document.getElementById('jobsGrid').innerHTML = '';
+      
+      try {
+        // Fetch all data in parallel
+        const [jobsData, myApps, statsData] = await Promise.all([
+          fetchAvailableJobs(page),
+          fetchMyApplications(),
+          fetchStats()
+        ]);
+        
+        buildApplicationsMap(myApps);
+        
+        totalJobsCount = jobsData.totalCount;
+        totalPagesCount = jobsData.totalPages;
+        allCurrentJobs = jobsData.jobs;
+        
+        // Apply filter
+        const filteredJobs = filterJobs(allCurrentJobs, filter);
+        
+        // Render jobs
+        document.getElementById('jobsGrid').innerHTML = filteredJobs.length > 0 
+          ? filteredJobs.map(renderJobCard).join('')
+          : '<div class="col-12 text-center py-5 text-muted"><i class="fas fa-inbox fa-3x mb-3 d-block"></i>No jobs found matching your criteria</div>';
+        
+        // Update UI
+        renderPagination();
+        updatePipeline();
+        updateStats(statsData);
+        
+      } catch (error) {
+        console.error('renderPage error:', error);
+        showToast('Error loading data', 'error');
+        document.getElementById('jobsGrid').innerHTML = '<div class="col-12 text-center py-5 text-danger">Error loading jobs. Please try again.</div>';
+      } finally {
+        document.getElementById('loadingSpinner').style.display = 'none';
+      }
+    }
+
+    // Global functions
+    window.goToPage = (page) => {
+      if (page < 1 || page > totalPagesCount) return;
+      renderPage(page, currentFilter);
+    };
+
+    window.applyJob = async (jobId) => {
+      try {
+        showToast('Submitting application...', 'info');
+        const res = await fetch(`${API_BASE}/graduate/jobs/apply`, {
+          method: 'POST',
+          headers: headers(),
+          body: JSON.stringify({ jobId: jobId })
+        });
+        
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Application failed');
+        }
+        
+        showToast('✅ Application submitted successfully!', 'success');
+        await renderPage(currentPage, currentFilter);
+      } catch (e) {
+        showToast(e.message || 'Failed to apply', 'error');
+      }
+    };
+
+    window.withdrawApp = async (appId) => {
+      if (!confirm('Are you sure you want to withdraw this application?')) return;
+      
+      try {
+        const res = await fetch(`${API_BASE}/graduate/jobs/applications/${appId}/withdraw`, {
+          method: 'DELETE',
+          headers: headers()
+        });
+        
+        if (!res.ok) throw new Error('Withdrawal failed');
+        
+        showToast('Application withdrawn', 'info');
+        await renderPage(currentPage, currentFilter);
+      } catch (e) {
+        showToast('Failed to withdraw application', 'error');
+      }
+    };
+
+    window.viewDetails = (jobId) => {
+      const job = allCurrentJobs.find(j => j.id == jobId);
+      if (!job) {
+        showToast('Job details not found', 'error');
+        return;
+      }
+      
+      const appInfo = applicationsMap.get(job.id);
+      const modalContent = document.getElementById('modalContent');
+      
+      let logo = 'https://via.placeholder.com/300x150?text=No+Logo';
+      if (job.companyLogo) {
+        logo = job.companyLogo.startsWith('http') 
+          ? job.companyLogo 
+          : `http://smartcareerhub.runasp.net${job.companyLogo}`;
+      }
+      
+      modalContent.innerHTML = `
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold">${escapeHtml(job.title)}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center mb-4">
+            <img src="${logo}" alt="Company Logo" style="max-height: 100px; object-fit: contain;" onerror="this.src='https://via.placeholder.com/300x150?text=No+Logo'">
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong><i class="fas fa-building me-2"></i>Company:</strong> ${escapeHtml(job.companyName)}</p>
+              <p><strong><i class="fas fa-map-marker-alt me-2"></i>Location:</strong> ${escapeHtml(job.location || 'Not specified')}</p>
+              <p><strong><i class="fas fa-briefcase me-2"></i>Job Type:</strong> ${escapeHtml(job.jobType || 'Not specified')}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong><i class="fas fa-signal me-2"></i>Experience:</strong> ${escapeHtml(job.experienceLevel || 'Not specified')}</p>
+              <p><strong><i class="fas fa-money-bill me-2"></i>Salary:</strong> ${escapeHtml(job.salaryRange || 'Not specified')}</p>
+              <p><strong><i class="fas fa-calendar me-2"></i>Posted:</strong> ${formatDate(job.createdAt)}</p>
+            </div>
+          </div>
+          ${appInfo ? `
+            <div class="alert alert-info mt-3">
+              <strong>Application Status:</strong> 
+              <span class="status-pill ${getStatusClass(appInfo.status)} ms-2">${appInfo.status}</span>
+              <br><small>Applied: ${formatDate(appInfo.date)}</small>
+            </div>
+          ` : ''}
+          <div class="mt-3">
+            <h6 class="fw-bold">Required Skills</h6>
+            <p>${escapeHtml(job.requiredSkills || 'Not specified')}</p>
+          </div>
+          <div class="mt-3">
+            <h6 class="fw-bold">Description</h6>
+            <p>${escapeHtml(job.description || 'No description available')}</p>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          ${!appInfo ? `<button class="btn-apply-primary" onclick="window.applyJob(${job.id})"><i class="fas fa-paper-plane me-1"></i>Apply Now</button>` : ''}
+          <button class="btn-view-light" data-bs-dismiss="modal">Close</button>
+        </div>
+      `;
+      
+      const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+      modal.show();
+    };
+
+    window.exportReport = async () => {
+      try {
+        showToast('Generating report...', 'info');
+        
+        // Fetch all applications for export
+        const myApps = await fetchMyApplications();
+        
+        if (myApps.length === 0) {
+          showToast('No applications to export', 'info');
+          return;
+        }
+        
+        // Create CSV content
+        let csv = 'Job Title,Company,Status,Applied Date,Location,Job Type\n';
+        myApps.forEach(app => {
+          const job = app.job || {};
+          csv += `"${escapeHtml(job.title || 'N/A')}","${escapeHtml(app.companyName || job.companyName || 'N/A')}","${app.status}","${formatDate(app.appliedDate || app.createdAt)}","${escapeHtml(job.location || 'N/A')}","${escapeHtml(job.jobType || 'N/A')}"\n`;
+        });
+        
+        // Download file
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `job-applications-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        showToast('✅ Report exported successfully!', 'success');
+      } catch (e) {
+        showToast('Failed to export report', 'error');
+      }
+    };
+
+    // Filter change event
+    document.getElementById('statusFilter').addEventListener('change', function(e) {
+      renderPage(1, e.target.value);
+    });
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderPage(1, 'All');
+    });
+  })();
+</script>
+</body>
+</html>
