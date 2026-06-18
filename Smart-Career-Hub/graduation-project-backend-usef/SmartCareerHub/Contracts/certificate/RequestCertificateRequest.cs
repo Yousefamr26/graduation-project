@@ -1,0 +1,1 @@
+﻿public record RequestCertificateRequest(int RoadmapId);

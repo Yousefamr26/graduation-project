@@ -1,0 +1,6 @@
+@SmartCareerHub_HostAddress = http://localhost:5159
+
+GET {{SmartCareerHub_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

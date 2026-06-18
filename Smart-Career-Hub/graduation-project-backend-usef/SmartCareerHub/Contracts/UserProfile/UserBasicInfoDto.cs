@@ -1,0 +1,20 @@
+﻿public record UserBasicInfoDto(
+      string UserId,
+      string FullName,
+      string Email,
+      string PhoneNumber,
+      string Country,
+      string City,
+      string UserType,
+      string Major,
+      string Degree,
+      string University,
+      DateTime? ExpectedGraduation,
+      int? GraduationYear,
+      int? YearsOfExperience,
+      string? ExperienceSummary,
+      string? GitHub,
+      string? LinkedIn,
+      string? ProfileImage,
+      DateTime JoinedAt
+  );
