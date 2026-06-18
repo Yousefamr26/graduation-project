@@ -204,7 +204,6 @@ SmartCareerHub
 
 Graduation Project – Smart Career Hub
 
-Faculty of Computers and Artificial Intelligence
 
 ---
 
